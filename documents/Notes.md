@@ -1,6 +1,16 @@
 ## BRL Project Meeting Notes (Team Yellow)
 These notes outline the decisions made during team meetings to be later dissemenated into project documentation.
 
+### 10/17/25
+<b>Vision Document Presentation Retrospective:</b>
+- Add use cases for:
+    - Flag record for manager review with comment
+    - Managers can clear flags
+    - Add/remove user's own upvote from record
+        - Could be extended later for downvotes
+    - Search records by date added
+    - Search records by flagged
+
 ---
 
 ### 10/20/25 
