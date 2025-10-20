@@ -4,7 +4,7 @@
 2. make edits and commit ...
 3. When ready to merge, pull from main `git pull origin/main`
 4. Fix any merge conflicts on your local machine.
-5. `git push` to remote branch `origin/new_branch_name`
+5. Use `git push -u origin new_branch_name` to publish to the remote.
 6. Go to https://github.com/tbjurlin/BuzzworthyResourceLocator.
 7. Select `Pull Requests` -> `Add New Pull Request`
 8. Select `main` as the base branch and `new_branch_name` as the compare branch.
