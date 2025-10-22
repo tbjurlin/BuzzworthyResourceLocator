@@ -2,9 +2,12 @@
 
 1. On your local machine, create new branch `git checkout -b new_branch_name`
 2. make edits and commit ...
-3. When ready to merge, pull from main `git pull origin/main`
+3. When all changes are commited, switch to main with `git switch main`
+4. Pull all changes made to main with `git pull`
+5. Switch back to your branch with `git switch new_branch_name`
+6. Merge main into your branch with `git merge main`
 4. Fix any merge conflicts on your local machine.
-5. Use `git push -u origin new_branch_name` to publish to the remote.
+5. Use `git push -u origin new_branch_name` to publish to the remote. If the branch already has a remote, only `git push` is necessary.
 6. Go to https://github.com/tbjurlin/BuzzworthyResourceLocator.
 7. Select `Pull Requests` -> `Add New Pull Request`
 8. Select `main` as the base branch and `new_branch_name` as the compare branch.
