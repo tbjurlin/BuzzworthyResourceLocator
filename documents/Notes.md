@@ -20,7 +20,7 @@ These notes outline the decisions made during team meetings to be later dissemen
 - [x] Determine naming conventions
 - [x] Choose a database
 - [ ] Lay out file structure (# of classes, DAOs, etc.)
-- [ ] Create a high-level design diagrams (CD and DFD)
+- [ ] Create high-level design diagrams (CD and DFD)
 - [x] Decide on config file type
 - [ ] Run proofs of concept (e.g. does coding language interact with DB?)
 - [ ] Create design presentation
@@ -65,7 +65,7 @@ These notes outline the decisions made during team meetings to be later dissemen
 
 <b>Still To-Do: (due by 10/24)</b>
 - [ ] Lay out file structure (# of classes, DAOs, etc.)
-- [ ] Create a high-level design diagrams (CD and DFD)
+- [ ] Create high-level design diagrams (CD and DFD)
 - [ ] Run proofs of concept (e.g. does coding language interact with DB?)
 - [ ] Create design presentation
 - [x] [NEW] Decide on a platform for automation/testing
@@ -116,3 +116,44 @@ These notes outline the decisions made during team meetings to be later dissemen
 ---
 
 ## 10/22/25
+
+<b>Still To-Do: (due by 10/24)</b>
+- [ ] Lay out file structure (# of classes, DAOs, etc.)
+- [x] [NEW] Complete detailed use cases
+- [x] Create high-level design diagrams (CD and DFD)
+- [ ] Run proofs of concept (e.g. does coding language interact with DB?)
+- [ ] Create design presentation
+- [ ] Decide on a web server
+- [ ] [NEW] Choose logging framework (and run prototype)
+- [x] [NEW] Come up with project name
+- [x] [NEW] Discuss documentation strategy
+
+<b>How do users delete records?</b>
+- A search could return indices with records, and a delete would take an index as input
+- Potential danger for accidental deletion due to index typos?
+
+<b>Logging - Log4j? Java Utility Logging?</b>
+Reasons for Log4J:
+- Log4j has more flexibility with config file and more functionality than JUL
+- Large user base and indication of continued support
+- More advanced filters than JUL and asychronous logging
+- Built to be easily swapped out if needed
+
+<b>Project Name - Buzzworthy Resource Locator</b>
+
+<b>Documentation</b>
+- User Manual
+    - Can be docx, HTML, etc.
+- Operation Manual
+    - Can be docx, HTML, etc.
+- Source Code Documentation
+    - Javadoc for inline documentation generation
+- Deployment Notes
+    - Can de docx, HTML, etc.
+
+<b>Mongo DB Atlas:</b>
+- faster cloud-based option
+- easy to scale as needed
+- need to document potential costs ($0.008/hr ?)
+
+---
