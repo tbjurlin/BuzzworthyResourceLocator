@@ -62,3 +62,57 @@ These notes outline the decisions made during team meetings to be later dissemen
 ---
 
 ### 10/21/25
+
+<b>Still To-Do: (due by 10/24)</b>
+- [ ] Lay out file structure (# of classes, DAOs, etc.)
+- [ ] Create a high-level design diagrams (CD and DFD)
+- [ ] Run proofs of concept (e.g. does coding language interact with DB?)
+- [ ] Create design presentation
+- [x] [NEW] Decide on a platform for automation/testing
+- [ ] [NEW] Decide on a web server
+
+<b>Automated Testing Platform - Maven:</b>
+- Works well with Java
+- Straightforward installation and project integration
+- Lots of plug-ins
+- Customizable and detailed reports
+- VS Code Extension
+
+<b>What does a record contain?</b>
+- index
+- url
+- date added
+- poster employee id
+- poster name
+- title
+- description
+- isEdited flag (later release)
+- editor employee id (later release)
+- editor name (later release)
+- list of comments
+    - commenter employee id
+    - commenter name
+    - comment
+    - date added
+    - isEdited flag (later release)
+- list of upvotes
+    - upvoter employee id
+    - upvoter name
+- list of managerFlags
+    - flagger employee id
+    - flagger name
+    - comment
+    - date added
+
+<b>Note: We are now considering using Java Properties instead of JSON for config files</b>
+
+<b>Web Server - Tomcat?</b>
+
+<b>Current task priority:</b>
+1. Flesh out detailed use cases
+2. Use the use cases to make Data Flow Diagrams (DFD)
+3. From the DFD processes, approximate which classes will be needed
+
+---
+
+## 10/22/25
