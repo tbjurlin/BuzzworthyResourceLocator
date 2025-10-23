@@ -1,17 +1,19 @@
 package com.buzzwordsoftware.prototype.app;
 
-import com.buzzwordsoftware.prototype.app.logging.Logger;
-import com.buzzwordsoftware.prototype.app.logging.LoggerImpl;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-/**
- * Hello world!
- */
 public class App {
 
-    protected static final Logger LOGGER = LoggerImpl.INSTANCE;
+    protected static final Logger logger = LogManager.getLogger("com.buzzwordsoftware.prototype.EventLogger");
     
     public static void main(String[] args) {
-        LOGGER.info("Hello Log!");
-        System.out.println("Hello World!");
+        logger.info("App started");
+        AuthMock authServer = new AuthMock();
+        logger.info("Connected to auth server.");
+        APIMock api = new APIMock(authServer);
+        logger.info("Launched API");
+
+        api.processRequest("Web token", "Here be dragons!");
     }
 }
