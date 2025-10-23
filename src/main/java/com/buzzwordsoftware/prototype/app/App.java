@@ -1,14 +1,14 @@
 package com.buzzwordsoftware.prototype.app;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+import com.buzzwordsoftware.prototype.app.logging.Logger;
+import com.buzzwordsoftware.prototype.app.logging.LoggerImpl;
 
 /**
  * Hello world!
  */
 public class App {
 
-    protected static final Logger LOGGER = LogManager.getLogger();
+    protected static final Logger LOGGER = LoggerImpl.INSTANCE;
     
     public static void main(String[] args) {
         LOGGER.info("Hello Log!");
