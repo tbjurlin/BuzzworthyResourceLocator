@@ -1,11 +1,21 @@
 package com.buzzword;
 
 public class LoggerFactory {
+
+    private static Logger securityLogger;
+    private static Logger eventLogger;    
+
     public static Logger getSecurityLogger() {
-        return new LoggerImpl("<security-logger-name>");
+        if (securityLogger == null) {
+            securityLogger = new LoggerImpl("<security-logger-name>");
+        }
+        return securityLogger;
     }
 
     public static Logger getEventLogger() {
-        return new LoggerImpl("<event-logger-name>");
+        if (eventLogger == null) {
+            eventLogger = new LoggerImpl("<event-logger-name>");
+        }
+        return eventLogger;
     }
 }
