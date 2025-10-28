@@ -38,19 +38,19 @@ public class Resource extends Record {
 
     }
 
-    public Flag[] getReviewFlags() {
+    public ReviewFlag[] getReviewFlags() {
         return reviewFlags;
     }
 
-    public void setReviewFlags(Flag[] newReviewFlags) {
+    public void setReviewFlags(ReviewFlag[] newReviewFlags) {
 
     }
 
-    public Flag[] getUpVoteFlags() {
+    public UpVote[] getUpVoteFlags() {
         return upVoteFlags;
     }
 
-    public void setUpVoteFlags(Flag[] newUpVoteFlags) {
+    public void setUpVoteFlags(UpVote[] newUpVoteFlags) {
 
     }
 
