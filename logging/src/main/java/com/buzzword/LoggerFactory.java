@@ -7,14 +7,14 @@ public class LoggerFactory {
 
     public static Logger getSecurityLogger() {
         if (securityLogger == null) {
-            securityLogger = new LoggerImpl("<security-logger-name>");
+            securityLogger = new LoggerImpl("com.buzzword.SecurityLogger");
         }
         return securityLogger;
     }
 
     public static Logger getEventLogger() {
         if (eventLogger == null) {
-            eventLogger = new LoggerImpl("<event-logger-name>");
+            eventLogger = new LoggerImpl("com.buzzword.EventLogger");
         }
         return eventLogger;
     }
