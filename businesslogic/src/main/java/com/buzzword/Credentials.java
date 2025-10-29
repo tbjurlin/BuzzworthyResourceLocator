@@ -7,6 +7,7 @@ public class Credentials {
     private String title;
     private String department;
     private String location;
+    private String systemRole;
 
     public Credentials(Integer id, String firstName, String lastName, String title, String department, String location) {
         setId(id);
@@ -15,6 +16,7 @@ public class Credentials {
         setTitle(title);
         setDepartment(department);
         setLocation(location);
+        setSystemRole();
     }
 
     public Integer getId() {
@@ -69,5 +71,14 @@ public class Credentials {
     public void setLocation(String location) {
         // TODO: Add validation for location
         this.location = location;
+    }
+
+    private void setSystemRole() {
+        // TODO: Add logic to compute system role
+        this.systemRole = "General User";
+    }
+
+    public String getSystemRole() {
+        return systemRole;
     }
 }
