@@ -4,7 +4,7 @@ public class Comment extends Record {
     private String contents;
 
     /* Constructor */
-    public Resource() {
+    public Comment() {
         // Construct the abstract record
         super();
     }
