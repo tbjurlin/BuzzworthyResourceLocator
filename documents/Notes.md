@@ -209,3 +209,35 @@ Reasons for Log4J:
 
 ---
 
+### 10/27/25
+
+<b>REST API Request Formats:</b>
+- Retrieve all resource records
+    - `GET @ http://localhost:8080/BRL/api/wiki/resource`
+- Add a resource record
+    - `POST @ http://localhost:8080/BRL/api/wiki/resource`
+- Add a comment to a resource record
+    - `POST @ http://localhost:8080/BRL/api/wiki/resource/{resourceId}/comment` 
+- Add an upvote to a resource record
+    - `POST @ http://localhost:8080/BRL/api/wiki/resource/{resourceId}/upvote`
+- Add a manager review flag to a resource record
+    - `POST @ http://localhost:8080/BRL/api/wiki/resource/{resourceId}/reviewFlag`
+- Delete a resource record by its ID
+    - `DELETE @ http://localhost:8080/BRL/api/wiki/resource/{resourceId}`
+- Delete a comment on a resource record by its ID
+    - `DELETE @ http://localhost:8080/BRL/api/wiki/resource/{resourceId}/comment/{commentId}`
+- Delete an upvote on a resource record by its ID
+    - `DELETE @ http://localhost:8080/BRL/api/wiki/resource/{resourceId}/upvote/{upvoteId}`
+- Delete a manager review flag on a resource record by its ID
+    - `DELETE @ http://localhost:8080/BRL/api/wiki/resource/{resourceId}/reviewFlag/{flagId}`
+
+---
+
+### 10/28/25
+
+<b>Using Spring Boot 3.5.7 to deploy project via Tomcat</b>
+- Simplifies the deployment process
+- Widely used with extensive support and documentation
+- Simple addition to pre-existing Maven project
+
+---
