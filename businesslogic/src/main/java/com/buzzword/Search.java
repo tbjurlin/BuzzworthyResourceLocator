@@ -1,4 +1,7 @@
+package com.buzzword;
+
 import java.util.Date;
+import java.util.List;
 
 public class Search {
     private List<String> tags;

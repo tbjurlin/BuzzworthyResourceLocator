@@ -1,3 +1,5 @@
+package com.buzzword;
+
 public class Credentials {
     private Integer id;
     private String firstName;
