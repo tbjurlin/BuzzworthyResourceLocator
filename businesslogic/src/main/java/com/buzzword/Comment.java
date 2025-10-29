@@ -13,8 +13,8 @@ public class Comment extends Record {
         return contents;
     }
 
-    public void setContents(string contents) {
+    public void setContents(String contents) {
         // TODO: Add validation for contents
-        self.contents = contents;
+        this.contents = contents;
     }
 }

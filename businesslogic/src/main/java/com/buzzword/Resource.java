@@ -1,12 +1,16 @@
 package com.buzzword;
 
+
+import java.util.List;
+
+
 public class Resource extends Record {
     private String title;
     private String description;
     private String url;
     private List<Comment> comments;
     private List<ReviewFlag> reviewFlags;
-    private List<Flag> upVoteFlags;
+    private List<UpVote> upVoteFlags;
 
     /* Constructor */
     public Resource() {
@@ -23,6 +27,15 @@ public class Resource extends Record {
         this.title = title;
     }
 
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        // TODO: Add validation for url
+        this.url = url;
+    }
+
     public String getDescription() {
         return description;
     }
@@ -32,7 +45,7 @@ public class Resource extends Record {
         this.description = description;
     }
 
-    public Comment getComments() {
+    public List<Comment> getComments() {
         return comments;
     }
 

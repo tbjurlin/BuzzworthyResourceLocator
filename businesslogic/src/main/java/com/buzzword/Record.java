@@ -11,7 +11,7 @@ abstract class Record {
     private Boolean isEdited;
 
     /* Constructor */
-    public void Record() {
+    public Record() {
 
     }
 
