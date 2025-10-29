@@ -1,7 +1,7 @@
-## MongoDB Community Edition Installation
+## MongoDB Community Edition Installation — Linux
 
 
-### Go to MongoDB.com under community downloads and select version 8.2.1 for the Ubuntu 22.04 x64 platform
+### Go to MongoDB.com and find the download in the MongoDB Community Edition Server Download section. Select version 8.2.1 for the Ubuntu 22.04 x64 platform
 https://www.mongodb.com/try/download/community
 
 ### Move to the folder with the MongoDB file in it. It is most likely in the downloads folder
