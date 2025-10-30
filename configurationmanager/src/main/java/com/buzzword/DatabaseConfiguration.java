@@ -15,6 +15,12 @@ public interface DatabaseConfiguration {
     public abstract String getDatabaseConnectionString();
 
     /**
+     * Getter for the database name.
+     * @return database name
+     */
+    public abstract String getDatabaseName();
+
+    /**
      * Getter for the minimum number of connections in the database connection pool.
      * @return min database pool connections
      */
