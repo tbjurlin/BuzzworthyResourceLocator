@@ -1,5 +1,5 @@
 package com.buzzword;
 
 public interface Authentication {
-    void Authenticate(String token);
+    Credentials Authenticate(Token token);
 }
