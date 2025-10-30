@@ -14,7 +14,7 @@ public class XssSanitizerTest {
     @BeforeEach
     public void setUp() throws Exception
     {
-        testXssSanitizer = new XssSanitizer();
+        testXssSanitizer = new XssSanitizerImpl();
     }
 
     @Test

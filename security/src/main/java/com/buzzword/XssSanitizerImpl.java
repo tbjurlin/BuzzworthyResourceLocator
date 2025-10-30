@@ -10,14 +10,6 @@ import org.jsoup.Jsoup;
 import org.jsoup.safety.Safelist;
 import org.apache.commons.text.StringEscapeUtils;
 
-
-/*Temp Notes (remove Later) 
- * 
- * Min size, max size, a string. Check that it's these things. If it is, it's sanitized.
- * The URL. It has to have the right parts! Https://, .org, .com, etc.
- * Take data from authentication methods and call setters to make the actual changes.
- * User credentials has a bunch of fields with set methods that you call with the data from the validation center
-*/
 public class XssSanitizerImpl
     implements XssSanitizer {
     
