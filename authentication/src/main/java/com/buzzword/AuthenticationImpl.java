@@ -17,7 +17,7 @@ public class AuthenticationImpl implements Authentication{
         
     }
 
-    public void Authenticate(Token token) {
-
+    public Credentials Authenticate(Token token) {
+        return new Credentials(0, "", "", "", "", "");
     }
 }
