@@ -13,4 +13,16 @@ public interface DatabaseConfiguration {
      * @return database connection string
      */
     public abstract String getDatabaseConnectionString();
+
+    /**
+     * Getter for the minimum number of connections in the database connection pool.
+     * @return min database pool connections
+     */
+    public abstract Integer getMinDatabaseConnections();
+
+    /**
+     * Getter for the maximum number of connections in the database connection pool.
+     * @return max database pool connections
+     */
+    public abstract Integer getMaxDatabaseConnections();
 }
