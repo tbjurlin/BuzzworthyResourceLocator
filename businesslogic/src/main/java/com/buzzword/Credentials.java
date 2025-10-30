@@ -2,30 +2,37 @@ package com.buzzword;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 
+@JsonAutoDetect(fieldVisibility = Visibility.ANY, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class Credentials {
+    
+    @JsonProperty("id")
     @JsonAlias({"id"})
     private Integer id;
+    @JsonProperty("fName")
     @JsonAlias({"fName"})
     private String firstName;
+    @JsonProperty("lName")
     @JsonAlias({"lName"})
     private String lastName;
+    @JsonProperty("title")
     @JsonAlias({"title"})
     private String title;
+    @JsonProperty("dept")
     @JsonAlias({"dept"})
     private String department;
+    @JsonProperty("loc")
     @JsonAlias({"loc"})
     private String location;
+    @JsonIgnore
     private String systemRole;
 
-    public Credentials(Integer id, String firstName, String lastName, String title, String department, String location) {
-        setId(id);
-        setFirstName(firstName);
-        setLastName(lastName);
-        setTitle(title);
-        setDepartment(department);
-        setLocation(location);
-        setSystemRole();
+    public Credentials() {
+
     }
 
     public Integer getId() {

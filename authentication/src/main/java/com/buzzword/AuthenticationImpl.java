@@ -11,6 +11,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyMetadata;
 
 public class AuthenticationImpl implements Authentication{
     private URL serverUrl;
@@ -37,7 +38,7 @@ public class AuthenticationImpl implements Authentication{
             connection.setRequestMethod("POST");
             connection.setDoOutput(true);
             connection.setRequestProperty("Content-Type", "application/json");
-            String tokenJson = String.format("{{\"token\": \"%s\"}}", token.getToken());
+            String tokenJson = String.format("{\"token\": \"%s\"}", token.getToken());
             try (OutputStream os = connection.getOutputStream()) {
                 byte[] output = (tokenJson).getBytes("utf-8");
                 os.write(output, 0, output.length);
@@ -54,8 +55,10 @@ public class AuthenticationImpl implements Authentication{
                     response.append(inputLine);
                 }
                 in.close();
+                String responseStr = response.toString();
                 ObjectMapper objectMapper = new ObjectMapper();
-                Credentials userCredentials = objectMapper.readValue(response.toString(), Credentials.class);
+                Credentials userCredentials;
+                userCredentials = objectMapper.readValue(responseStr, Credentials.class);
                 return userCredentials;
             } else {
                 // Throw exception
