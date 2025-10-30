@@ -29,7 +29,7 @@ abstract class Record {
      * <br>
      * The business rules are:
      * <ul>
-     *   <li>the id must be...</li>
+     *   <li>the id must be non-negative</li>
      * </ul>
      *
      * @param id the value to set into the recordId field
@@ -37,6 +37,9 @@ abstract class Record {
      */
     public void setId(int id) {
         // TODO: Add validation for id
+        if (id < 0) {
+            throw new IllegalArgumentException("id must be non-negative");
+        }
         this.id = id;
     }
 

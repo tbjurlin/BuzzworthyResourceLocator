@@ -1,10 +1,10 @@
 package com.buzzword;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertThat;
-
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Set;
 
@@ -16,23 +16,25 @@ import org.junit.jupiter.api.BeforeEach;
  */
 public class ResourceTest {
 
+    private Resource testResource = null;
+
     @BeforeEach
     void setup() {
+        testResource = new Resource();
     }
-
 
     @Test
     public void testInvalidId() {
-        Resource resource = new Resource();
-        resource.setId(-1);
-        
+        assertThrows(IllegalArgumentException.class, () -> {
+            testResource.setId(-1);
+        }); 
     }
 
     @Test
     public void testValidId() {
-        Resource resource = new Resource();
-        resource.setId(1);
-
+        testResource.setId(1);
+        assertEquals(1, testResource.getId()); 
     }
+
 }
 
