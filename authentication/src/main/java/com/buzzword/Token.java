@@ -27,9 +27,14 @@ public class Token {
 
     /**
      * Setter for the token.
-     * Provides validation and sanitization logic.
-     * 
-     * @param token the token to be sanitized and validated.
+     * <p>
+     * Sanitizes token and validates according to the following rules:
+     * // TODO: Identify min and max length.
+     * The token is formed of three sections separated by periods:
+     *      the header, the payload, and the signature.
+     * Each section may only contain the characters a-zA-Z0-9_-.
+     * <p>
+     * @param token The token to be sanitized and validated.
      * @throws IllegalArgumentException when validation fails.
      */
     public void setToken(String token) {
@@ -40,9 +45,9 @@ public class Token {
 
         // Ensure token follows valid JWT format
         // [\\w-] matches one character fron a-zA-Z0-9_-
-        // The regex applies this to 10 or more characters, a period, 10 or more characters,
+        // The regex applies this to one or more characters, a period, one or more characters,
         //      a period, one or more characters. On discussion with Jonathon, we can refine this.
-        if (!safeToken.matches("[\\w-]{10,}\\.[\\w-]{10,}\\.[\\w-]+")) {
+        if (!safeToken.matches("[\\w-]+\\.[\\w-]+\\.[\\w-]+")) {
             throw new IllegalArgumentException("JWT token contained invalid characters");
         }
 
