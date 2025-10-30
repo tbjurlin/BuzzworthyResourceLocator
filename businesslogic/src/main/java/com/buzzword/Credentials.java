@@ -1,11 +1,20 @@
 package com.buzzword;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonAlias;
+
 public class Credentials {
+    @JsonAlias({"id"})
     private Integer id;
+    @JsonAlias({"fName"})
     private String firstName;
+    @JsonAlias({"lName"})
     private String lastName;
+    @JsonAlias({"title"})
     private String title;
+    @JsonAlias({"dept"})
     private String department;
+    @JsonAlias({"loc"})
     private String location;
     private String systemRole;
 
