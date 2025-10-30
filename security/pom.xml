@@ -44,10 +44,11 @@
       <artifactId>junit-jupiter-params</artifactId>
       <scope>test</scope>
     </dependency>
+     <!-- Jsoup Dependency -->
     <dependency>
-      <groupId>com.buzzword</groupId>
-      <artifactId>logging</artifactId>
-      <version>1.0-SNAPSHOT</version>
+      <groupId>org.jsoup</groupId>
+      <artifactId>jsoup</artifactId>
+      <version>1.21.2</version> <!-- Use the latest stable version of Jsoup -->
     </dependency>
   </dependencies>
 
