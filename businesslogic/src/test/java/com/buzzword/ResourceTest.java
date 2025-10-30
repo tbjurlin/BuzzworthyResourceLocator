@@ -1,7 +1,10 @@
 package com.buzzword;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThat;
+
 
 import java.util.Set;
 
@@ -26,16 +29,38 @@ public class ResourceTest {
         validator = factory.getValidator();
     }
 
-    /**
-     * 
-     */
+
     @Test
-    public void creatorFirstNameNotBlank() {
-        Resource newResource = new Resource();
-        newResource.setCreatorFirstName("FirstName");
+    public void testInvalidId() {
+        Resource resource = new Resource();
+        resource.setId(-1);
+        Set<ConstraintViolation<Resource>> violations = validator.validate(resource);
 
-        Set<ConstraintViolation<Resource>> violations = validator.validate(newResource);
 
-        assertTrue(violations.isEmpty(), "Violations expected for invalid data");
+        assertFalse(violations.isEmpty());
+
+
+        resource.setCreatorId(-1);
+        resource.setCreatorFirstName("");
+
+       
+        // Valid Input
+        
+        resource.setCreatorId(1);
+        resource.setCreatorFirstName("FirstName");
+
+        violations = validator.validate(resource);
+        assertTrue(violations.isEmpty());
+    }
+
+    @Test
+    public void testValidId() {
+        Resource resource = new Resource();
+        resource.setId(1);
+        Set<ConstraintViolation<Resource>> violations = validator.validate(resource);
+        assertTrue(violations.isEmpty());
+        ConstraintViolation<Resource> violation = violations.iterator().next();
+        assertEquals("id must be non-negative", violation.getMessage());
     }
 }
+

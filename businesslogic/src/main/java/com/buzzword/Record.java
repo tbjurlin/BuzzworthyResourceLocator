@@ -3,9 +3,13 @@ package com.buzzword;
 import java.util.Date;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 
 abstract class Record {
+    @PositiveOrZero(message = "id must be non-negative")
     private int id;
+    @PositiveOrZero(message = "creatorId must be non-negative")
     private int creatorId;
     @NotBlank(message="Must provide a first name.")
     private String creatorFirstName;
