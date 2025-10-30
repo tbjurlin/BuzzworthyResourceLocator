@@ -18,6 +18,7 @@ public class ConfigurationManager implements DatabaseConfiguration {
     private String databaseConnectionString;
     private Integer minDatabaseConnections;
     private Integer maxDatabaseConnections;
+    private String databaseName;
 
     private static ConfigurationManager instance;
 
@@ -30,12 +31,13 @@ public class ConfigurationManager implements DatabaseConfiguration {
             prop.getProperty("database.userName"),
             prop.getProperty("database.password"),
             prop.getProperty("database.host"),
-            prop.getProperty("database.port"),
-            prop.getProperty("database.databaseName")
+            prop.getProperty("database.port")
         );
 
         setMinDatabaseConnections(prop.getProperty("database.pool.min"));
         setMaxDatabaseConnections(prop.getProperty("database.pool.max"));
+
+        setDatabaseName(prop.getProperty("database.name"));
     }
 
     /**
@@ -63,7 +65,7 @@ public class ConfigurationManager implements DatabaseConfiguration {
      * @param databaseName the name of the database.
      * @throws IllegalArgumentException if any of the fields are invalid.
      */
-    private void createDatabaseConnectionString(String userName, String password, String host, String port, String databaseName) throws IllegalArgumentException {
+    private void createDatabaseConnectionString(String userName, String password, String host, String port) throws IllegalArgumentException {
 
         if (userName == null) {
             throw new IllegalArgumentException("Database username is missing.");
@@ -76,9 +78,6 @@ public class ConfigurationManager implements DatabaseConfiguration {
         }
         if (port == null) {
             throw new IllegalArgumentException("Port is null.");
-        }
-        if (databaseName == null) {
-            throw new IllegalArgumentException("Databse name is null");
         }
 
         // TODO: Add sanitization.
@@ -103,16 +102,13 @@ public class ConfigurationManager implements DatabaseConfiguration {
             throw new IllegalArgumentException("Invalid host number.");
         }
 
-        String safeDatabaseName = databaseName;
-
 
         databaseConnectionString = URLEncoder.encode(String.format(
-            "mongodb://%s:%s@%s:%s/%s?authSource=admin",
+            "mongodb://%s:%s@%s:%s/?authSource=admin",
             safeUserName,
             safePassword,
             safeHost,
-            safePort,
-            safeDatabaseName
+            safePort
         ), StandardCharsets.UTF_8);
     }
 
@@ -174,5 +170,23 @@ public class ConfigurationManager implements DatabaseConfiguration {
     @Override
     public Integer getMaxDatabaseConnections() {
         return maxDatabaseConnections;
+    }
+
+    /**
+     * Setter for the database name.
+     * @param databaseName the name of the database.
+     */
+    private void setDatabaseName(String databaseName) {
+        // TODO: Add sanitizer.
+        String safeDatabaseName = databaseName;
+        this.databaseName = safeDatabaseName;
+    }
+
+    /**
+     * {@inheritDocs}
+     */
+    @Override
+    public String getDatabaseName() {
+        return databaseName;
     }
 }
