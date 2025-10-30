@@ -20,7 +20,7 @@ public interface XssSanitizer {
 
     /**
      * Encode Routine
-     * 
+     * <p>
      * Sanitizes the ouput as a way to avoid unsafe HTML, as well as remove
      * whitespace to ensure safe and clean content is displayed.
      * 
