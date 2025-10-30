@@ -157,3 +157,55 @@ Reasons for Log4J:
 - need to document potential costs ($0.008/hr ?)
 
 ---
+
+### 10/23/25
+
+<b>Still To-Do: (due by 10/24)</b>
+- [ ] Lay out file structure (# of classes, DAOs, etc.)
+- [x] Run proofs of concept (e.g. does coding language interact with DB?)
+- [x] Create design presentation
+- [x] Decide on a web server
+- [x] [NEW] Choose logging framework (and run prototype)
+- [x] [NEW] Finish data dictionary
+
+<b>Completed design presentation today and performed successful prototypes for logging, connecting to MongoDB, and connecting to the authentication server via REST API. See DesignPresentation.pptx for more details.</b>
+
+---
+
+### 10/24/25
+
+<b>Still To-Do: (due by 10/24 - today)</b>
+- [X] Lay out file structure (# of classes, DAOs, etc.)
+- [x] Determine development roles/duties (i.e. who is coding what?)
+
+<b>We presented our design presentation, laid out our file structure, and designated roles for next week's coding phase.</b>
+
+<b>Development Duties:</b>
+- Ben
+    - API (owner)
+    - Authentication (owner)
+    - Database (reviewer)
+- Claire
+    - Database (owner)
+    - Security (reviewer)
+    - Log Management (reviewer)
+- Dennis
+    - Business Logic (owner)
+    - API (reviewer)
+    - Config Management (reviewer)
+- Janniebeth
+    - Security (owner)
+    - Authentication (reviewer)
+- Ted
+    - Log Management (owner)
+    - Config Management (owner)
+    - Business Logic (reviewer)
+
+<b>Other notes:</b>
+- Need to use log4j 2.17 and newer
+    - Can use Maven to identify Log4j2 vulnerabilities
+- For security, don't use direct string concatenation
+    - Instead, use String.format()
+
+---
+
