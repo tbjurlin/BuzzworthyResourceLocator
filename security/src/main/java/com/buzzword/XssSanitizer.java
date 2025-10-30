@@ -6,8 +6,23 @@
  */
 package com.buzzword;
 
+import org.jsoup.safety.Safelist;
 
 public interface XssSanitizer {
+
+    /**
+	 * Returns the current rules.
+	 * <p>
+	 * @return the current rules
+	 */
+	Safelist getRules();
+
+    /**
+	 * Loads a new rules.
+	 * <p>
+	 * @param rules the rules definition to load
+	 */
+	void setRules(Safelist rules);
 
     /**
      * Scan Routine
