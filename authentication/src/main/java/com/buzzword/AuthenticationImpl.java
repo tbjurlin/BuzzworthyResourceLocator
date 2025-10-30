@@ -17,7 +17,7 @@ public class AuthenticationImpl implements Authentication{
         
     }
 
-    public void Authenticate(String token) {
+    public void Authenticate(Token token) {
 
     }
 }
