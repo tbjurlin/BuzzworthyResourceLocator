@@ -1,10 +1,13 @@
 package com.buzzword;
 
 import java.util.Date;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 abstract class Record {
     private int id;
     private int creatorId;
+    @NotBlank(message="Must provide a first name.")
     private String creatorFirstName;
     private String creatorLastName;
     private Date creationDate;
