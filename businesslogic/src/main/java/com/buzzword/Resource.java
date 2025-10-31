@@ -1,5 +1,7 @@
 package com.buzzword;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 
 import java.util.List;
 
@@ -8,8 +10,11 @@ public class Resource extends Record {
     private String title;
     private String description;
     private String url;
+    @JsonIgnore
     private List<Comment> comments;
+    @JsonIgnore
     private List<ReviewFlag> reviewFlags;
+    @JsonIgnore
     private List<UpVote> upVoteFlags;
 
     /* Constructor */
