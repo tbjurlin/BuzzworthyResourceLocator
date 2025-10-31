@@ -1,10 +1,9 @@
 package com.buzzword;
 
+import org.jsoup.safety.Safelist;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-
-import org.jsoup.safety.Safelist;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -28,7 +27,7 @@ public class XssSanitizerTest {
 	public void testInvalidXssString()
 	{
 		String bad = "Some data <script>alert()</script> more data ";
-		String expected = "Some data  more data";
+		String expected = "Some data more data";
 		String actual = testXssSanitizer.sanitizeInput(bad);
 		assertEquals(expected, actual);
 	}
