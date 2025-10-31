@@ -16,11 +16,11 @@ import org.junit.jupiter.api.BeforeEach;
  */
 public class RecordTest {
 
-    private TestRecord testRecord = null;
+    private DummyRecord testRecord = null;
 
     @BeforeEach
     void setup() {
-        testRecord = new TestRecord();
+        testRecord = new DummyRecord();
     }
 
     @Test
