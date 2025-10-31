@@ -6,8 +6,19 @@ package com.buzzword;
  * the Authentication Server.
  * 
  * @author Ted Bjurlin
+ * @version 1.0
  */
 public class Token {
+
+    /**
+     * A reference to the security logger to log if token validation fails.
+     */
+    Logger logger = LoggerFactory.getSecurityLogger();
+
+    /**
+     * The sanitizer used to prevent XSS attacks.
+     */
+    XssSanitizer sanitizer = new XssSanitizerImpl();
 
     /**
      * Represents the validated token string provided by the user.
@@ -29,26 +40,26 @@ public class Token {
      * Setter for the token.
      * <p>
      * Sanitizes token and validates according to the following rules:
-     * // TODO: Identify min and max length.
-     * The token is formed of three sections separated by periods:
-     *      the header, the payload, and the signature.
-     * Each section may only contain the characters a-zA-Z0-9_-.
+     * The token must be between 250 and 400 characters.
      * <p>
      * @param token The token to be sanitized and validated.
      * @throws IllegalArgumentException when validation fails.
      */
-    public void setToken(String token) {
-        // TODO: Add sanitization.
-        String safeToken = token;
+    public void setToken(String token) throws IllegalArgumentException {
 
-        // TODO: Set up checks for JWT token max and min size.
+        if (token == null) {
+            logger.error("No authentication token recieved.");
+            throw new IllegalArgumentException("No authentication token recieved.");
+        }
 
-        // Ensure token follows valid JWT format
-        // [\\w-] matches one character fron a-zA-Z0-9_-
-        // The regex applies this to one or more characters, a period, one or more characters,
-        //      a period, one or more characters. On discussion with Jonathon, we can refine this.
-        if (!safeToken.matches("[\\w-]+\\.[\\w-]+\\.[\\w-]+")) {
-            throw new IllegalArgumentException("JWT token contained invalid characters");
+        String safeToken = sanitizer.sanitizeInput(token);
+
+        if (safeToken.length() < 250) {
+            logger.error("Authentication token recieved is too short.");
+            throw new IllegalArgumentException("JWT token is too short.");
+        } else if (safeToken.length() > 400) {
+            logger.error("Authentication token recieved is too long.");
+            throw new IllegalArgumentException("JWT token is too long.");
         }
 
         this.token = safeToken;
