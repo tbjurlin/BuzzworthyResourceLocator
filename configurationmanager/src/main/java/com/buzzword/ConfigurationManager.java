@@ -2,6 +2,8 @@ package com.buzzword;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Properties;
@@ -12,6 +14,7 @@ import java.util.Properties;
  * On construction, retrieves the configuration information from the config file. This information
  * is globally available as a singleton, and is made accessibly through a set of getter functions.
  * @author Ted Bjurlin
+ * @version 1.0
  */
 public class ConfigurationManager implements DatabaseConfiguration {
 
@@ -20,12 +23,41 @@ public class ConfigurationManager implements DatabaseConfiguration {
     private Integer maxDatabaseConnections;
     private String databaseName;
 
+    private final Logger logger = LoggerFactory.getEventLogger();
+
+    private XssSanitizer sanitizer = new XssSanitizerImpl();
+
     private static ConfigurationManager instance;
 
+    /**
+     * Constructs a ConfigurationManager
+     * <p>
+     * Constructs a configuration instance, reading configuration information from the
+     * application config file. The manager first looks for a BRL_CONFIG environmental
+     * variable specifying the configuration path. If this is not found, it looks for
+     * a config file in the working directory.
+     * @throws IOException If the config file fails to parse as a java properties file.
+     * @throws IllegalArgumentException If a field in the config file is invalid or missing.
+     * @throws FileNotFoundExcepton - If the config file could not be found.
+     */
     private ConfigurationManager() throws IOException, IllegalArgumentException {
         Properties prop = new Properties();
-        InputStream stream = ConfigurationManager.class.getResourceAsStream("/config.properties");
-        prop.load(stream);
+        String configPath = System.getenv("BRL_CONFIG");
+        if (configPath == null) {
+            configPath = "brl.properties";
+        }
+        logger.info("Looking for configuration file at path " + configPath);
+    
+        try {
+            InputStream stream = new FileInputStream(configPath);
+            prop.load(stream);
+        } catch (FileNotFoundException e) {
+            logger.error("No configuration file found.");
+            throw e;
+        } catch (IOException e) {
+            logger.error("Malformed configuration file.");
+            throw e;
+        }
 
         createDatabaseConnectionString(
             prop.getProperty("database.userName"),
@@ -62,44 +94,48 @@ public class ConfigurationManager implements DatabaseConfiguration {
      * @param password the password of the database user.
      * @param host the host URL of the database.
      * @param port the port the databse is hosted on.
-     * @param databaseName the name of the database.
      * @throws IllegalArgumentException if any of the fields are invalid.
      */
     private void createDatabaseConnectionString(String userName, String password, String host, String port) throws IllegalArgumentException {
 
         if (userName == null) {
+            logger.error("Config file is missing required field database.userName.");
             throw new IllegalArgumentException("Database username is missing.");
         }
         if (password == null) {
+            logger.error("Config file is missing required field database.password.");
             throw new IllegalArgumentException("Database password is missing.");
         }
         if (host == null) {
+            logger.error("Config file is missing required field host.");
             throw new IllegalArgumentException("Host is null.");
         }
         if (port == null) {
+            logger.error("Config file is missing required field port.");
             throw new IllegalArgumentException("Port is null.");
         }
 
-        // TODO: Add sanitization.
-        String safeUserName = userName;
+        String safeUserName = sanitizer.sanitizeInput(userName);
 
         if (safeUserName.length() < 1 || safeUserName.length() > 128) {
-            throw new IllegalArgumentException("Database username either missing or invalid.");
+            logger.error("Database userName length is invalid.");
+            throw new IllegalArgumentException("Database username has invalid length.");
         }
 
-        // TODO: Add sanitization.
-        String safePassword = password;
-        String safeHost = host;
+        String safePassword = sanitizer.sanitizeInput(password);
+        String safeHost = sanitizer.sanitizeInput(host);
 
-        String safePort = port;
+        String safePort = sanitizer.sanitizeInput(port);
 
         try {
             Integer portNum = Integer.parseInt(safePort);
             if (portNum < 1 || portNum > 65535) {
-                throw new IllegalArgumentException("Invalid host number.");
+                logger.error("Port number is not in the valid port range.");
+                throw new IllegalArgumentException("Invalid port number.");
             }
         }  catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Invalid host number.");
+            logger.error("database.port is not a number.");
+            throw new IllegalArgumentException("Invalid port number.");
         }
 
 
@@ -128,12 +164,14 @@ public class ConfigurationManager implements DatabaseConfiguration {
         try {
             Integer numConnections = Integer.parseInt(connections);
             
-            if (numConnections < 0 || numConnections > 100) {
+            if (numConnections < 0) {
+                logger.error("Number of minimum connections is less than zero.");
                 throw new IllegalArgumentException("Invalid minimum number of connections.");
             }
 
             minDatabaseConnections = numConnections;
         } catch (NumberFormatException e) {
+            logger.error("Minimum connections is not a number.");
             throw new IllegalArgumentException("Invalid minimum number of connections.");
         }
     }
@@ -147,11 +185,13 @@ public class ConfigurationManager implements DatabaseConfiguration {
             Integer numConnections = Integer.parseInt(connections);
             
             if (numConnections < 1 || numConnections < minDatabaseConnections) {
+                logger.error("Maximum number of connections is less than one or the minimum number of connections.");
                 throw new IllegalArgumentException("Invalid maximum number of connections.");
             }
 
             minDatabaseConnections = numConnections;
         } catch (NumberFormatException e) {
+            logger.error("Maximum number of connections is not a number.");
             throw new IllegalArgumentException("Invalid maximum number of connections.");
         }
     }
@@ -177,8 +217,7 @@ public class ConfigurationManager implements DatabaseConfiguration {
      * @param databaseName the name of the database.
      */
     private void setDatabaseName(String databaseName) {
-        // TODO: Add sanitizer.
-        String safeDatabaseName = databaseName;
+        String safeDatabaseName = sanitizer.sanitizeInput(databaseName);
         this.databaseName = safeDatabaseName;
     }
 
