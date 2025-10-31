@@ -36,7 +36,6 @@ abstract class Record {
      * @throws IllegalArgumentException if the record id is invalid
      */
     public void setId(int id) {
-        // TODO: Add validation for id
         if (id < 0) {
             throw new IllegalArgumentException("id must be non-negative");
         }
@@ -52,21 +51,21 @@ abstract class Record {
     }
 
     /**
-     * Sets the id value for the creator.
+     * Sets the creatorId value for the creator.
      * <br>
      * <br>
      * The business rules are:
      * <ul>
-     *   <li>the first name must <strong>not</strong> be null</li>
-     *   <li>the first name must <strong>not</strong> be empty</li>
-     *   <li>the creatorId must be...</li>
+     *   <li>the creatorId must be non-negative</li>
      * </ul>
      *
      * @param creatorId the value to set into the creatorId field
      * @throws IllegalArgumentException if the id is invalid
      */
     public void setCreatorId(int creatorId) {
-        // TODO: Add validation for creatorId
+        if (creatorId < 0) {
+            throw new IllegalArgumentException("creatorId must be non-negative");
+        }
         this.creatorId = creatorId;
     }
 
@@ -94,7 +93,20 @@ abstract class Record {
      * @throws IllegalArgumentException if the first name is invalid
      */
     public void setCreatorFirstName(String creatorFirstName) {
-        // TODO: Add validation for creatorFirstName
+        // TODO: Add more validation for creatorFirstName
+
+        final int maxLenth = 40;
+
+        if (creatorFirstName == null) {
+            throw new IllegalArgumentException("creatorFirstName must not be null.");
+        }
+        if (creatorFirstName.isEmpty()) {
+            throw new IllegalArgumentException("creatorFirstName must not be empty.");
+        }
+        if (creatorFirstName.length() > maxLenth ) {
+            throw new IllegalArgumentException("creatorFirstName must not exceed 40 characters");
+        }
+        
         this.creatorFirstName = creatorFirstName;
     }
 
