@@ -152,13 +152,17 @@ abstract class Record {
      * <p>
      * The business rules are:
      * <ul>
-     *   <li>the creation date must <strong>not</strong> be null</li>
+     *   <li>if the creation date is not provided, the current date will be used.</li>
      *   <li>the creation date must <strong>today or earlier</strong></li>
      * </ul>
      * 
      * @param creationDate the value to set into the creationDate field
      * @throws IllegalArgumentException if the creation date is invalid
      */
+    public void setCreationDate() {
+        // TODO: Set creationDate to the current date
+    }
+
     public void setCreationDate(Date creationDate) {
         // TODO: Add validation for creationDate
         this.creationDate = creationDate;
