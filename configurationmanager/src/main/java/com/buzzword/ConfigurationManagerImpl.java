@@ -1,0 +1,123 @@
+package com.buzzword;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.util.Properties;
+
+/**
+ * Stores the configuration for the application.
+ * <p>
+ * On construction, retrieves the configuration information from the config file. This information
+ * is globally available as a singleton, and is made accessibly through a set of getter functions.
+ * @author Ted Bjurlin
+ * @version 1.0
+ */
+public class ConfigurationManagerImpl implements ConfigurationManager {
+
+    private Properties propertiesFile = new Properties();
+
+    private final Logger logger = LoggerFactory.getEventLogger();
+
+    private static ConfigurationManagerImpl instance;
+
+    /**
+     * Constructs a ConfigurationManager
+     * <p>
+     * Constructs a configuration instance, reading configuration information from the
+     * application config file. The manager first looks for a BRL_CONFIG environmental
+     * variable specifying the configuration path. If this is not found, it looks for
+     * a config file in the working directory.
+     * @throws IOException If the config file fails to parse as a java properties file.
+     * @throws FileNotFoundExcepton - If the config file could not be found.
+     */
+    private ConfigurationManagerImpl() throws IOException, IllegalArgumentException {
+        String configPath = System.getenv("BRL_CONFIG");
+        if (configPath == null) {
+            configPath = "brl.properties";
+        }
+        logger.info("Looking for configuration file at path " + configPath);
+    
+        try {
+            InputStream stream = new FileInputStream(configPath);
+            propertiesFile.load(stream);
+        } catch (FileNotFoundException e) {
+            logger.error("No configuration file found.");
+            throw e;
+        } catch (IOException e) {
+            logger.error("Malformed configuration file.");
+            throw e;
+        }
+    }
+
+    /**
+     * Gets a reference to the ConfigurationManager.
+     * @return a reference to the singleton instance of the ConfigurationManager
+     * @throws IllegalArgumentException if there is an invalid field in the config file.
+     * @throws IOException if the config file does not exist.
+     */
+    public static ConfigurationManagerImpl getInstance() throws IllegalArgumentException, IOException {
+        if (instance == null) {
+            instance = new ConfigurationManagerImpl();
+        }
+
+        return instance;
+    }
+
+    /**
+     * {@inheritDocs}
+     */
+    @Override
+    public String getDatabaseUserName() {
+        return propertiesFile.getProperty("database.userName");
+    }
+
+    /**
+     * {@inheritDocs}
+     */
+    @Override
+    public String getDatabasePassword() {
+        return propertiesFile.getProperty("database.password");
+    }
+
+    /**
+     * {@inheritDocs}
+     */
+    @Override
+    public String getDatabaseHost() {
+        return propertiesFile.getProperty("database.host");
+    }
+
+    /**
+     * {@inheritDocs}
+     */
+    @Override
+    public String getDatabasePort() {
+        return propertiesFile.getProperty("database.port");
+    }
+
+    /**
+     * {@inheritDocs}
+     */
+    @Override
+    public String getDatabaseMinPoolSize() {
+        return propertiesFile.getProperty("database.pool.min");
+    }
+
+    /**
+     * {@inheritDocs}
+     */
+    @Override
+    public String getDatabaseMaxPoolSize() {
+        return propertiesFile.getProperty("database.pool.min");
+    }
+
+    /**
+     * {@inheritDocs}
+     */
+    @Override
+    public String getDatabaseName() {
+        return propertiesFile.getProperty("database.name");
+    }
+}
