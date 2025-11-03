@@ -7,12 +7,18 @@ abstract class Record {
     private int creatorId;
     private String creatorFirstName;
     private String creatorLastName;
-    private Date creationDate;
+    private String creationDate;
     private Boolean isEdited;
+
+    private XssSanitizer mySanitizer;
 
     /* Constructor */
     public Record() {
+        this(new XssSanitizerImpl());
+    }
 
+    public Record(final XssSanitizer sanitizer) {
+        mySanitizer = sanitizer;
     }
 
     /**
@@ -92,7 +98,7 @@ abstract class Record {
      * @param creatorFirstName the value to set into the creatorFirstName field
      * @throws IllegalArgumentException if the first name is invalid
      */
-    public void setCreatorFirstName(String creatorFirstName) {
+    public void setCreatorFirstName(final String creatorFirstName) {
         // TODO: Add more validation for creatorFirstName
 
         final int maxLenth = 40;
@@ -100,14 +106,17 @@ abstract class Record {
         if (creatorFirstName == null) {
             throw new IllegalArgumentException("creatorFirstName must not be null.");
         }
-        if (creatorFirstName.isEmpty()) {
+
+        String sanitizedFirstName = mySanitizer.sanitizeInput(creatorFirstName);
+
+        if (sanitizedFirstName.isEmpty()) {
             throw new IllegalArgumentException("creatorFirstName must not be empty.");
         }
-        if (creatorFirstName.length() > maxLenth ) {
+        if (sanitizedFirstName.length() > maxLenth ) {
             throw new IllegalArgumentException("creatorFirstName must not exceed 40 characters");
         }
         
-        this.creatorFirstName = creatorFirstName;
+        this.creatorFirstName = sanitizedFirstName;
     }
 
     /**
@@ -143,7 +152,7 @@ abstract class Record {
      * Returns the creationDate value for the Record
      * @return creationDate
      */
-    public Date getCreationDate() {
+    public String getCreationDate() {
         return creationDate;
     }
 
@@ -163,7 +172,7 @@ abstract class Record {
         // TODO: Set creationDate to the current date
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(String creationDate) {
         // TODO: Add validation for creationDate
         this.creationDate = creationDate;
     }

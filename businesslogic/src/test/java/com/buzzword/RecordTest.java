@@ -9,6 +9,11 @@ import org.apache.commons.lang3.RandomStringUtils;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+
+import java.time.Instant;
+import java.time.Clock;
+import java.time.ZoneId;
 
 
 /**
@@ -73,7 +78,34 @@ public class RecordTest {
 
     @Test
     public void testValidCreatorFirstName() {
+        String[] names = {"Bob", "aLice", "CARL", "dave", "li'l ernie"};
+        for (String name : names) {
+            testRecord.setCreatorFirstName(name);
+        }
 
+    }
+
+    @Test
+    public void testSanitizedFirstName() {
+        String xssInput = "<script>alert('Sanitization Test');</script>Bob";
+        String expected = "Bob";
+
+        testRecord.setCreatorFirstName(xssInput);
+
+        assertEquals(expected, testRecord.getCreatorFirstName());
+    }
+
+    @Disabled
+    @Test
+    public void testSetCurrentCreationDate() {
+        String expectedTime = "2025-01-01T00:00:00Z";
+        Instant fixedInstant = Instant.parse(expectedTime);
+        ZoneId zone = ZoneId.of("UTC");
+        Clock fixedClock = Clock.fixed(fixedInstant, zone);
+
+        // String fixedTime = Instant.toString(Instant.now(fixedClock));
+
+        assertEquals(expectedTime, testRecord.getCreationDate());
     }
 
 }
