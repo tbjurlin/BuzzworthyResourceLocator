@@ -9,30 +9,48 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyMetadata;
 
+/**
+ * Implementation for Authentication.java.
+ * This class facilitates a connection to an authentication server to
+ * retrieve user credentials using a Java Web Token (JWT) provided by
+ * the authorization server for Single Sign-On (SSO).
+ * 
+ * @author Ben Edens
+ * @version 1.0
+ */
 public class AuthenticationImpl implements Authentication{
     private URL serverUrl;
 
+    /**
+     * Authentication implementation constructor. Builds authentication server URL from provided string.
+     * 
+     * @param urlString A string version of the authentication server's URL.
+     */
     public AuthenticationImpl(String urlString) {
         try {
             URI uri = new URI(urlString);
             serverUrl = uri.toURL();
         } catch (URISyntaxException e) {
-            System.out.println(e);
+            throw new AuthenticationException("Cannot construct authentication server uri from provided String due to improper syntax.");
         } catch (MalformedURLException f) {
-            System.out.println(f);
+            throw new AuthenticationException("Cannot construct authentication server url from provided uri due to improper syntax.");
         }
     }
 
+    /**
+     * Send a Java Web Token (JWT) to an authentication server to be
+     * authenticated and return the corresponding user's credentials.
+     * 
+     * @param token A Token object containing a user's Java Web Token (JWT) obtained from the authentication server.
+     * @return A Credentials object storing the user's credentials.
+     */
     public Credentials Authenticate(Token token) {
 
         try {
             if(serverUrl == null) {
-                // Throw exception
-                System.out.println("URL is null!");
+                throw new AuthenticationException("Null server url. Class instance improperly constructed.");
             }
             HttpURLConnection connection = (HttpURLConnection) serverUrl.openConnection();
             connection.setRequestMethod("POST");
@@ -59,17 +77,15 @@ public class AuthenticationImpl implements Authentication{
                 ObjectMapper objectMapper = new ObjectMapper();
                 Credentials userCredentials;
                 userCredentials = objectMapper.readValue(responseStr, Credentials.class);
+                connection.disconnect();
                 return userCredentials;
             } else {
-                // Throw exception
-                System.out.println("Bad response code!");
+                connection.disconnect();
+                String errorMsg = String.format("Received response code %d from authentication server.", responseCode);
+                throw new AuthenticationException(errorMsg);
             }
-
-            connection.disconnect();
         } catch (IOException e) {
-            // Throw exception
-            System.out.println(e);
+            throw new AuthenticationException("Error connecting to authentication server.");
         }
-        return null;
     }
 }
