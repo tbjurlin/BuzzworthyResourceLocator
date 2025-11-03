@@ -217,6 +217,10 @@ public class ConfigurationManager implements DatabaseConfiguration {
      * @param databaseName the name of the database.
      */
     private void setDatabaseName(String databaseName) {
+        if (databaseName == null) {
+            logger.error("Config file is missing required field database.name.");
+            throw new IllegalArgumentException("Database name is missing.");
+        }
         String safeDatabaseName = sanitizer.sanitizeInput(databaseName);
         this.databaseName = safeDatabaseName;
     }
