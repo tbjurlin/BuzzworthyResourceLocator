@@ -19,7 +19,7 @@ public class DatabaseConnectionPool {
      */
     private static DatabaseConnectionPool instance;
 
-    private final DatabaseConfiguration config = ConfigurationManager.getInstance();
+    private final DatabaseConfiguration config = new DatabaseConfigurationImpl(ConfigurationManagerImpl.getInstance());
 
     private final Logger logger = LoggerFactory.getEventLogger();
 

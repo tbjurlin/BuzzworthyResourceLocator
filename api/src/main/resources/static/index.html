@@ -2,20 +2,112 @@
 <html>
     <head>
         <title>Buzzworthy Resource Locator API</title>
+        <style>
+            body {background-color: #FFEE8C;}
+        </style>
     </head>
     <body>
-        <h1>REST API Operations:</h1>
+        <h1>Buzzworthy Resource Locator (BRL) — REST API Operations:</h1>
+        <hr>
+        <h2>User documentation available @ http://localhost:8080/BRL/api/</h2>
         <hr>
         <h2>GET http://localhost:8080/BRL/api/wiki/resource</h2>
+        <h3>Purpose — Retrieve all resource records from the database.</h3>
+        <h3>Request header — Bearer: abcdefg...tuvwxyz where this string is an SSO token.</h3>
+        <h3>Return body — {{resource},{resource},...,{resource}} where each resource is in the format shown at the bottom of this page.</h3>
+        <h3>Return code — 200 (successfully retrieved), 400 (misformatted request), 401 (unable to authenticate user), 403 (insufficient user permissions), 404 (unable to retrieve resources)</h3>
         <hr>
         <h2>POST http://localhost:8080/BRL/api/wiki/resource</h2>
+        <h3>Purpose — Insert a new resource record into the database.</h3>
+        <h3>Request header — Bearer: abcdefg...tuvwxyz where this string is an SSO token.</h3>
+        <h3>Request body — {resource} where the resource is in the format shown at the bottom of this page.</h3>
+        <p>* Note that inserted resources should omit the "comments", "upVotes", and "reviewFlags" fields</p>
+        <h3>Return body — {resource} where the resource is the inserted resource in the format shown at the bottom of this page.</h3>
+        <h3>Return code — 201 (successfully added), 400 (misformatted request), 401 (unable to authenticate user), 403 (insufficient user permissions), 404 (unable to add resource)</h3>
+        <hr>
         <h2>POST http://localhost:8080/BRL/api/wiki/resource/{resourceId}/comment</h2>
+        <h3>Purpose — Add a comment to an existing resource record.</h3>
+        <h3>Request header — Bearer: abcdefg...tuvwxyz where this string is an SSO token.</h3>
+        <h3>Request body — {comment} where the comment is in the format shown at the bottom of this page.</h3>
+        <h3>Return body — {resource} where the resource is the newly commented-on resource in the format shown at the bottom of this page.</h3>
+        <h3>Return code — 201 (successfully added), 400 (misformatted request), 401 (unable to authenticate user), 403 (insufficient user permissions), 404 (unable to add comment)</h3>
+        <hr>
         <h2>POST http://localhost:8080/BRL/api/wiki/resource/{resourceId}/upvote</h2>
+        <h3>Purpose — Add an upvote to an existing resource record.</h3>
+        <h3>Request header — Bearer: abcdefg...tuvwxyz where this string is an SSO token.</h3>
+        <h3>Request body — {upVote} where the upVote is in the format shown at the bottom of this page.</h3>
+        <h3>Return body — {resource} where the resource is the newly upvoted resource in the format shown at the bottom of this page.</h3>
+        <h3>Return code — 201 (successfully added), 400 (misformatted request), 401 (unable to authenticate user), 403 (insufficient user permissions), 404 (unable to add upVote)</h3>
+        <hr>
         <h2>POST http://localhost:8080/BRL/api/wiki/resource/{resourceId}/reviewFlag</h2>
+        <h3>Purpose — Add a flag for manager review to an existing resource record.</h3>
+        <h3>Request header — Bearer: abcdefg...tuvwxyz where this string is an SSO token.</h3>
+        <h3>Request body — {reviewFlag} where the reviewFlag is in the format shown at the bottom of this page.</h3>
+        <h3>Return body — {resource} where the resource is the newly flagged resource in the format shown at the bottom of this page.</h3>
+        <h3>Return code — 201 (successfully added), 400 (misformatted request), 401 (unable to authenticate user), 403 (insufficient user permissions), 404 (unable to add reviewFlag)</h3>
         <hr>
         <h2>DELETE http://localhost:8080/BRL/api/wiki/resource/{resourceId}</h2>
+        <h3>Purpose — Delete a specific existing resource record.</h3>
+        <h3>Request header — Bearer: abcdefg...tuvwxyz where this string is an SSO token.</h3>
+        <h3>Return code — 200 (successfully deleted), 400 (misformatted request), 401 (unable to authenticate user), 403 (insufficient user permissions), 404 (unable to delete specified resource)</h3>
+        <hr>
         <h2>DELETE http://localhost:8080/BRL/api/wiki/resource/{resourceId}/comment/{commentId}</h2>
+        <h3>Purpose — Delete a specific comment from a specific existing resource record.</h3>
+        <h3>Request header — Bearer: abcdefg...tuvwxyz where this string is an SSO token.</h3>
+        <h3>Return code — 200 (successfully deleted), 400 (misformatted request), 401 (unable to authenticate user), 403 (insufficient user permissions), 404 (unable to delete specified comment)</h3>
+        <hr>
         <h2>DELETE http://localhost:8080/BRL/api/wiki/resource/{resourceId}/upvote/{upvoteId}</h2>
+        <h3>Purpose — Delete a specific upVote from a specific existing resource record.</h3>
+        <h3>Request header — Bearer: abcdefg...tuvwxyz where this string is an SSO token.</h3>
+        <h3>Return code — 200 (successfully deleted), 400 (misformatted request), 401 (unable to authenticate user), 403 (insufficient user permissions), 404 (unable to delete specified upVote)</h3>
+        <hr>
         <h2>DELETE http://localhost:8080/BRL/api/wiki/resource/{resourceId}/reviewFlag/{flagId}</h2>
+        <h3>Purpose — Delete a specific reviewFlag from a specific existing resource record.</h3>
+        <h3>Request header — Bearer: abcdefg...tuvwxyz where this string is an SSO token.</h3>
+        <h3>Return code — 200 (successfully deleted), 400 (misformatted request), 401 (unable to authenticate user), 403 (insufficient user permissions), 404 (unable to delete specified reviewFlag)</h3>
+        <hr>
+        <h2>Record Formats (JSON):</h2>
+        <p style="padding-left: 125px; text-indent: -125px;">
+            {resource} = {"id": #, <br>
+            "creatorID": #, <br>
+            "creatorFirstName": "First", <br>
+            "creatorLastName": "Last", <br>
+            "creationDate": YYYY-MM-DDTHH:mm:ss.sssZ, <br>
+            "isEdited": false, <br>
+            "title": "A meaningful title...", <br>
+            "description": "A meaningful description...", <br>
+            "url": "http://...", <br>
+            "comments": {{comment},{comment},...,{comment}}, <br>
+            "upVotes": {{upVote},{upVote},...,{upVote}}, <br>
+            "reviewFlags": {{reviewFlag},{reviewFlag},...,{reviewFlag}}, <br>
+            }
+        </p>
+        <p style="padding-left: 130px; text-indent: -130px;">
+            {comment} = {"id": #, <br>
+            "creatorID": #, <br>
+            "creatorFirstName": "First", <br>
+            "creatorLastName": "Last", <br>
+            "creationDate": YYYY-MM-DDTHH:mm:ss.sssZ, <br>
+            "isEdited": false, <br>
+            "contents": "A meaningful comment...", <br>
+            }
+        </p>
+        <p style="padding-left: 110px; text-indent: -110px;">
+            {upVote} = {"id": #, <br>
+            "creatorID": #, <br>
+            "creatorFirstName": "First", <br>
+            "creatorLastName": "Last", <br>
+            }
+        </p>
+        <p style="padding-left: 145px; text-indent: -145px;">
+            {reviewFlag} = {"id": #, <br>
+            "creatorID": #, <br>
+            "creatorFirstName": "First", <br>
+            "creatorLastName": "Last", <br>
+            "creationDate": YYYY-MM-DDTHH:mm:ss.sssZ, <br>
+            "isEdited": false, <br>
+            "contents": "A meaningful comment...", <br>
+            }
+        </p>
     </body>
 </html>
