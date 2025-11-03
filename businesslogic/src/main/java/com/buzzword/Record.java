@@ -31,7 +31,6 @@ abstract class Record {
      * <ul>
      *   <li>the id must be...</li>
      * </ul>
-     *
      * @param id the value to set into the recordId field
      * @throws IllegalArgumentException if the record id is invalid
      */
