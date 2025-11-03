@@ -13,7 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class DatabaseConfigurationTest {
 
-    @Mock
+    @Mock(strictness = Mock.Strictness.LENIENT)
     ConfigurationManagerImpl manager;
 
     @BeforeEach
@@ -42,6 +42,135 @@ class DatabaseConfigurationTest {
     @Test
     void rejectsNullDatabaseName() {
         when(manager.getDatabaseName()).thenReturn(null);
+        assertThrows(IllegalArgumentException.class, () -> {
+            new DatabaseConfigurationImpl(manager);
+        });
+    }
+
+    @Test
+    void rejectsNullDatabaseUserName() {
+        when(manager.getDatabaseUserName()).thenReturn(null);
+        assertThrows(IllegalArgumentException.class, () -> {
+            new DatabaseConfigurationImpl(manager);
+        });
+    }
+
+    @Test
+    void rejectsNullDatabasePassword() {
+        when(manager.getDatabasePassword()).thenReturn(null);
+        assertThrows(IllegalArgumentException.class, () -> {
+            new DatabaseConfigurationImpl(manager);
+        });
+    }
+
+    @Test
+    void rejectsNullDatabaseHost() {
+        when(manager.getDatabaseHost()).thenReturn(null);
+        assertThrows(IllegalArgumentException.class, () -> {
+            new DatabaseConfigurationImpl(manager);
+        });
+    }
+
+    @Test
+    void rejectsNullDatabasePort() {
+        when(manager.getDatabasePort()).thenReturn(null);
+        assertThrows(IllegalArgumentException.class, () -> {
+            new DatabaseConfigurationImpl(manager);
+        });
+    }
+
+    @Test
+    void rejectsNullDatabaseMinPoolSize() {
+        when(manager.getDatabaseMinPoolSize()).thenReturn(null);
+        assertThrows(IllegalArgumentException.class, () -> {
+            new DatabaseConfigurationImpl(manager);
+        });
+    }
+
+    @Test
+    void rejectsNullDatabaseMaxPoolSize() {
+        when(manager.getDatabaseMaxPoolSize()).thenReturn(null);
+        assertThrows(IllegalArgumentException.class, () -> {
+            new DatabaseConfigurationImpl(manager);
+        });
+    }
+
+    @Test
+    void passwordIsURLEncoded() {
+        when(manager.getDatabasePassword()).thenReturn("$:/?#[]@");
+        DatabaseConfiguration dbConfig = new DatabaseConfigurationImpl(manager);
+        String connectionString = "mongodb://userName:%24%3A%2F%3F%23%5B%5D%40@hostname:8080/?authSource=admin";
+        assertEquals(connectionString, dbConfig.getDatabaseConnectionString());
+    }
+
+    @Test
+    void rejectsEmptyPassword() {
+        when(manager.getDatabasePassword()).thenReturn("");
+        assertThrows(IllegalArgumentException.class, () -> {
+            new DatabaseConfigurationImpl(manager);
+        });
+    }
+
+    @Test
+    void rejectsEmptyHost() {
+        when(manager.getDatabaseHost()).thenReturn("");
+        assertThrows(IllegalArgumentException.class, () -> {
+            new DatabaseConfigurationImpl(manager);
+        });
+    }
+
+    @Test
+    void rejectsTooSmallPort() {
+        when(manager.getDatabasePort()).thenReturn("0");
+        assertThrows(IllegalArgumentException.class, () -> {
+            new DatabaseConfigurationImpl(manager);
+        });
+    }
+
+    @Test
+    void rejectsTooLargePort() {
+        when(manager.getDatabasePort()).thenReturn("65536");
+        assertThrows(IllegalArgumentException.class, () -> {
+            new DatabaseConfigurationImpl(manager);
+        });
+    }
+
+    @Test
+    void rejectsTooSmallMinPool() {
+        when(manager.getDatabaseMinPoolSize()).thenReturn("-1");
+        assertThrows(IllegalArgumentException.class, () -> {
+            new DatabaseConfigurationImpl(manager);
+        });
+    }
+
+    @Test
+    void rejectsTooNonNumericMinPool() {
+        when(manager.getDatabaseMinPoolSize()).thenReturn("five");
+        assertThrows(IllegalArgumentException.class, () -> {
+            new DatabaseConfigurationImpl(manager);
+        });
+    }
+
+    @Test
+    void rejectsTooSmallMaxPool() {
+        when(manager.getDatabaseMaxPoolSize()).thenReturn("0");
+        assertThrows(IllegalArgumentException.class, () -> {
+            new DatabaseConfigurationImpl(manager);
+        });
+    }
+
+    @Test
+    void rejectsTooNonNumericMaxPool() {
+        when(manager.getDatabaseMaxPoolSize()).thenReturn("five");
+        assertThrows(IllegalArgumentException.class, () -> {
+            new DatabaseConfigurationImpl(manager);
+        });
+    }
+
+    @Test
+    void rejectsMaxPoolLessThanMinPool() {
+        when(manager.getDatabaseMinPoolSize()).thenReturn("10");
+        when(manager.getDatabaseMaxPoolSize()).thenReturn("5");
         assertThrows(IllegalArgumentException.class, () -> {
             new DatabaseConfigurationImpl(manager);
         });

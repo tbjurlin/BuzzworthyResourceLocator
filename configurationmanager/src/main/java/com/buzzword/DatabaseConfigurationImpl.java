@@ -88,6 +88,15 @@ public class DatabaseConfigurationImpl implements DatabaseConfiguration {
             throw new IllegalArgumentException("Database username has invalid length.");
         }
 
+        if (password == "") {
+            logger.error("Database password is empty.");
+            throw new IllegalArgumentException("Database password is empty.");
+        }
+        if (host == "") {
+            logger.error("Database host is empty.");
+            throw new IllegalArgumentException("Database host is empty.");
+        }
+
         String safePassword = sanitizer.sanitizeInput(password);
         String safeHost = sanitizer.sanitizeInput(host);
 
