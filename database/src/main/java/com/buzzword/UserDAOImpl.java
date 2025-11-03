@@ -1,0 +1,116 @@
+/**
+ * This is the UserDAO Implementation file, which handles operations related to users.
+ * 
+ * 
+ *  @author Janniebeth Melendez
+ *  @since 1.0
+ */
+package com.buzzword;
+
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.Filters;
+
+import org.bson.Document;
+
+import java.io.IOException;
+
+public class UserDAOImpl 
+    implements UserDAO {
+
+    private final MongoCollection<Document> usersCollection;
+    private final Logger logger = LoggerFactory.getEventLogger();
+
+    public UserDAOImpl() throws IOException {
+        MongoDatabase db = DatabaseConnectionPool.getInstance()
+            .getDatabaseConnection();
+        this.usersCollection = db.getCollection("users");
+    }
+
+    @Override
+    public Void addUpVote(Credentials user, Resource resource) {
+        // Add an upvote sub-document under the matched resource. Use $addToSet so the same
+        // user cannot upvote the same resource more than once (we key by creatorId).
+        Document upvoteDoc = new Document()
+            .append("creatorId", user.getId())
+            .append("creationDate", new java.util.Date());
+
+        com.mongodb.client.result.UpdateResult result = usersCollection.updateOne(
+            Filters.and(Filters.eq("id", user.getId()), Filters.eq("resources.id", resource.getId())),
+            new Document("$addToSet", new Document("resources.$.upVotes", upvoteDoc))
+        );
+
+        if (result.getModifiedCount() == 0) {
+            logger.warn(String.format("Failed to add upvote from user %d to resource %d - resource not found", user.getId(), resource.getId()));
+            return null;
+        }
+
+        // Also increment the upvoteCount for quick reads. Use the same filter.
+        result = usersCollection.updateOne(
+            Filters.and(Filters.eq("id", user.getId()), Filters.eq("resources.id", resource.getId())),
+            new Document("$inc", new Document("resources.$.upvoteCount", 1))
+        );
+
+        logger.info(String.format("User %d added upvote to resource %d", user.getId(), resource.getId()));
+        return null;
+    }
+    @Override
+    public Void removeUpVote(Credentials user, Resource resource) {
+        // Remove an upvote by this user for the matched resource and decrement the counter.
+        com.mongodb.client.result.UpdateResult result = usersCollection.updateOne(
+            Filters.and(Filters.eq("id", user.getId()), Filters.eq("resources.id", resource.getId())),
+            new Document("$pull", new Document("resources.$.upVotes", new Document("creatorId", user.getId())))
+        );
+
+        if (result.getModifiedCount() == 0) {
+            logger.warn(String.format("Failed to remove upvote from user %d for resource %d - resource or upvote not found", user.getId(), resource.getId()));
+            return null;
+        }
+
+        result = usersCollection.updateOne(
+            Filters.and(Filters.eq("id", user.getId()), Filters.eq("resources.id", resource.getId())),
+            new Document("$inc", new Document("resources.$.upvoteCount", -1))
+        );
+
+        logger.info(String.format("User %d removed upvote from resource %d", user.getId(), resource.getId()));
+        return null;
+    }
+    @Override
+    public Void addReviewFlag(Credentials user, Resource resource) {
+        // Add an active review flag for the resource. We store who flagged it and when.
+        Document flagDoc = new Document()
+            .append("creatorId", user.getId())
+            .append("active", true)
+            .append("creationDate", new java.util.Date());
+
+        com.mongodb.client.result.UpdateResult result = usersCollection.updateOne(
+            Filters.and(Filters.eq("id", user.getId()), Filters.eq("resources.id", resource.getId())),
+            new Document("$push", new Document("resources.$.reviewFlags", flagDoc))
+        );
+
+        if (result.getModifiedCount() == 0) {
+            logger.warn(String.format("Failed to add review flag from user %d to resource %d - resource not found", user.getId(), resource.getId()));
+            return null;
+        }
+
+        logger.info(String.format("User %d added review flag to resource %d", user.getId(), resource.getId()));
+        return null;
+    }
+    @Override
+    public Void removeReviewFlag(Credentials user, Resource resource) {
+        // Remove review flags created by this user for the matched resource (assumption).
+        com.mongodb.client.result.UpdateResult result = usersCollection.updateOne(
+            Filters.and(Filters.eq("id", user.getId()), Filters.eq("resources.id", resource.getId())),
+            new Document("$pull", new Document("resources.$.reviewFlags", new Document("creatorId", user.getId())))
+        );
+
+        if (result.getModifiedCount() == 0) {
+            logger.warn(String.format("Failed to remove review flag from user %d for resource %d - resource or flag not found", user.getId(), resource.getId()));
+            return null;
+        }
+
+        logger.info(String.format("User %d removed review flag from resource %d", user.getId(), resource.getId()));
+        return null;
+    }
+
+}
