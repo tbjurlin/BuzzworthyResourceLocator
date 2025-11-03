@@ -1,7 +1,5 @@
 package com.buzzword;
 
-import java.net.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,26 +16,40 @@ import jakarta.validation.Valid;
 @RequestMapping("wiki")
 public class WikiEndpoint {
 
-    String authServerUrl = "insert authentication server url here";
+    String authServerUrl = "url here";
+    private final Logger logger = LoggerFactory.getEventLogger();
 
     @GetMapping("resource")
     public ResponseEntity<String> retrieveAllResources(@Valid @RequestHeader("Bearer") String tokenStr) {
-        Credentials userCred = contactAuth(tokenStr);
-        /* Pseudo code:
-         * DAO dbAccess = new DAOImpl(Config.Instance());
-         * String obj = dbAccess.insertResource(userCredresource, );
-         */
-        return ResponseEntity.ok()
-                             .contentType(MediaType.APPLICATION_JSON)
-                             .body("{\"msg\": \"Retrieve all resources\"}");
+        try {
+            Token token = new Token();
+            token.setToken(tokenStr);
+            Authentication auth = new AuthenticationImpl(authServerUrl);
+            Credentials userCredentials = auth.Authenticate(token);
+            if(userCredentials == null) {
+                throw new Exception("No");
+            }
+            /* Pseudo code:
+            * DAO dbAccess = new DAOImpl(Config.Instance());
+            * String obj = dbAccess.getResources(userCredentials);
+            */
+            return ResponseEntity.ok()
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .body("{\"msg\": \"Retrieve all resources\"}");
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(e.toString());
+        }
     }
     
     @PostMapping("resource")
     public ResponseEntity<String> addResource(@Valid @RequestHeader("Bearer") String tokenStr, @Valid @RequestBody Resource resource) {
-        Credentials userCred = contactAuth(tokenStr);
+        Token token = new Token();
+        token.setToken(tokenStr);
+        Authentication auth = new AuthenticationImpl(authServerUrl);
+        Credentials userCredentials = auth.Authenticate(token);
         /* Pseudo code:
          * DAO dbAccess = new DAOImpl(Config.Instance());
-         * String obj = dbAccess.insertResource(userCredresource, );
+         * String obj = dbAccess.insertResource(userCredentials, resource);
          */
         return ResponseEntity.ok()
                              .contentType(MediaType.APPLICATION_JSON)
@@ -45,11 +57,14 @@ public class WikiEndpoint {
     }
 
     @PostMapping("resource/{resourceId}/comment")
-    public ResponseEntity<String> addComment(@Valid @RequestHeader("Bearer") String tokenStr, @Valid @PathVariable Long resourceId) {
-        Credentials userCred = contactAuth(tokenStr);
+    public ResponseEntity<String> addComment(@Valid @RequestHeader("Bearer") String tokenStr, @Valid @PathVariable Long resourceId, @Valid @RequestBody Comment comment) {
+        Token token = new Token();
+        token.setToken(tokenStr);
+        Authentication auth = new AuthenticationImpl(authServerUrl);
+        Credentials userCredentials = auth.Authenticate(token);
         /* Pseudo code:
          * DAO dbAccess = new DAOImpl(Config.Instance());
-         * String obj = dbAccess.insertResource(userCredresource, );
+         * String obj = dbAccess.insertComment(userCredentials, resourceId, comment);
          */
         return ResponseEntity.ok()
                              .contentType(MediaType.APPLICATION_JSON)
@@ -57,11 +72,14 @@ public class WikiEndpoint {
     }
 
     @PostMapping("resource/{resourceId}/upvote")
-    public ResponseEntity<String> addUpvote(@Valid @RequestHeader("Bearer") String tokenStr, @Valid @PathVariable Long resourceId) {
-        Credentials userCred = contactAuth(tokenStr);
+    public ResponseEntity<String> addUpVote(@Valid @RequestHeader("Bearer") String tokenStr, @Valid @PathVariable Long resourceId, @Valid @RequestBody UpVote upvote) {
+        Token token = new Token();
+        token.setToken(tokenStr);
+        Authentication auth = new AuthenticationImpl(authServerUrl);
+        Credentials userCredentials = auth.Authenticate(token);
         /* Pseudo code:
          * DAO dbAccess = new DAOImpl(Config.Instance());
-         * String obj = dbAccess.insertResource(userCredresource, );
+         * String obj = dbAccess.insertUpVote(userCredentials, resourceId, upvote);
          */
         return ResponseEntity.ok()
                              .contentType(MediaType.APPLICATION_JSON)
@@ -69,11 +87,14 @@ public class WikiEndpoint {
     }
 
     @PostMapping("resource/{resourceId}/reviewFlag")
-    public ResponseEntity<String> addReviewFlag(@Valid @RequestHeader("Bearer") String tokenStr, @Valid @PathVariable Long resourceId) {
-        Credentials userCred = contactAuth(tokenStr);
+    public ResponseEntity<String> addReviewFlag(@Valid @RequestHeader("Bearer") String tokenStr, @Valid @PathVariable Long resourceId, @Valid @RequestBody ReviewFlag reviewFlag) {
+        Token token = new Token();
+        token.setToken(tokenStr);
+        Authentication auth = new AuthenticationImpl(authServerUrl);
+        Credentials userCredentials = auth.Authenticate(token);
         /* Pseudo code:
          * DAO dbAccess = new DAOImpl(Config.Instance());
-         * String obj = dbAccess.insertResource(userCredresource, );
+         * String obj = dbAccess.insertReviewFlag(userCredentials, resourceId, reviewFlag);
          */
         return ResponseEntity.ok()
                              .contentType(MediaType.APPLICATION_JSON)
@@ -82,10 +103,13 @@ public class WikiEndpoint {
 
     @DeleteMapping("resource/{resourceId}")
     public ResponseEntity<String> removeResource(@Valid @RequestHeader("Bearer") String tokenStr, @Valid @PathVariable Long resourceId) {
-        Credentials userCred = contactAuth(tokenStr);
+        Token token = new Token();
+        token.setToken(tokenStr);
+        Authentication auth = new AuthenticationImpl(authServerUrl);
+        Credentials userCredentials = auth.Authenticate(token);
         /* Pseudo code:
          * DAO dbAccess = new DAOImpl(Config.Instance());
-         * String obj = dbAccess.insertResource(userCredresource, );
+         * String obj = dbAccess.deleteResource(userCredentials, resourceId);
          */
         return ResponseEntity.ok()
                              .contentType(MediaType.APPLICATION_JSON)
@@ -94,10 +118,13 @@ public class WikiEndpoint {
 
     @DeleteMapping("resource/{resourceId}/comment/{commentId}")
     public ResponseEntity<String> removeComment(@Valid @RequestHeader("Bearer") String tokenStr, @Valid @PathVariable Long resourceId, @PathVariable Long commentId) {
-        Credentials userCred = contactAuth(tokenStr);
+        Token token = new Token();
+        token.setToken(tokenStr);
+        Authentication auth = new AuthenticationImpl(authServerUrl);
+        Credentials userCredentials = auth.Authenticate(token);
         /* Pseudo code:
          * DAO dbAccess = new DAOImpl(Config.Instance());
-         * String obj = dbAccess.insertResource(userCredresource, );
+         * String obj = dbAccess.deleteComment(userCredentials, resourceId, commentId);
          */
         return ResponseEntity.ok()
                              .contentType(MediaType.APPLICATION_JSON)
@@ -106,10 +133,13 @@ public class WikiEndpoint {
 
     @DeleteMapping("resource/{resourceId}/upvote/{upvoteId}")
     public ResponseEntity<String> removeUpvote(@Valid @RequestHeader("Bearer") String tokenStr, @Valid @PathVariable Long resourceId, @PathVariable Long upvoteId) {
-        Credentials userCred = contactAuth(tokenStr);
+        Token token = new Token();
+        token.setToken(tokenStr);
+        Authentication auth = new AuthenticationImpl(authServerUrl);
+        Credentials userCredentials = auth.Authenticate(token);
         /* Pseudo code:
          * DAO dbAccess = new DAOImpl(Config.Instance());
-         * String obj = dbAccess.insertResource(userCredresource, );
+         * String obj = dbAccess.deleteUpvote(userCredentials, resourceId, upvoteId);
          */
         return ResponseEntity.ok()
                              .contentType(MediaType.APPLICATION_JSON)
@@ -118,20 +148,16 @@ public class WikiEndpoint {
 
     @DeleteMapping("resource/{resourceId}/reviewFlag/{flagId}")
     public ResponseEntity<String> removeReviewFlag(@Valid @RequestHeader("Bearer") String tokenStr, @Valid @PathVariable Long resourceId, @PathVariable Long flagId) {
-        Credentials userCred = contactAuth(tokenStr);
+        Token token = new Token();
+        token.setToken(tokenStr);
+        Authentication auth = new AuthenticationImpl(authServerUrl);
+        Credentials userCredentials = auth.Authenticate(token);
         /* Pseudo code:
          * DAO dbAccess = new DAOImpl(Config.Instance());
-         * String obj = dbAccess.insertResource(userCredresource, );
+         * String obj = dbAccess.deleteReviewFlag(userCredentials, resourceId, flagId);
          */
         return ResponseEntity.ok()
                              .contentType(MediaType.APPLICATION_JSON)
                              .body("{\"msg\": \"Remove review flag " + flagId + " from resource " + resourceId + "\"}");
-    }
-
-    private Credentials contactAuth(String tokenStr) {
-        Token token = new Token();
-        token.setToken(tokenStr);
-        Authentication auth = new AuthenticationImpl(authServerUrl);
-        return auth.Authenticate(token);
     }
 }
