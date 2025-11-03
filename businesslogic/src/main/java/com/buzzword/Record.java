@@ -99,8 +99,6 @@ abstract class Record {
      * @throws IllegalArgumentException if the first name is invalid
      */
     public void setCreatorFirstName(final String creatorFirstName) {
-        // TODO: Add more validation for creatorFirstName
-
         final int maxLenth = 40;
 
         if (creatorFirstName == null) {
@@ -143,8 +141,26 @@ abstract class Record {
      * @throws IllegalArgumentException if the last name is invalid
      */
     public void setCreatorLastName(String creatorLastName) {
-        // TODO: Add validation for creatorLastName
-        this.creatorLastName = creatorLastName;
+        final int maxLenth = 40;
+        final int minLenth = 2;
+
+        if (creatorLastName == null) {
+            throw new IllegalArgumentException("creatorLastName must not be null.");
+        }
+
+        String sanitizedLastName = mySanitizer.sanitizeInput(creatorLastName);
+
+        if (sanitizedLastName.isEmpty()) {
+            throw new IllegalArgumentException("creatorLastName must not be empty.");
+        }
+        if (sanitizedLastName.length() < minLenth ) {
+            throw new IllegalArgumentException("creatorLastName must not conatin fewer than 2 characters");
+        }
+        if (sanitizedLastName.length() > maxLenth ) {
+            throw new IllegalArgumentException("creatorLastName must not exceed 40 characters");
+        }
+        
+        this.creatorLastName = sanitizedLastName;
 
     }
 

@@ -29,6 +29,12 @@ public class RecordTest {
     }
 
     @Test
+    public void testValidId() {
+        testRecord.setId(1);
+        assertEquals(1, testRecord.getId()); 
+    }
+
+    @Test
     public void testInvalidId() {
         assertThrows(IllegalArgumentException.class, () -> {
             testRecord.setId(-1);
@@ -36,9 +42,9 @@ public class RecordTest {
     }
 
     @Test
-    public void testValidId() {
-        testRecord.setId(1);
-        assertEquals(1, testRecord.getId()); 
+    public void testValidCreatorId() {
+        testRecord.setCreatorId(1);
+        assertEquals(1, testRecord.getCreatorId()); 
     }
 
     @Test
@@ -49,9 +55,11 @@ public class RecordTest {
     }
 
     @Test
-    public void testValidCreatorId() {
-        testRecord.setCreatorId(1);
-        assertEquals(1, testRecord.getCreatorId()); 
+    public void testValidCreatorFirstName() {
+        String[] names = {"Bob", "aLice", "CARL", "dave", "li'l ernie"};
+        for (String name : names) {
+            testRecord.setCreatorFirstName(name);
+        }
     }
 
     @Test
@@ -77,15 +85,6 @@ public class RecordTest {
     }
 
     @Test
-    public void testValidCreatorFirstName() {
-        String[] names = {"Bob", "aLice", "CARL", "dave", "li'l ernie"};
-        for (String name : names) {
-            testRecord.setCreatorFirstName(name);
-        }
-
-    }
-
-    @Test
     public void testSanitizedFirstName() {
         String xssInput = "<script>alert('Sanitization Test');</script>Bob";
         String expected = "Bob";
@@ -93,6 +92,54 @@ public class RecordTest {
         testRecord.setCreatorFirstName(xssInput);
 
         assertEquals(expected, testRecord.getCreatorFirstName());
+    }
+
+    @Test
+    public void testValidCreatorLastName() {
+        String[] names = {"Smith", "O'Brien", "Forsythe-Marsdon", "johnson", "PO", "last name"};
+        for (String name : names) {
+            testRecord.setCreatorLastName(name);
+        }
+    }
+
+    @Test
+    public void testNullCreatorLastName() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            testRecord.setCreatorLastName(null);
+        });
+    }
+
+    @Test
+    public void testEmptyCreatorLastName() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            testRecord.setCreatorLastName("");
+        });
+    }
+
+    @Test
+    public void testShortCreatorLastName() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            String shortName = RandomStringUtils.insecure().next(1);
+            testRecord.setCreatorLastName(shortName);
+        });
+    }
+
+    @Test
+    public void testLongCreatorLastName() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            String longName = RandomStringUtils.insecure().next(41);
+            testRecord.setCreatorLastName(longName);
+        });
+    }
+
+    @Test
+    public void testSanitizedLastName() {
+        String xssInput = "<script>alert('Sanitization Test');</script>Smith";
+        String expected = "Smith";
+
+        testRecord.setCreatorLastName(xssInput);
+
+        assertEquals(expected, testRecord.getCreatorLastName());
     }
 
     @Disabled
