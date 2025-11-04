@@ -17,6 +17,9 @@ public class ResourceDAOImpl implements ResourceDAO {
         this.resources = db.getCollection("resources");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void insertResource(Credentials user, Resource resource) {
         // Require an authenticated user to insert resources (simple policy).
@@ -49,6 +52,9 @@ public class ResourceDAOImpl implements ResourceDAO {
         logger.info(String.format("User %d inserted new resource %d", user.getId(), resource.getId()));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean removeResource(Credentials user, long id) {
         // First, find the resource to check ownership
@@ -95,6 +101,9 @@ public class ResourceDAOImpl implements ResourceDAO {
         return resource;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<Resource> listAllResources(Credentials user) {
         List<Resource> allResources = new ArrayList<>();

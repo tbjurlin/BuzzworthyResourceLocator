@@ -16,13 +16,18 @@ public interface ResourceDAO {
     void insertResource(Credentials user, Resource resource);
 
     /**
+     * <p>
+     * A contributor may delete their own resource or an admin may remove any resource.
+     * 
      * @param user credentials of the user
      * @param resource resource to be removed
     */
     boolean removeResource(Credentials user, long id);
 
-    /**
+    /**<p>
      * List all resources available in the system.
+     * 
+     * @param user credentials of the user
      * @return list of all resources
     */
     List<Resource> listAllResources(Credentials user);
