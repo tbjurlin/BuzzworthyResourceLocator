@@ -17,8 +17,8 @@ public interface ResourceDAO {
     Boolean removeResource(Credentials user, Resource resource);
 
     /**
-     * @param query search query
-     * @return list of resources that match the query
+     * List all resources available in the system.
+     * @return list of all resources
     */
-    List<Resource> searchResources(String query);
+    List<Resource> listAllResources();
 }

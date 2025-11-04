@@ -1,27 +1,28 @@
 package com.buzzword;
 
-import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.MongoDatabase;
+
 import org.bson.Document;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import com.mongodb.client.MongoCollection;
 
 public class ResourceDAOImpl implements ResourceDAO {
-    private final MongoCollection<Document> usersCollection;
-    private final SecurityDAO securityDAO;
+    private final MongoCollection<Document> resources;
+    private final SecurityVerifying securityVerifying;
     private final Logger logger = LoggerFactory.getEventLogger();
 
-    public ResourceDAOImpl(MongoCollection<Document> usersCollection, SecurityDAO securityDAO) {
-        this.usersCollection = usersCollection;
-        this.securityDAO = securityDAO;
+    public ResourceDAOImpl(MongoDatabase db, SecurityVerifying securityVerifying) {
+        this.resources = db.getCollection("users");
+        this.securityVerifying = securityVerifying;
     }
 
     @Override
     public Void insertResource(Credentials user, Resource resource) {
         // Check if user has permission to insert resources
-        if (!securityDAO.canInsertResource(user.getSystemRole())) {
+        if (!securityVerifying.canInsertResource(user.getSystemRole())) {
             logger.error(String.format("User %d with role %s denied permission to insert resource", user.getId(), user.getSystemRole()));
             throw new SecurityException("User does not have permission to insert resources");
         }
@@ -42,7 +43,7 @@ public class ResourceDAOImpl implements ResourceDAO {
                    .append("creationDate", new java.util.Date());
 
         // Push the resource into the resources collection
-        usersCollection.updateOne(
+        resources.updateOne(
             Filters.eq("id", user.getId()),
             new Document("$push", new Document("resources", resourceDoc))
         );
@@ -54,7 +55,7 @@ public class ResourceDAOImpl implements ResourceDAO {
     @Override
     public Boolean removeResource(Credentials user, Resource resource) {
         // First, find the resource to check ownership
-        Document doc = usersCollection.find(
+        Document doc = resources.find(
             Filters.elemMatch("resources", new Document("id", resource.getId()))
         ).first();
 
@@ -64,8 +65,8 @@ public class ResourceDAOImpl implements ResourceDAO {
         }
 
         // Find the resource in the array to get its creatorId
-        List<Document> resources = doc.getList("resources", Document.class);
-        Document resourceDoc = resources.stream()
+        List<Document> resourcesS = doc.getList("resources", Document.class);
+        Document resourceDoc = resourcesS.stream()
             .filter(r -> r.getInteger("id") == resource.getId())
             .findFirst()
             .orElse(null);
@@ -75,14 +76,14 @@ public class ResourceDAOImpl implements ResourceDAO {
         }
 
         // Check if user has permission to delete this resource
-        if (!securityDAO.canDeleteResource(user.getSystemRole(), resourceDoc.getInteger("creatorId"), user.getId())) {
+        if (!securityVerifying.canDeleteResource(user.getSystemRole(), resourceDoc.getInteger("creatorId"), user.getId())) {
             logger.error(String.format("User %d with role %s denied permission to delete resource %d", 
                 user.getId(), user.getSystemRole(), resource.getId()));
             throw new SecurityException("User does not have permission to delete this resource");
         }
 
         // Pull (delete) the resource entirely from the user's resources array
-        com.mongodb.client.result.UpdateResult result = usersCollection.updateOne(
+        com.mongodb.client.result.UpdateResult result = resources.updateOne(
             Filters.elemMatch("resources", new Document("id", resource.getId())),
             new Document("$pull", new Document("resources", new Document("id", resource.getId())))
         );
@@ -106,45 +107,19 @@ public class ResourceDAOImpl implements ResourceDAO {
     }
 
     @Override
-    public List<Resource> searchResources(String query) {
-        // Create empty list to store matching resources
-        List<Resource> matchingResources = new ArrayList<>();
-        
-        // If no query provided, return all resources
-        if (query == null || query.trim().isEmpty()) {
-            usersCollection.find(Filters.exists("resources"))
-                .forEach(doc -> {
-                    List<Document> resources = doc.getList("resources", Document.class);
-                    if (resources != null) {
-                        for (Document resourceDoc : resources) {
-                            matchingResources.add(convertDocumentToResource(resourceDoc));
-                        }
-                    }
-                });
-            return matchingResources;
-        }
+    public List<Resource> listAllResources() {
+        List<Resource> allResources = new ArrayList<>();
 
-        // Search resources where title or description contains query (case insensitive)
-        Document searchFilter = new Document("$or", Arrays.asList(
-            new Document("resources.title", new Document("$regex", query).append("$options", "i")),
-            new Document("resources.description", new Document("$regex", query).append("$options", "i"))
-        ));
-
-        usersCollection.find(searchFilter).forEach(doc -> {
-            List<Document> resources = doc.getList("resources", Document.class);
-            if (resources != null) {
-                for (Document resourceDoc : resources) {
-                    // Only add resources that match our criteria
-                    String title = resourceDoc.getString("title");
-                    String description = resourceDoc.getString("description");
-                    if ((title != null && title.toLowerCase().contains(query.toLowerCase())) ||
-                        (description != null && description.toLowerCase().contains(query.toLowerCase()))) {
-                        matchingResources.add(convertDocumentToResource(resourceDoc));
+        resources.find(Filters.exists("resources"))
+            .forEach(doc -> {
+                List<Document> resourcesS = doc.getList("resources", Document.class);
+                if (resourcesS != null) {
+                    for (Document resourceDoc : resourcesS) {
+                        allResources.add(convertDocumentToResource(resourceDoc));
                     }
                 }
-            }
-        });
-        
-        return matchingResources;
+            });
+
+        return allResources;
     }
 }

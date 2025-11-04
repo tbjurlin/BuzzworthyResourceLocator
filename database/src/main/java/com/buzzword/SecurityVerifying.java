@@ -1,6 +1,6 @@
 package com.buzzword;
 
-public interface SecurityDAO {
+public interface SecurityVerifying {
 
     /**
      * @param role role of the user

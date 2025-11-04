@@ -1,19 +1,20 @@
 package com.buzzword;
 
-import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
 
 import java.util.List;
 
 public class CommentDAOImpl implements CommentDAO {
-    private final MongoCollection<Document> usersCollection;
-    private final SecurityDAO securityDAO;
+    private final MongoCollection<Document> resources;
+    private final SecurityVerifying securityVerifying;
     private final Logger logger = LoggerFactory.getEventLogger();
 
-    public CommentDAOImpl(MongoCollection<Document> usersCollection, SecurityDAO securityDAO) {
-        this.usersCollection = usersCollection;
-        this.securityDAO = securityDAO;
+    public CommentDAOImpl(MongoDatabase db, SecurityVerifying securityVerifying) {
+        this.resources = db.getCollection("users");
+        this.securityVerifying = securityVerifying;
     }
 
     @Override
@@ -26,7 +27,7 @@ public class CommentDAOImpl implements CommentDAO {
             .append("creationDate", new java.util.Date());  // Set current timestamp
 
         // Push the comment into the resource's comments array
-        usersCollection.updateOne(
+        resources.updateOne(
             Filters.elemMatch("resources", new Document("id", comment.getCreatorId())), // creatorId holds resourceId
             new Document("$push", new Document("resources.$.comments", commentDoc))
         );
@@ -38,7 +39,7 @@ public class CommentDAOImpl implements CommentDAO {
     @Override
     public Boolean removeComment(Credentials user, Comment comment) {
         // First, find the comment to check ownership
-        Document doc = usersCollection.find(
+        Document doc = resources.find(
             Filters.elemMatch("resources", 
                 new Document("comments.id", comment.getId()))
         ).first();
@@ -66,12 +67,12 @@ public class CommentDAOImpl implements CommentDAO {
         }
 
         // Check if user has permission to delete this comment
-        if (!securityDAO.canDeleteComment(user.getSystemRole(), commentDoc.getInteger("creatorId"), user.getId())) {
+        if (!securityVerifying.canDeleteComment(user.getSystemRole(), commentDoc.getInteger("creatorId"), user.getId())) {
             throw new SecurityException("User does not have permission to delete this comment");
         }
 
         // Remove the comment from the resource's comments array
-        com.mongodb.client.result.UpdateResult result = usersCollection.updateOne(
+        com.mongodb.client.result.UpdateResult result = resources.updateOne(
             Filters.elemMatch("resources", new Document("id", comment.getCreatorId())), // creatorId holds resourceId
             new Document("$pull", 
                 new Document("resources.$.comments", 

@@ -1,6 +1,6 @@
 package com.buzzword;
 
-public class SecurityDAOImpl implements SecurityDAO {
+public class SecurityVerifyingImpl implements SecurityVerifying {
     private static final String ROLE_MANAGER = "Manager";
     private static final String ROLE_DEVELOPER = "Developer";
     private static final String ROLE_GENERAL_USER = "General User";

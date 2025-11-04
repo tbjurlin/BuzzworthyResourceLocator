@@ -7,8 +7,8 @@
  */
 package com.buzzword;
 
-import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 
 import org.bson.Document;
@@ -18,13 +18,11 @@ import java.io.IOException;
 public class UserDAOImpl 
     implements UserDAO {
 
-    private final MongoCollection<Document> usersCollection;
+    private final MongoCollection<Document> resources;
     private final Logger logger = LoggerFactory.getEventLogger();
 
-    public UserDAOImpl() throws IOException {
-        MongoDatabase db = DatabaseConnectionPool.getInstance()
-            .getDatabaseConnection();
-        this.usersCollection = db.getCollection("users");
+    public UserDAOImpl(MongoDatabase db) throws IOException {
+        this.resources = db.getCollection("users");
     }
 
     @Override
@@ -35,7 +33,7 @@ public class UserDAOImpl
             .append("creatorId", user.getId())
             .append("creationDate", new java.util.Date());
 
-        com.mongodb.client.result.UpdateResult result = usersCollection.updateOne(
+        com.mongodb.client.result.UpdateResult result = resources.updateOne(
             Filters.and(Filters.eq("id", user.getId()), Filters.eq("resources.id", resource.getId())),
             new Document("$addToSet", new Document("resources.$.upVotes", upvoteDoc))
         );
@@ -46,7 +44,7 @@ public class UserDAOImpl
         }
 
         // Also increment the upvoteCount for quick reads. Use the same filter.
-        result = usersCollection.updateOne(
+        result = resources.updateOne(
             Filters.and(Filters.eq("id", user.getId()), Filters.eq("resources.id", resource.getId())),
             new Document("$inc", new Document("resources.$.upvoteCount", 1))
         );
@@ -57,7 +55,7 @@ public class UserDAOImpl
     @Override
     public Void removeUpVote(Credentials user, Resource resource) {
         // Remove an upvote by this user for the matched resource and decrement the counter.
-        com.mongodb.client.result.UpdateResult result = usersCollection.updateOne(
+        com.mongodb.client.result.UpdateResult result = resources.updateOne(
             Filters.and(Filters.eq("id", user.getId()), Filters.eq("resources.id", resource.getId())),
             new Document("$pull", new Document("resources.$.upVotes", new Document("creatorId", user.getId())))
         );
@@ -67,7 +65,7 @@ public class UserDAOImpl
             return null;
         }
 
-        result = usersCollection.updateOne(
+        result = resources.updateOne(
             Filters.and(Filters.eq("id", user.getId()), Filters.eq("resources.id", resource.getId())),
             new Document("$inc", new Document("resources.$.upvoteCount", -1))
         );
@@ -83,7 +81,7 @@ public class UserDAOImpl
             .append("active", true)
             .append("creationDate", new java.util.Date());
 
-        com.mongodb.client.result.UpdateResult result = usersCollection.updateOne(
+        com.mongodb.client.result.UpdateResult result = resources.updateOne(
             Filters.and(Filters.eq("id", user.getId()), Filters.eq("resources.id", resource.getId())),
             new Document("$push", new Document("resources.$.reviewFlags", flagDoc))
         );
@@ -99,7 +97,7 @@ public class UserDAOImpl
     @Override
     public Void removeReviewFlag(Credentials user, Resource resource) {
         // Remove review flags created by this user for the matched resource (assumption).
-        com.mongodb.client.result.UpdateResult result = usersCollection.updateOne(
+        com.mongodb.client.result.UpdateResult result = resources.updateOne(
             Filters.and(Filters.eq("id", user.getId()), Filters.eq("resources.id", resource.getId())),
             new Document("$pull", new Document("resources.$.reviewFlags", new Document("creatorId", user.getId())))
         );
