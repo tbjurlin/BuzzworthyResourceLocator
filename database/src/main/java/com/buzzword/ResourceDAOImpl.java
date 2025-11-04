@@ -8,6 +8,7 @@ import org.bson.Document;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.result.DeleteResult;
 
 public class ResourceDAOImpl implements ResourceDAO {
     private final MongoCollection<Document> resources;
@@ -50,29 +51,35 @@ public class ResourceDAOImpl implements ResourceDAO {
      */
     @Override
     public boolean removeResource(Credentials user, long id) {
-        // First, find the resource to check ownership
-        Document doc = resources.find(
-            Filters.eq("resourceId", id)).first();
-
-        if (doc == null) {
-            logger.warn(String.format("Failed to find resource %d for removal by user %d", id, user.getId()));
-            return false;  // Resource not found
-        }
-
-        // Check if user has permission to delete this resource.
-        // Allow deletion only if the user is an Admin or the original creator of the resource.
-        boolean isAdmin = "Admin".equals(user.getSystemRole());
-        Integer creatorId = doc.getInteger("creatorId");
-        boolean isCreator = creatorId != null && creatorId.equals(user.getId());
-
-        if (!isAdmin && !isCreator) {
+        if (user.getSystemRole() != "Admin" && user.getSystemRole() != "Contributor") {
             logger.error(String.format("User %d with role %s denied permission to delete resource %d", 
                 user.getId(), user.getSystemRole(), id));
             throw new AuthorizationException("User does not have permission to delete this resource");
         }
+        if (user.getSystemRole() == "Contributor") {
+            // First, find the resource to check ownership
+            Document doc = resources.find(
+                Filters.eq("resourceId", id)).first();
+
+            if (doc == null) {
+                logger.warn(String.format("Failed to find resource %d for removal by user %d", id, user.getId()));
+                return false;  // Resource not found
+            }
+
+            // Check if user has permission to delete this resource.
+            // Allow deletion only if the user is the original creator of the resource.
+            Integer creatorId = doc.getInteger("creatorId");
+            boolean isCreator = creatorId != null && creatorId.equals(user.getId());
+
+            if (!isCreator) {
+                logger.error(String.format("User %d with role %s denied permission to delete resource %d", 
+                    user.getId(), user.getSystemRole(), id));
+                throw new AuthorizationException("User does not have permission to delete this resource");
+            }
+        }
 
                 // Delete the resource document
-        com.mongodb.client.result.DeleteResult result = resources.deleteOne(
+        DeleteResult result = resources.deleteOne(
             Filters.eq("resourceId", id)
         );
         

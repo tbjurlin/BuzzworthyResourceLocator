@@ -138,8 +138,6 @@ public class ResourceDAOTest {
     @Test
     void managerMayDelete() {
         Credentials mockCredentials = mock(Credentials.class);
-        when(mockCredentials.getFirstName()).thenReturn("Foo");
-        when(mockCredentials.getLastName()).thenReturn("Bar");
         when(mockCredentials.getId()).thenReturn(1);
         when(mockCredentials.getSystemRole()).thenReturn("Admin");
 
@@ -153,7 +151,7 @@ public class ResourceDAOTest {
         verify(testCollection).deleteOne(captor.capture());
 
         Bson capturedFilter = captor.getValue();
-        Bson expectedFilter = Filters.eq("recordId", 1);
+        Bson expectedFilter = Filters.eq("resourceId", 1L);
         Assertions.assertThat(capturedFilter)
             .usingRecursiveComparison()
             .isEqualTo(expectedFilter);
@@ -162,8 +160,6 @@ public class ResourceDAOTest {
     @Test
     void developerMayDeleteIfCreator() {
         Credentials mockCredentials = mock(Credentials.class);
-        when(mockCredentials.getFirstName()).thenReturn("Foo");
-        when(mockCredentials.getLastName()).thenReturn("Bar");
         when(mockCredentials.getId()).thenReturn(1);
         when(mockCredentials.getSystemRole()).thenReturn("Contributor");
 
@@ -190,7 +186,7 @@ public class ResourceDAOTest {
         verify(testCollection).deleteOne(captor.capture());
 
         Bson capturedFilter = captor.getValue();
-        Bson expectedFilter = Filters.eq("recordId", 1);
+        Bson expectedFilter = Filters.eq("resourceId", 1L);
         Assertions.assertThat(capturedFilter)
             .usingRecursiveComparison()
             .isEqualTo(expectedFilter);
@@ -199,8 +195,6 @@ public class ResourceDAOTest {
     @Test
     void developerMayNotDeleteIfNotCreator() {
         Credentials mockCredentials = mock(Credentials.class);
-        when(mockCredentials.getFirstName()).thenReturn("Foo");
-        when(mockCredentials.getLastName()).thenReturn("Bar");
         when(mockCredentials.getId()).thenReturn(1);
         when(mockCredentials.getSystemRole()).thenReturn("Contributor");
 
@@ -208,7 +202,7 @@ public class ResourceDAOTest {
         FindIterable<Document> mockIterable = (FindIterable<Document>) mock(FindIterable.class);
         Document targetDocument  = new Document()
             .append("resourceId", 1)
-            .append("creatorId", 1)
+            .append("creatorId", 2)
             .append("firstName", "Foo")
             .append("lastName", "Bar")
             .append("title", "Title")
@@ -228,8 +222,6 @@ public class ResourceDAOTest {
     @Test
     void generalEmployeeMayNotDelete() {
         Credentials mockCredentials = mock(Credentials.class);
-        when(mockCredentials.getFirstName()).thenReturn("Foo");
-        when(mockCredentials.getLastName()).thenReturn("Bar");
         when(mockCredentials.getId()).thenReturn(1);
         when(mockCredentials.getSystemRole()).thenReturn("Commenter");
 
@@ -314,5 +306,16 @@ public class ResourceDAOTest {
         Assertions.assertThat(results)
             .usingRecursiveComparison()
             .isEqualTo(expected);
+    }
+
+    @Test
+    void dontListAllIfNoSystemRole() {
+        Credentials mockCredentials = mock(Credentials.class);
+        when(mockCredentials.getId()).thenReturn(1);
+        when(mockCredentials.getSystemRole()).thenReturn("Some Invalid Role");
+
+        assertThrows(AuthorizationException.class, () -> {
+            resourceDAO.listAllResources(mockCredentials);
+        });
     }
 }
