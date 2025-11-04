@@ -92,12 +92,16 @@ public class ResourceDAOImpl implements ResourceDAO {
         return removed;
     }
 
-    public Resource convertDocumentToResource(Document doc) {
+    private Resource convertDocumentToResource(Document doc) {
         Resource resource = new Resource();
-        resource.setId(doc.getInteger("id"));
+        resource.setId(doc.getInteger("resourceId"));
         resource.setTitle(doc.getString("title"));
         resource.setDescription(doc.getString("description"));
         resource.setUrl(doc.getString("url"));
+        resource.setCreatorId(doc.getInteger("creatorId"));
+        resource.setCreationDate(doc.getDate("dateCreated"));
+        resource.setCreatorFirstName(doc.getString("firstName"));
+        resource.setCreatorLastName(doc.getString("lastName"));
         return resource;
     }
 
@@ -106,6 +110,12 @@ public class ResourceDAOImpl implements ResourceDAO {
      */
     @Override
     public List<Resource> listAllResources(Credentials user) {
+        if (user.getSystemRole() != "Admin" && user.getSystemRole() != "Contributor" && user.getSystemRole() != "Commenter") {
+            logger.error(String.format("User %d with role %s denied permission to retrieve resources: role is not valid.", 
+                user.getId(), user.getSystemRole()));
+            throw new AuthorizationException("User does not have a valid system role.");
+        }
+
         List<Resource> allResources = new ArrayList<>();
 
         resources.find().forEach(resDoc -> {
