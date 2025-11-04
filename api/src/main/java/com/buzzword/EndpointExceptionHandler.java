@@ -15,8 +15,8 @@ import org.springframework.beans.TypeMismatchException;
 
 /**
  * This class catches and handles exceptions in order to provide
- * the appropriate HTTP error codes with helpful messages to the
- * end-user accessing the API.
+ * the appropriate HTTP responses with error codes and helpful 
+ * messages to the end-user accessing the API.
  * 
  * @author Ben Edens
  * @version 1.0
@@ -186,7 +186,7 @@ public class EndpointExceptionHandler {
 
 
 
-     
+
 
 /*  Exception Handler Template
 
