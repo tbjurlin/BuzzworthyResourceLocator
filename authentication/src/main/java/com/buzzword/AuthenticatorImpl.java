@@ -12,23 +12,23 @@ import java.net.MalformedURLException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * Implementation for Authentication.java.
+ * Implementation for Authenticator.java.
  * This class facilitates a connection to an authentication server to
  * retrieve user credentials using a Java Web Token (JWT) provided by
- * the authorization server for Single Sign-On (SSO).
+ * the authentication server for Single Sign-On (SSO).
  * 
  * @author Ben Edens
  * @version 1.0
  */
-public class AuthenticationImpl implements Authentication{
+public class AuthenticatorImpl implements Authenticator{
     private URL serverUrl;
 
     /**
-     * Authentication implementation constructor. Builds authentication server URL from provided string.
+     * Authenticator implementation constructor. Builds authentication server URL from provided string.
      * 
      * @param urlString A string version of the authentication server's URL.
      */
-    public AuthenticationImpl(String urlString) {
+    public AuthenticatorImpl(String urlString) {
         try {
             URI uri = new URI(urlString);
             serverUrl = uri.toURL();
