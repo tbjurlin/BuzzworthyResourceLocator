@@ -5,10 +5,15 @@ import java.util.List;
 public interface ResourceDAO {
 
     /**
+     * <p>
+     * A contributor or admin may insert a resource into the database.
+     * This resource contains information such as a title, the description, and Url link.
+     * It will also contain the id of the user who uploaded the resource as well as it's date of creation.
+     * 
      * @param user credentials of the user
      * @param resource resource to be inserted
     */
-    Void insertResource(Credentials user, Resource resource);
+    void insertResource(Credentials user, Resource resource);
 
     /**
      * @param user credentials of the user

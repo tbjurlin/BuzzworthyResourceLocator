@@ -1,24 +1,24 @@
 package com.buzzword;
 
-import com.mongodb.client.model.Filters;
-import com.mongodb.client.MongoDatabase;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.bson.Document;
 
-import java.util.ArrayList;
-import java.util.List;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
 
 public class ResourceDAOImpl implements ResourceDAO {
     private final MongoCollection<Document> resources;
     private final Logger logger = LoggerFactory.getEventLogger();
 
     public ResourceDAOImpl(MongoDatabase db) {
-        this.resources = db.getCollection("users");
+        this.resources = db.getCollection("resources");
     }
 
     @Override
-    public Void insertResource(Credentials user, Resource resource) {
+    public void insertResource(Credentials user, Resource resource) {
         // Require an authenticated user to insert resources (simple policy).
         if (user == null || user.getId() == null) {
             logger.error("Unauthenticated user denied permission to insert resource");
@@ -47,7 +47,6 @@ public class ResourceDAOImpl implements ResourceDAO {
         );
 
         logger.info(String.format("User %d inserted new resource %d", user.getId(), resource.getId()));
-        return null;
     }
 
     @Override
@@ -73,13 +72,12 @@ public class ResourceDAOImpl implements ResourceDAO {
             throw new AuthorizationException("User does not have permission to delete this resource");
         }
 
-        // Pull (delete) the resource entirely from the user's resources array
-        com.mongodb.client.result.UpdateResult result = resources.updateOne(
-            Filters.elemMatch("resources", new Document("id", id)),
-            new Document("$pull", new Document("resources", new Document("id", id)))
+                // Delete the resource document
+        com.mongodb.client.result.DeleteResult result = resources.deleteOne(
+            Filters.eq("resourceId", id)
         );
         
-        boolean removed = result.getModifiedCount() > 0;
+        boolean removed = result.getDeletedCount() > 0;
         if (removed) {
             logger.info(String.format("User %d removed resource %d", user.getId(), id));
         } else {
