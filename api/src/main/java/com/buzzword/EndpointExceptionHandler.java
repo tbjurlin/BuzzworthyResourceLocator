@@ -12,6 +12,7 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.beans.TypeMismatchException;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
 
 /**
  * This class catches and handles exceptions in order to provide
@@ -40,7 +41,7 @@ public class EndpointExceptionHandler {
     public ResponseEntity<String> handleMissingServletRequestParameterException(MissingServletRequestParameterException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                              .contentType(MediaType.APPLICATION_JSON)
-                             .body("Missing required parameter for the requested operation.");
+                             .body("{\"errorMsg\": \"Missing required parameter for the requested operation.\"}");
     }
 
     /**
@@ -53,7 +54,7 @@ public class EndpointExceptionHandler {
     public ResponseEntity<String> handleMissingRequestHeaderException(MissingRequestHeaderException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                              .contentType(MediaType.APPLICATION_JSON)
-                             .body("Missing required header for the requested operation.");
+                             .body("{\"errorMsg\": \"Missing required header for the requested operation.\"}");
     }
 
     /**
@@ -66,7 +67,7 @@ public class EndpointExceptionHandler {
     public ResponseEntity<String> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                              .contentType(MediaType.APPLICATION_JSON)
-                             .body("Invalid parameter provided for the requested operation.");
+                             .body("{\"errorMsg\": \"Invalid parameter provided for the requested operation.\"}");
     }
 
     /**
@@ -79,7 +80,7 @@ public class EndpointExceptionHandler {
     public ResponseEntity<String> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                              .contentType(MediaType.APPLICATION_JSON)
-                             .body("Unable to read request body. Check that the request body matches the formatting outlined in the user documentation.");
+                             .body("{\"errorMsg\": \"Unable to read request body. Check that the request body matches the formatting outlined in the user documentation.\"}");
     }
 
     /**
@@ -92,7 +93,7 @@ public class EndpointExceptionHandler {
     public ResponseEntity<String> handleTypeMismatchException(TypeMismatchException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                              .contentType(MediaType.APPLICATION_JSON)
-                             .body("Invalid parameter provided for the requested operation.");
+                             .body("{\"errorMsg\": \"Invalid parameter provided for the requested operation.\"}");
     }
 
 
@@ -113,7 +114,7 @@ public class EndpointExceptionHandler {
     public ResponseEntity<String> handleAuthenticationException(AuthenticationException e) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                              .contentType(MediaType.APPLICATION_JSON)
-                             .body("Unable to authenticate user. Potential causes include invalid web token or inability to contact authentication services.");
+                             .body("{\"errorMsg\": \"Unable to authenticate user. Potential causes include invalid web token or inability to contact authentication services.\"}");
     }
 
 
@@ -134,7 +135,7 @@ public class EndpointExceptionHandler {
     public ResponseEntity<String> handleAuthorizationException(AuthorizationException e) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
                              .contentType(MediaType.APPLICATION_JSON)
-                             .body("User lacks necessary permissions to perform request.");
+                             .body("{\"errorMsg\": \"User lacks necessary permissions to perform request.\"}");
     }*/
 
     /*
@@ -153,7 +154,7 @@ public class EndpointExceptionHandler {
     public ResponseEntity<String> handleNoResourceFoundException(NoResourceFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                              .contentType(MediaType.APPLICATION_JSON)
-                             .body("Resource not found. Check that the request matches one of the REST operations outlined in the user documentation.");
+                             .body("{\"errorMsg\": \"Resource not found. Check that the request matches one of the REST operations outlined in the user documentation.\"}");
     }
 
 
@@ -174,8 +175,31 @@ public class EndpointExceptionHandler {
     public ResponseEntity<String> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
         return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED)
                              .contentType(MediaType.APPLICATION_JSON)
-                             .body("Request method not supported. Check that the request includes the appropriate CRUD operation and matches one of the REST operations outlined in the user documentation.");
+                             .body("{\"errorMsg\": \"Request method not supported. Check that the request includes the appropriate CRUD operation and matches one of the REST operations outlined in the user documentation.\"}");
     }
+
+
+
+    /*
+     * =======================================================================================
+     *      415 Errors (UNSUPPORTED MEDIA TYPE)
+     * =======================================================================================
+     */
+
+    /**
+     * Exception handler for when the HTTP request uses an unsupported media type.
+     * 
+     * @param e An HttpMediaTypeNotSupportedException.
+     * @return  A JSON-formatted HTTP response with a 415 error code and message.
+     */
+    @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
+    public ResponseEntity<String> handleHttpMediaTypeNotSupportedException(HttpMediaTypeNotSupportedException e) {
+        return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+                             .contentType(MediaType.APPLICATION_JSON)
+                             .body("{\"errorMsg\": \"Request media type not supported. Please use application/json media type.\"}");
+    }
+
+
     
     /*
      * =======================================================================================
