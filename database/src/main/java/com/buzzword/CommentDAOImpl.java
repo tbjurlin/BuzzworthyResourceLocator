@@ -34,40 +34,23 @@ public class CommentDAOImpl implements CommentDAO {
         return null;
     }
     
+    /**
+     * An admin may remove the comment, only do find if they're a commentor or contributor.
+     */
     @Override
     public boolean removeComment(Credentials user, long id) {
         // First, find the comment to check ownership
         Document doc = resources.find(
-            Filters.elemMatch("resources", 
-                new Document("comments.id", id))
-        ).first();
+            Filters.eq("commentId", id)).first();
 
         if (doc == null) {
-            return false;  // Comment not found
-        }
-
-        // Get the comment details to check permissions
-        Document commentDoc = null;
-        outer: for (Document resource : doc.getList("resources", Document.class)) {
-            List<Document> comments = resource.getList("comments", Document.class);
-            if (comments != null) {
-                for (Document c : comments) {
-                    if (c.getInteger("id") == id) {
-                        commentDoc = c;
-                        break outer;
-                    }
-                }
-            }
-        }
-
-        if (commentDoc == null) {
             return false;  // Comment not found
         }
 
         // Check if user has permission to delete this comment.
         // Allow deletion only if the user is an Admin or the original creator of the comment.
         boolean isAdmin = "Admin".equals(user.getSystemRole());
-        Integer commentCreatorId = commentDoc.getInteger("creatorId");
+        Integer commentCreatorId = doc.getInteger("creatorId");
         boolean isCreator = commentCreatorId != null && commentCreatorId.equals(user.getId());
 
         if (!isAdmin && !isCreator) {
