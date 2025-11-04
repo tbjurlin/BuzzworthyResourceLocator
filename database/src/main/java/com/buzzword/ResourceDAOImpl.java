@@ -23,31 +23,24 @@ public class ResourceDAOImpl implements ResourceDAO {
     @Override
     public void insertResource(Credentials user, Resource resource) {
         // Require an authenticated user to insert resources (simple policy).
-        if (user == null || user.getId() == null) {
+        if (user == null || (user.getSystemRole() != "Admin" && user.getSystemRole() != "Contributor")) {
             logger.error("Unauthenticated user denied permission to insert resource");
             throw new AuthorizationException("User must be authenticated to insert resources");
         }
 
         // Build a sub-document for the resource and push it into the user's resources array
         Document resourceDoc = new Document()
-            .append("id", resource.getId())
+            .append("resourceId", resource.getId())
             .append("title", resource.getTitle())
             .append("description", resource.getDescription())
             .append("url", resource.getUrl())
-            .append("creatorId", user.getId());  // Track who created the resource
-
-        // Initialize embedded arrays and counters for consistent updates later
-        resourceDoc.append("comments", new ArrayList<>())
-                   .append("upVotes", new ArrayList<>())
-                   .append("reviewFlags", new ArrayList<>())
-                   .append("upvoteCount", 0)
-                   .append("creationDate", new java.util.Date());
+            .append("creatorId", user.getId())  // Track who created the resource
+            .append("firstName", user.getFirstName())
+            .append("lastName", user.getLastName())
+            .append("dateCreated", resource.getCreationDate());
 
         // Push the resource into the resources collection
-        resources.updateOne(
-            Filters.eq("id", user.getId()),
-            new Document("$push", new Document("resources", resourceDoc))
-        );
+        resources.insertOne(resourceDoc);
 
         logger.info(String.format("User %d inserted new resource %d", user.getId(), resource.getId()));
     }

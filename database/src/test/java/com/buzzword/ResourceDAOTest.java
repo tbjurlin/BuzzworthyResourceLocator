@@ -60,9 +60,6 @@ public class ResourceDAOTest {
 
         Resource mockResource = mock(Resource.class);
         when(mockResource.getId()).thenReturn(1);
-        when(mockResource.getCreatorId()).thenReturn(1);
-        when(mockResource.getCreatorFirstName()).thenReturn("Foo");
-        when(mockResource.getCreatorLastName()).thenReturn("Bar");
         when(mockResource.getCreationDate()).thenReturn(Date.from(Instant.ofEpochSecond(946684800)));
         when(mockResource.getTitle()).thenReturn("Title");
         when(mockResource.getDescription()).thenReturn("Description");
@@ -75,6 +72,7 @@ public class ResourceDAOTest {
 
         Document capturedDoc = captor.getValue();
         Document expectedDoc = new Document()
+            .append("creatorId", 1)
             .append("resourceId", 1)
             .append("firstName", "Foo")
             .append("lastName", "Bar")
@@ -97,9 +95,6 @@ public class ResourceDAOTest {
 
         Resource mockResource = mock(Resource.class);
         when(mockResource.getId()).thenReturn(1);
-        when(mockResource.getCreatorId()).thenReturn(1);
-        when(mockResource.getCreatorFirstName()).thenReturn("Foo");
-        when(mockResource.getCreatorLastName()).thenReturn("Bar");
         when(mockResource.getCreationDate()).thenReturn(Date.from(Instant.ofEpochSecond(946684800)));
         when(mockResource.getTitle()).thenReturn("Title");
         when(mockResource.getDescription()).thenReturn("Description");
@@ -128,20 +123,9 @@ public class ResourceDAOTest {
     @Test
     void generalEmployeeMayNotInsert() {
         Credentials mockCredentials = mock(Credentials.class);
-        when(mockCredentials.getFirstName()).thenReturn("Foo");
-        when(mockCredentials.getLastName()).thenReturn("Bar");
-        when(mockCredentials.getId()).thenReturn(1);
         when(mockCredentials.getSystemRole()).thenReturn("Commenter");
 
         Resource mockResource = mock(Resource.class);
-        when(mockResource.getId()).thenReturn(1);
-        when(mockResource.getCreatorId()).thenReturn(1);
-        when(mockResource.getCreatorFirstName()).thenReturn("Foo");
-        when(mockResource.getCreatorLastName()).thenReturn("Bar");
-        when(mockResource.getCreationDate()).thenReturn(Date.from(Instant.ofEpochSecond(946684800)));
-        when(mockResource.getTitle()).thenReturn("Title");
-        when(mockResource.getDescription()).thenReturn("Description");
-        when(mockResource.getUrl()).thenReturn("localhost");
 
         assertThrows(AuthorizationException.class, () -> {
             resourceDAO.insertResource(mockCredentials, mockResource);
