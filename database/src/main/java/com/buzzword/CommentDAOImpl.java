@@ -1,22 +1,24 @@
 package com.buzzword;
 
-import com.mongodb.client.model.Filters;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
 
-import java.util.List;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
 
 public class CommentDAOImpl implements CommentDAO {
     private final MongoCollection<Document> resources;
     private final Logger logger = LoggerFactory.getEventLogger();
 
     public CommentDAOImpl(MongoDatabase db) {
-        this.resources = db.getCollection("users");
+        this.resources = db.getCollection("resources");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public Void addComment(Credentials user, Comment comment) {
+    public void addComment(Credentials user, Comment comment) {
         // All users can add comments (General User, Developer, Manager)
         Document commentDoc = new Document()
             .append("id", comment.getId())
@@ -31,15 +33,14 @@ public class CommentDAOImpl implements CommentDAO {
         );
 
         logger.info(String.format("User %d added comment %d to resource %d", user.getId(), comment.getId(), comment.getCreatorId()));
-        return null;
     }
     
     /**
-     * An admin may remove the comment, only do find if they're a commentor or contributor.
+     * {@inheritDoc}
      */
     @Override
     public boolean removeComment(Credentials user, long id) {
-        // First, find the comment to check ownership
+        //An admin may remove the comment, only do find if they're a commentor or contributor.
         Document doc = resources.find(
             Filters.eq("commentId", id)).first();
 
@@ -57,21 +58,19 @@ public class CommentDAOImpl implements CommentDAO {
             throw new AuthorizationException("User does not have permission to delete this comment");
         }
 
-        // Remove the comment from the resource's comments array
-        com.mongodb.client.result.UpdateResult result = resources.updateOne(
-            Filters.elemMatch("resources", new Document("id", id)), // creatorId holds resourceId
-            new Document("$pull", 
-                new Document("resources.$.comments", 
-                    new Document("id", id)
-                )
+        // Delete the comment document
+        com.mongodb.client.result.DeleteResult result = resources.deleteOne(
+            Filters.and(
+                Filters.eq("resourceId", id), // creatorId holds resourceId
+                Filters.eq("commentId", id)
             )
         );
 
-        boolean removed = result.getModifiedCount() > 0;
+        boolean removed = result.getDeletedCount() > 0;
         if (removed) {
-            logger.info(String.format("User %d removed comment %d from resource %d", user.getId(), id));
+            logger.info(String.format("User %d removed comment %d from resource %d", user.getId(), id, doc.getLong("resourceId")));
         } else {
-            logger.warn(String.format("User %d failed to remove comment %d from resource %d", user.getId(), id));
+            logger.warn(String.format("User %d failed to remove comment %d from resource %d", user.getId(), id, doc.getLong("resourceId")));
         }
         return removed;
     }
