@@ -12,5 +12,5 @@ public interface CommentDAO {
      * @param user credentials of the user
      * @param comment comment to be removed
     */
-    Boolean removeComment(Credentials user, Comment comment);
+    boolean removeComment(Credentials user, long id);
 }

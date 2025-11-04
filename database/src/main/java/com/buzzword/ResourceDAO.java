@@ -14,11 +14,11 @@ public interface ResourceDAO {
      * @param user credentials of the user
      * @param resource resource to be removed
     */
-    Boolean removeResource(Credentials user, Resource resource);
+    boolean removeResource(Credentials user, long id);
 
     /**
      * List all resources available in the system.
      * @return list of all resources
     */
-    List<Resource> listAllResources();
+    List<Resource> listAllResources(Credentials user);
 }
