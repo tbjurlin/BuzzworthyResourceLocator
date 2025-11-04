@@ -17,7 +17,6 @@ public class WikiEndpointTest {
 
     private Authenticator mockAuth;
     private WikiEndpoint wikiEndpoint;
-    private Token token;
     private Credentials managerCredentials;
     private Credentials commenterCredentials;
 
@@ -30,8 +29,6 @@ public class WikiEndpointTest {
 
     @BeforeEach
     void setup() throws Exception {
-        token = new Token();
-        token.setToken(tokenStr);
         ObjectMapper objectMapper = new ObjectMapper();
         try{
             managerCredentials = objectMapper.readValue(managerCredJSONStr, Credentials.class);
@@ -41,10 +38,10 @@ public class WikiEndpointTest {
             throw new Exception();
         }
         mockAuth = mock(AuthenticatorImpl.class);
-        when(mockAuth.Authenticate(token)).thenReturn(managerCredentials);
+        when(mockAuth.Authenticate(any())).thenReturn(managerCredentials);
         wikiEndpoint = new WikiEndpoint();
         wikiEndpoint.setAuthenticator(mockAuth);
-        this.mockMvc = MockMvcBuilders.standaloneSetup(wikiEndpoint).build();
+        this.mockMvc = MockMvcBuilders.standaloneSetup(wikiEndpoint).setControllerAdvice(new EndpointExceptionHandler()).build();
     }
 
 
@@ -61,15 +58,15 @@ public class WikiEndpointTest {
                             .header("Bearer", tokenStr))
                .andExpect(status().isOk());
     }
-/* 
+
     @Test
-    void testRetrieveAllResourcesBadAuth() throws Exception {
-        when(mockAuth.Authenticate(token)).thenThrow(new AuthenticationException());
+    void testRetrieveAllResourcesBadAuthentication() throws Exception {
+        when(mockAuth.Authenticate(any())).thenThrow(new AuthenticationException());
         mockMvc.perform(get("/wiki/resource")
                             .header("Bearer", tokenStr))
                .andExpect(status().isUnauthorized());
     }
-*/
+
     /*
      * =======================================================================================
      *      POST addResource tests (heavy testing)
@@ -118,20 +115,20 @@ public class WikiEndpointTest {
                .andExpect(status().isBadRequest());
     }
 
-/* 
+
     @Test
     void testAddResourceBadAuthentication() throws Exception {
-        when(mockAuth.Authenticate(token)).thenThrow(new AuthenticationException());
+        when(mockAuth.Authenticate(any())).thenThrow(new AuthenticationException());
         mockMvc.perform(post("/wiki/resource")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(resourceJSONStrGood)
                             .header("Bearer", tokenStr))
                .andExpect(status().isUnauthorized());
     }
-
+/*
     @Test
     void testAddResourceBadAuthorization() throws Exception {
-        when(mockAuth.Authenticate(token)).thenReturn(commenterCredentials);
+        when(mockAuth.Authenticate(any())).thenReturn(commenterCredentials);
         mockMvc.perform(post("/wiki/resource")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(resourceJSONStrGood)
@@ -140,7 +137,7 @@ public class WikiEndpointTest {
     }
 */
     @Test
-    void testAddResourceNotFound() throws Exception {
+    void testAddResourceNoHandler() throws Exception {
         mockMvc.perform(post("/wiki/resource/")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(resourceJSONStrGood)
@@ -282,25 +279,25 @@ public class WikiEndpointTest {
                             .header("Bearer", tokenStr))
                .andExpect(status().isBadRequest());
     }
-/*
+
     @Test
     void testRemoveReviewFlagBadAuthentication() throws Exception {
-        when(mockAuth.Authenticate(token)).thenThrow(new AuthenticationException());
+        when(mockAuth.Authenticate(any())).thenThrow(new AuthenticationException());
         mockMvc.perform(delete("/wiki/resource/1/reviewFlag/1")
                             .header("Bearer", tokenStr))
                .andExpect(status().isUnauthorized());
     }
-
+/*
     @Test
     void testRemoveReviewFlagBadAuthorization() throws Exception {
-        when(mockAuth.Authenticate(token)).thenReturn(commenterCredentials);
+        when(mockAuth.Authenticate(any())).thenReturn(commenterCredentials);
         mockMvc.perform(delete("/wiki/resource/1/reviewFlag/1")
                             .header("Bearer", tokenStr))
                .andExpect(status().isForbidden());
     }
 */
     @Test
-    void testRemoveReviewFlagNotFound() throws Exception {
+    void testRemoveReviewFlagNoHandler() throws Exception {
         mockMvc.perform(delete("/wiki/resource/1/reviewFlag/1/")
                             .header("Bearer", tokenStr))
                .andExpect(status().isNotFound());

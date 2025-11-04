@@ -13,6 +13,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
 /**
  * This class catches and handles exceptions in order to provide
@@ -157,7 +158,12 @@ public class EndpointExceptionHandler {
                              .body("{\"errorMsg\": \"Resource not found. Check that the request matches one of the REST operations outlined in the user documentation.\"}");
     }
 
-
+    @ExceptionHandler(NoHandlerFoundException.class)
+    public ResponseEntity<String> handlesNoHandlerFoundException(NoHandlerFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                             .contentType(MediaType.APPLICATION_JSON)
+                             .body("{\"errorMsg\": \"Resource not found. Check that the request matches one of the REST operations outlined in the user documentation.\"}");
+    }
 
     /*
      * =======================================================================================
