@@ -2,11 +2,9 @@ package com.buzzword;
 
 import java.util.Date;
 
-abstract class Record {
+abstract class Record extends Name{
     private int id;
     private int creatorId;
-    private String creatorFirstName;
-    private String creatorLastName;
     private String creationDate;
     private Boolean isEdited;
 
@@ -14,11 +12,7 @@ abstract class Record {
 
     /* Constructor */
     public Record() {
-        this(new XssSanitizerImpl());
-    }
-
-    public Record(final XssSanitizer sanitizer) {
-        mySanitizer = sanitizer;
+        mySanitizer = new XssSanitizerImpl();
     }
 
     /**
@@ -73,95 +67,6 @@ abstract class Record {
             throw new IllegalArgumentException("creatorId must be non-negative");
         }
         this.creatorId = creatorId;
-    }
-
-    /**
-     * Returns the creatorFirstName value for the Record
-     * @return creatorFirstName
-     */
-    public String getCreatorFirstName() {
-        return creatorFirstName;
-    }
-
-    /**
-     * Sets the first name value for the creator.
-     * <br>
-     * <br>
-     * The business rules are:
-     * <ul>
-     *   <li>the first name must <strong>not</strong> be null</li>
-     *   <li>the first name must <strong>not</strong> be empty</li>
-     *   <li>the first name must max length of 40 chars</li>
-     *   <li>XSS strings within the first name will be removed</li>
-     * </ul>
-     *
-     * @param creatorFirstName the value to set into the creatorFirstName field
-     * @throws IllegalArgumentException if the first name is invalid
-     */
-    public void setCreatorFirstName(final String creatorFirstName) {
-        final int maxLenth = 40;
-
-        if (creatorFirstName == null) {
-            throw new IllegalArgumentException("creatorFirstName must not be null.");
-        }
-
-        String sanitizedFirstName = mySanitizer.sanitizeInput(creatorFirstName);
-
-        if (sanitizedFirstName.isEmpty()) {
-            throw new IllegalArgumentException("creatorFirstName must not be empty.");
-        }
-        if (sanitizedFirstName.length() > maxLenth ) {
-            throw new IllegalArgumentException("creatorFirstName must not exceed 40 characters");
-        }
-        
-        this.creatorFirstName = sanitizedFirstName;
-    }
-
-    /**
-     * Returns the creatorLastName value for the Record
-     * @return creatorLastName
-     */
-    public String getCreatorLastName() {
-        return creatorLastName;
-    }
-
-    /**
-     * Sets the last name value for the creator.
-     * <br>
-     * <br>
-     * The business rules are:
-     * <ul>
-     *   <li>the last name must <strong>not</strong> be null</li>
-     *   <li>the last name must <strong>not</strong> be empty</li>
-     *   <li>the last name must max length of 40 chars</li>
-     *   <li>XSS strings within the last name will be removed</li>
-     * </ul>
-     *
-     * @param creatorLastName the value to set into the creatorLastName field
-     * @throws IllegalArgumentException if the last name is invalid
-     */
-    public void setCreatorLastName(String creatorLastName) {
-        final int maxLenth = 40;
-        final int minLenth = 2;
-
-        if (creatorLastName == null) {
-            throw new IllegalArgumentException("creatorLastName must not be null.");
-        }
-
-        String sanitizedLastName = mySanitizer.sanitizeInput(creatorLastName);
-
-        if (sanitizedLastName.isEmpty()) {
-            throw new IllegalArgumentException("creatorLastName must not be empty.");
-        }
-        if (sanitizedLastName.length() < minLenth ) {
-            throw new IllegalArgumentException("creatorLastName must not conatin fewer than 2 characters");
-        }
-        if (sanitizedLastName.length() > maxLenth ) {
-            throw new IllegalArgumentException("creatorLastName must not exceed 40 characters");
-        }
-        
-        this.creatorLastName = sanitizedLastName;
-
     }
 
     /**
