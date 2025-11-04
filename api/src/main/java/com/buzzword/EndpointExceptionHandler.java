@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -22,18 +23,12 @@ import org.springframework.beans.TypeMismatchException;
  */
 @ControllerAdvice
 public class EndpointExceptionHandler {
-    /**
-     * Exception handler for the exception thrown when the expected requested resource cannot be found.
-     * 
-     * @param e A NoResourceFoundException.
-     * @return  A JSON-formatted HTTP response with a 404 error code and message.
+
+    /*
+     * =======================================================================================
+     *      400 Errors (BAD REQUEST)
+     * =======================================================================================
      */
-    @ExceptionHandler(NoResourceFoundException.class)
-    public ResponseEntity<String> handleNoResourceFoundException(NoResourceFoundException e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                             .contentType(MediaType.APPLICATION_JSON)
-                             .body("Resource not found. Check that the request matches one of the REST operations outlined in the user documentation.");
-    }
 
     /**
      * Exception handler for when required parameters are missing from HTTP request.
@@ -46,6 +41,19 @@ public class EndpointExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                              .contentType(MediaType.APPLICATION_JSON)
                              .body("Missing required parameter for the requested operation.");
+    }
+
+    /**
+     * Exception handler for when required headers are missing from HTTP request.
+     * 
+     * @param e A MissingRequestHeaderException.
+     * @return  A JSON-formatted HTTP response with a 400 error code and message.
+     */
+    @ExceptionHandler(MissingRequestHeaderException.class)
+    public ResponseEntity<String> handleMissingRequestHeaderException(MissingRequestHeaderException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                             .contentType(MediaType.APPLICATION_JSON)
+                             .body("Missing required header for the requested operation.");
     }
 
     /**
@@ -75,7 +83,28 @@ public class EndpointExceptionHandler {
     }
 
     /**
-     * Exception handler for when user cannot be authenticated or lacks proper authorization.
+     * Exception handler for when an HTTP request parameter cannot be properly type-converted. 
+     * 
+     * @param e A TypeMismatchException.
+     * @return  A JSON-formatted HTTP response with a 400 error code and message.
+     */
+    @ExceptionHandler(TypeMismatchException.class)
+    public ResponseEntity<String> handleTypeMismatchException(TypeMismatchException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                             .contentType(MediaType.APPLICATION_JSON)
+                             .body("Invalid parameter provided for the requested operation.");
+    }
+
+
+    
+    /*
+     * =======================================================================================
+     *      401 Errors (UNAUTHORIZED)
+     * =======================================================================================
+     */
+
+    /**
+     * Exception handler for when user cannot be authenticated.
      * 
      * @param e An AuthenticationException.
      * @return  A JSON-formatted HTTP response with a 401 error code and message.
@@ -84,8 +113,56 @@ public class EndpointExceptionHandler {
     public ResponseEntity<String> handleAuthenticationException(AuthenticationException e) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                              .contentType(MediaType.APPLICATION_JSON)
-                             .body("User not authorized to perform this request. Potential causes include invalid web token, inadequate user permissions, or inability to contact authentication services.");
+                             .body("Unable to authenticate user. Potential causes include invalid web token or inability to contact authentication services.");
     }
+
+
+
+    /*
+     * =======================================================================================
+     *      403 Errors (FORBIDDEN)
+     * =======================================================================================
+     */
+
+    /**
+     * Exception handler for when user lacks proper authorization.
+     * 
+     * @param e An AuthorizationException.
+     * @return  A JSON-formatted HTTP response with a 403 error code and message.
+     */
+    /*@ExceptionHandler(AuthorizationException.class)
+    public ResponseEntity<String> handleAuthorizationException(AuthorizationException e) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                             .contentType(MediaType.APPLICATION_JSON)
+                             .body("User lacks necessary permissions to perform request.");
+    }*/
+
+    /*
+     * =======================================================================================
+     *      404 Errors (NOT FOUND)
+     * =======================================================================================
+     */
+
+    /**
+     * Exception handler for the exception thrown when the expected requested resource cannot be found.
+     * 
+     * @param e A NoResourceFoundException.
+     * @return  A JSON-formatted HTTP response with a 404 error code and message.
+     */
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<String> handleNoResourceFoundException(NoResourceFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                             .contentType(MediaType.APPLICATION_JSON)
+                             .body("Resource not found. Check that the request matches one of the REST operations outlined in the user documentation.");
+    }
+
+
+
+    /*
+     * =======================================================================================
+     *      405 Errors (METHOD NOT ALLOWED)
+     * =======================================================================================
+     */
 
     /**
      * Exception handler for when the HTTP request format is recognized but uses an incorrect CRUD operation.
@@ -99,36 +176,20 @@ public class EndpointExceptionHandler {
                              .contentType(MediaType.APPLICATION_JSON)
                              .body("Request method not supported. Check that the request includes the appropriate CRUD operation and matches one of the REST operations outlined in the user documentation.");
     }
-
-    /**
-     * Exception handler for when an HTTP request parameter cannot be properly type-converted. 
-     * 
-     * @param e A TypeMismatchException.
-     * @return  A JSON-formatted HTTP response with a 400 error code and message.
-     */
-    @ExceptionHandler(TypeMismatchException.class)
-    public ResponseEntity<String> handleTypeMismatchException(TypeMismatchException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                             .contentType(MediaType.APPLICATION_JSON)
-                             .body("Invalid parameter provided for the requested operation.");
-    }
-
-    /* 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                             .contentType(MediaType.APPLICATION_JSON)
-                             .body(e.toString());
-    }*/
-
-/*
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleException(Exception e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                             .contentType(MediaType.APPLICATION_JSON)
-                             .body(e.toString());
-    }
     
+    /*
+     * =======================================================================================
+     *      500 Errors (INTERNAL SERVER ERROR)
+     * =======================================================================================
+     */
+
+
+
+
+     
+
+/*  Exception Handler Template
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleException(Exception e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
