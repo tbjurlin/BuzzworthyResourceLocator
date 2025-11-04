@@ -1,5 +1,6 @@
 package com.buzzword;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -89,7 +90,7 @@ public class WikiEndpoint {
          * DAO dbAccess = new DAOImpl(Config.Instance());
          * String obj = dbAccess.insertResource(userCredentials, resource);
          */
-        return ResponseEntity.ok()
+        return ResponseEntity.status(HttpStatus.CREATED)
                              .contentType(MediaType.APPLICATION_JSON)
                              .body("{\"msg\": \"Add resource\"}");
     }
@@ -112,7 +113,7 @@ public class WikiEndpoint {
          * DAO dbAccess = new DAOImpl(Config.Instance());
          * String obj = dbAccess.insertComment(userCredentials, resourceId, comment);
          */
-        return ResponseEntity.ok()
+        return ResponseEntity.status(HttpStatus.CREATED)
                              .contentType(MediaType.APPLICATION_JSON)
                              .body("{\"msg\": \"Add comment to resource " + resourceId + "\"}");
     }
@@ -123,19 +124,18 @@ public class WikiEndpoint {
      * 
      * @param tokenStr A string representation of the user's Java Web Token (JWT).
      * @param resourceId The index of the resource record to add the upvote to.
-     * @param upvote A JSON-formatted upvote object from the HTTP request body.
      * @return
      */
     @PostMapping("resource/{resourceId}/upvote")
-    public ResponseEntity<String> addUpVote(@Valid @RequestHeader("Bearer") String tokenStr, @Valid @PathVariable Long resourceId, @Valid @RequestBody UpVote upvote) {
+    public ResponseEntity<String> addUpvote(@Valid @RequestHeader("Bearer") String tokenStr, @Valid @PathVariable Long resourceId) {
         Token token = new Token();
         token.setToken(tokenStr);
         Credentials userCredentials = auth.Authenticate(token);
         /* Pseudo code:
          * DAO dbAccess = new DAOImpl(Config.Instance());
-         * String obj = dbAccess.insertUpVote(userCredentials, resourceId, upvote);
+         * String obj = dbAccess.insertUpvote(userCredentials, resourceId, upvote);
          */
-        return ResponseEntity.ok()
+        return ResponseEntity.status(HttpStatus.CREATED)
                              .contentType(MediaType.APPLICATION_JSON)
                              .body("{\"msg\": \"Add upvote to resource " + resourceId + "\"}");
     }
@@ -158,7 +158,7 @@ public class WikiEndpoint {
          * DAO dbAccess = new DAOImpl(Config.Instance());
          * String obj = dbAccess.insertReviewFlag(userCredentials, resourceId, reviewFlag);
          */
-        return ResponseEntity.ok()
+        return ResponseEntity.status(HttpStatus.CREATED)
                              .contentType(MediaType.APPLICATION_JSON)
                              .body("{\"msg\": \"Add review flag to resource " + resourceId + "\"}");
     }
