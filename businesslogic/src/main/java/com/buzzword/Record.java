@@ -1,9 +1,16 @@
 package com.buzzword;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import java.util.Date;
 
+/**
+ * This abstract Record class is the parent class for the Resource,
+ * Comment, ReviewFlag, and Upvote classes. It contains the 
+ * business logic for common fields associated with a Record.
+ * <p>
+ * @author Dennis Shelby
+ * @version 1.0
+ */
 abstract class Record extends Name{
     @JsonIgnore
     private int id;

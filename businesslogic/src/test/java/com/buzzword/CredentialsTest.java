@@ -101,6 +101,13 @@ public class CredentialsTest {
     }
 
     @Test
+    public void testNullLocation() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            testCredentials.setLocation(null);
+        });
+    }
+
+    @Test
     public void testLongLocation() {
         assertThrows(IllegalArgumentException.class, () -> {
             String longLocation = RandomStringUtils.insecure().next(65);

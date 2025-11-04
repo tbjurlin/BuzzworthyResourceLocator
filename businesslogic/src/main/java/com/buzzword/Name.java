@@ -4,6 +4,14 @@ import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+/**
+ * This abstract Name class is the parent class for the Record
+ * and Credentials classes. It contains the business logic for 
+ * handling first and last names.
+ * <p>
+ * @author Dennis Shelby
+ * @version 1.0
+ */
 abstract public class Name {
     @JsonIgnore
     @JsonProperty("fName")
