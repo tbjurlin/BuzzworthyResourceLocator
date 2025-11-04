@@ -1,8 +1,18 @@
 package com.buzzword;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 abstract public class Name {
-    String firstName;
-    String lastName;
+    @JsonIgnore
+    @JsonProperty("fName")
+    @JsonAlias({"fName"})
+    private String firstName;
+    @JsonIgnore
+    @JsonProperty("lName")
+    @JsonAlias({"lName"})
+    private String lastName;
 
     private XssSanitizer mySanitizer;
 
@@ -39,7 +49,7 @@ abstract public class Name {
             throw new IllegalArgumentException("name must not be empty.");
         }
         if (santizedName.length() > maxLenth ) {
-            throw new IllegalArgumentException("name must not exceed 40 characters");
+            throw new IllegalArgumentException("name must not exceed 64 characters");
         }
         
         return santizedName;

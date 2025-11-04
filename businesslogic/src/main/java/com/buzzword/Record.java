@@ -1,11 +1,17 @@
 package com.buzzword;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.Date;
 
 abstract class Record extends Name{
+    @JsonIgnore
     private int id;
+    @JsonIgnore
     private int creatorId;
+    @JsonIgnore
     private String creationDate;
+    @JsonIgnore
     private Boolean isEdited;
 
     private XssSanitizer mySanitizer;

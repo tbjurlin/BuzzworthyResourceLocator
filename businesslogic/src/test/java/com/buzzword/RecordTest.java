@@ -35,6 +35,12 @@ public class RecordTest {
     }
 
     @Test
+    public void testValidZeroId() {
+        testRecord.setId(0);
+        assertEquals(0, testRecord.getId()); 
+    }
+
+    @Test
     public void testInvalidId() {
         assertThrows(IllegalArgumentException.class, () -> {
             testRecord.setId(-1);
