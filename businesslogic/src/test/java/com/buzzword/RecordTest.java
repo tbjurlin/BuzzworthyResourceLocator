@@ -14,6 +14,9 @@ import org.junit.jupiter.api.Disabled;
 import java.time.Instant;
 import java.time.Clock;
 import java.time.ZoneId;
+import java.time.Duration;
+
+import java.util.Date;
 
 
 /**
@@ -60,18 +63,31 @@ public class RecordTest {
         });
     }
 
-
-    @Disabled
     @Test
-    public void testSetCurrentCreationDate() {
-        String expectedTime = "2025-01-01T00:00:00Z";
-        Instant fixedInstant = Instant.parse(expectedTime);
-        ZoneId zone = ZoneId.of("UTC");
-        Clock fixedClock = Clock.fixed(fixedInstant, zone);
+    public void testValidDate() {
+        Date nowDate = new Date();
+        testRecord.setCreationDate(nowDate);
+    }
 
-        // String fixedTime = Instant.toString(Instant.now(fixedClock));
+    @Test
+    public void testNullCreationDate() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            testRecord.setCreationDate(null);
+        });
+    }
 
-        assertEquals(expectedTime, testRecord.getCreationDate());
+    @Test
+    public void testFutureDate() {
+        Clock nowClock = Clock.systemUTC();
+        Duration clockOffset = Duration.ofDays(1);
+        Clock futureClock = Clock.offset(nowClock, clockOffset);
+        Instant instant = Instant.now(futureClock);
+        Date futureDate = Date.from(instant);
+
+        // this.creationDate =  Date.from(instant);
+        assertThrows(IllegalArgumentException.class, () -> {
+            testRecord.setCreationDate(futureDate);
+        });
     }
 
 }

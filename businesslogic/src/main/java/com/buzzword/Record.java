@@ -10,15 +10,17 @@ abstract class Record extends Name{
     @JsonIgnore
     private int creatorId;
     @JsonIgnore
-    private String creationDate;
+    private Date creationDate;
     @JsonIgnore
-    private Boolean isEdited;
+    private boolean isEdited;
 
     private XssSanitizer mySanitizer;
 
     /* Constructor */
     public Record() {
         mySanitizer = new XssSanitizerImpl();
+        this.creationDate = new Date();
+        this.isEdited = false;
     }
 
     /**
@@ -79,7 +81,7 @@ abstract class Record extends Name{
      * Returns the creationDate value for the Record
      * @return creationDate
      */
-    public String getCreationDate() {
+    public Date getCreationDate() {
         return creationDate;
     }
 
@@ -95,12 +97,14 @@ abstract class Record extends Name{
      * @param creationDate the value to set into the creationDate field
      * @throws IllegalArgumentException if the creation date is invalid
      */
-    public void setCreationDate() {
-        // TODO: Set creationDate to the current date
-    }
-
-    public void setCreationDate(String creationDate) {
-        // TODO: Add validation for creationDate
+    public void setCreationDate(Date creationDate) {
+        if (creationDate == null) {
+            throw new IllegalArgumentException("creationDate must not be null.");
+        }
+        Date nowDate = new Date();
+        if (creationDate.after(nowDate)) {
+            throw new IllegalArgumentException("creationDate must not be in the future.");
+        }
         this.creationDate = creationDate;
     }
 
@@ -123,8 +127,7 @@ abstract class Record extends Name{
      * @param isEdited the value to set into the isEdited field
      * @throws IllegalArgumentException if the is edited value is invalid
      */
-    public void setIsEdited(Boolean isEdited) {
-        // TODO: Add validation for isEdited
+    public void setIsEdited(boolean isEdited) {
         this.isEdited = isEdited;
     }
 }
