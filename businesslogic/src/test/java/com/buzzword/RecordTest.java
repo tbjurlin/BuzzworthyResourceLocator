@@ -67,6 +67,7 @@ public class RecordTest {
     public void testValidDate() {
         Date nowDate = new Date();
         testRecord.setCreationDate(nowDate);
+        assertEquals(nowDate, testRecord.getCreationDate());
     }
 
     @Test

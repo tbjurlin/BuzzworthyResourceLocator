@@ -18,12 +18,6 @@ public class Credentials extends Name{
     @JsonProperty("id")
     @JsonAlias({"id"})
     private Integer id;
-    // @JsonProperty("fName")
-    // @JsonAlias({"fName"})
-    // private String firstName;
-    // @JsonProperty("lName")
-    // @JsonAlias({"lName"})
-    // private String lastName;
     @JsonProperty("title")
     @JsonAlias({"title"})
     private String title;
@@ -38,9 +32,12 @@ public class Credentials extends Name{
 
     private XssSanitizer mySanitizer;
 
+    private final Logger logger = LoggerFactory.getEventLogger();
+
     /* Constructor */
     public Credentials() {
         mySanitizer = new XssSanitizerImpl();
+        logger.debug("finishing the default constructor");
     }
 
     /**
@@ -49,6 +46,7 @@ public class Credentials extends Name{
      * @return id
      */
     public Integer getId() {
+        logger.debug("returning the id: " + id);
         return id;
     }
 
@@ -64,29 +62,13 @@ public class Credentials extends Name{
      * @throws IllegalArgumentException if the id is invalid
      */
     public void setId(Integer id) {
+        logger.debug("setting the id");
         if (id < 0) {
+            logger.error("id must be non-negative");
             throw new IllegalArgumentException("id must be non-negative");
         }
         this.id = id;
     }
-
-    // public String getFirstName() {
-    //     return firstName;
-    // }
-
-    // public void setFirstName(String firstName) {
-    //     // TODO: Add validation logic for firstName
-    //     this.firstName = firstName;
-    // }
-
-    // public String getLastName() {
-    //     return lastName;
-    // }
-
-    // public void setLastName(String lastName) {
-    //     // TODO: Add validation logic for lastName
-    //     this.lastName = lastName;
-    // }
 
     /**
      * Returns the title of the Credentials
@@ -95,6 +77,7 @@ public class Credentials extends Name{
      * @return title
      */
     public String getTitle() {
+        logger.debug("returning the title: " + title);
         return title;
     }
 
@@ -110,11 +93,13 @@ public class Credentials extends Name{
      * @throws IllegalArgumentException if the title is invalid
      */
     public void setTitle(String title) {
+        logger.debug("setting the title");
         final int maxLenth = 64;
 
         String sanitizedTitle = mySanitizer.sanitizeInput(title);
 
         if (sanitizedTitle.length() > maxLenth ) {
+            logger.error("name must not exceed 64 characters");
             throw new IllegalArgumentException("name must not exceed 64 characters");
         }
 
@@ -127,6 +112,7 @@ public class Credentials extends Name{
      * @return department
      */
     public String getDepartment() {
+        logger.debug("returning the department: " + department);
         return department;
     }
 
@@ -142,11 +128,13 @@ public class Credentials extends Name{
      * @throws IllegalArgumentException if the department is invalid
      */
     public void setDepartment(String department) {
+        logger.debug("setting the department");
         final int maxLenth = 64;
 
         String sanitizedDepartment = mySanitizer.sanitizeInput(department);
 
         if (sanitizedDepartment.length() > maxLenth ) {
+            logger.error("name must not exceed 64 characters");
             throw new IllegalArgumentException("name must not exceed 64 characters");
         }
 
@@ -159,6 +147,7 @@ public class Credentials extends Name{
      * @return location
      */
     public String getLocation() {
+        logger.debug("returning the location: " + location);
         return location;
     }
 
@@ -174,11 +163,13 @@ public class Credentials extends Name{
      * @throws IllegalArgumentException if the location is invalid
      */
     public void setLocation(String location) {
+        logger.debug("setting the location");
         final int maxLenth = 64;
 
         String sanitizedLocation = mySanitizer.sanitizeInput(location);
 
         if (sanitizedLocation.length() > maxLenth ) {
+            logger.error("name must not exceed 64 characters");
             throw new IllegalArgumentException("name must not exceed 64 characters");
         }
         this.location = sanitizedLocation;
@@ -190,6 +181,7 @@ public class Credentials extends Name{
      * @return systemRole
      */
     public String getSystemRole() {
+        logger.debug("returning the system role: " + systemRole);
         return systemRole;
     }
 
@@ -203,6 +195,8 @@ public class Credentials extends Name{
      */
     private void setSystemRole() {
         // TODO: Add logic to compute system role
+        logger.debug("setting the system role");
+
         // this.systemRole = Map.get(title);
     }
 }

@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class CommentsTest {
+public class CommentTest {
 
     private Comment testComment;
 
@@ -35,7 +35,7 @@ public class CommentsTest {
     @Test
     public void testSetContentsTooLongThrows() {
         StringBuilder sb = new StringBuilder();
-        for (int i = 1; i < 201; i++) sb.append('a');
+        for (int i = 1; i <= 201; i++) sb.append('a');
         String longContents = sb.toString();
         assertThrows(IllegalArgumentException.class, () -> testComment.setContents(longContents));
     }

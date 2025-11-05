@@ -21,13 +21,13 @@ abstract class Record extends Name{
     @JsonIgnore
     private boolean isEdited;
 
-    private XssSanitizer mySanitizer;
+    private final Logger logger = LoggerFactory.getEventLogger();
 
     /* Constructor */
     public Record() {
-        mySanitizer = new XssSanitizerImpl();
         this.creationDate = new Date();
         this.isEdited = false;
+        logger.debug("finishing default constructor");
     }
 
     /**
@@ -51,7 +51,10 @@ abstract class Record extends Name{
      * @throws IllegalArgumentException if the record id is invalid
      */
     public void setId(int id) {
+        logger.debug("setting the id");
+
         if (id < 0) {
+            logger.error("id must be non-negative");
             throw new IllegalArgumentException("id must be non-negative");
         }
         this.id = id;
@@ -62,6 +65,7 @@ abstract class Record extends Name{
      * @return creatorId
      */
     public int getCreatorId() {
+        logger.debug("returning the id: " + id);
         return creatorId;
     }
 
@@ -78,7 +82,9 @@ abstract class Record extends Name{
      * @throws IllegalArgumentException if the id is invalid
      */
     public void setCreatorId(int creatorId) {
+        logger.debug(("setting the creatorId: " + creatorId));
         if (creatorId < 0) {
+            logger.error("creatorId must be non-negative");
             throw new IllegalArgumentException("creatorId must be non-negative");
         }
         this.creatorId = creatorId;
@@ -89,6 +95,7 @@ abstract class Record extends Name{
      * @return creationDate
      */
     public Date getCreationDate() {
+        logger.debug("returns the creationDate: " + creationDate);
         return creationDate;
     }
 
@@ -105,11 +112,14 @@ abstract class Record extends Name{
      * @throws IllegalArgumentException if the creation date is invalid
      */
     public void setCreationDate(Date creationDate) {
+        logger.debug("setting the creationDate: " + creationDate);
         if (creationDate == null) {
+            logger.error("creationDate must not be null");
             throw new IllegalArgumentException("creationDate must not be null.");
         }
         Date nowDate = new Date();
         if (creationDate.after(nowDate)) {
+            logger.error("creationDate must not be in the future");
             throw new IllegalArgumentException("creationDate must not be in the future.");
         }
         this.creationDate = creationDate;
@@ -120,6 +130,7 @@ abstract class Record extends Name{
      * @return isEdited
      */
     public Boolean getIsEdited() {
+        logger.debug("returning isEdited: " + isEdited);
         return isEdited;
     }
 
@@ -132,9 +143,9 @@ abstract class Record extends Name{
      * </ul>
      * 
      * @param isEdited the value to set into the isEdited field
-     * @throws IllegalArgumentException if the is edited value is invalid
      */
     public void setIsEdited(boolean isEdited) {
+        logger.debug("setting isEdited");
         this.isEdited = isEdited;
     }
 }

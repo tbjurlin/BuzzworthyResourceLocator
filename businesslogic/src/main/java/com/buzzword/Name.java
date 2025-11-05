@@ -24,9 +24,12 @@ abstract public class Name {
 
     private XssSanitizer mySanitizer;
 
+    private final Logger logger = LoggerFactory.getEventLogger();
+
     /* Constructor */
     public Name() {
         mySanitizer = new XssSanitizerImpl();
+        logger.debug("finishing default constructor");
     }
 
     /**
@@ -48,15 +51,18 @@ abstract public class Name {
         final int maxLenth = 64;
 
         if (name == null) {
+            logger.error("name must not be null.");
             throw new IllegalArgumentException("name must not be null.");
         }
 
         String santizedName = mySanitizer.sanitizeInput(name);
 
         if (santizedName.isEmpty()) {
+            logger.error("name must not be empty.");
             throw new IllegalArgumentException("name must not be empty.");
         }
         if (santizedName.length() > maxLenth ) {
+            logger.error("name must not exceed 64 characters");
             throw new IllegalArgumentException("name must not exceed 64 characters");
         }
         
@@ -68,6 +74,7 @@ abstract public class Name {
      * @return firstName
      */
     public String getFirstName() {
+        logger.debug("returning the first name: " + firstName);
         return firstName;
     }
 
@@ -87,7 +94,7 @@ abstract public class Name {
      * @throws IllegalArgumentException if the first name is invalid
      */
     public void setFirstName(final String firstName) {
-        
+        logger.debug("setting the first name");
         this.firstName = validateName(firstName);
     }
 
@@ -96,6 +103,7 @@ abstract public class Name {
      * @return lastName
      */
     public String getLastName() {
+        logger.debug("returning the last name: " + lastName);
         return lastName;
     }
 
@@ -115,7 +123,7 @@ abstract public class Name {
      * @throws IllegalArgumentException if the last name is invalid
      */
     public void setLastName(final String lastName) {
-        
+        logger.debug("setting the last name");
         this.lastName = validateName(lastName);
     }
 

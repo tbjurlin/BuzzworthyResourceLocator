@@ -5,6 +5,8 @@ public class Comment extends Record {
 
     private final XssSanitizer commentSanitizer;
 
+    private final Logger logger = LoggerFactory.getEventLogger();
+
     /* Constructor */
     public Comment() {
         super();
@@ -24,27 +26,33 @@ public class Comment extends Record {
         final int maxLength = 200;
 
         if (contents == null) {
+            logger.error("Contents must not be null");
             throw new IllegalArgumentException("Contents must not be null.");
         }
 
         String sanitizedContents = commentSanitizer.sanitizeInput(contents);
 
         if (sanitizedContents.isEmpty()) {
+            logger.error("Contents must not be empty");
             throw new IllegalArgumentException("Contents must not be empty.");
         }
         if(sanitizedContents.length() < minLength ) {
+            logger.error("Contents must be at least 1 character long");
             throw new IllegalArgumentException("Contents must be at least 1 character long");
         }
         if (sanitizedContents.length() > maxLength ) {
+            logger.error("Contents must not exceed 200 characters");
             throw new IllegalArgumentException("Contents must not exceed 200 characters");
         }
 
         return sanitizedContents;
     }
     public String getContents() {
+        logger.debug("returning the contents");
         return contents;
     }
     public void setContents(String contents) {
+        logger.debug("setting contents");
         this.contents = validateContents(contents);
     }
 }

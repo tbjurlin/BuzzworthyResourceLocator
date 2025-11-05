@@ -20,6 +20,8 @@ public class Resource extends Record {
 
     private final XssSanitizer resourceSanitizer;
 
+    private final Logger logger = LoggerFactory.getEventLogger();
+
     /* Constructor */
     public Resource() {
         super(); // Call the parent constructor (i.e. Record)
@@ -40,27 +42,33 @@ public class Resource extends Record {
         final int maxLength = 64;
 
         if (title == null) {
+            logger.error("Title must not be null");
             throw new IllegalArgumentException("Title must not be null.");
         }
 
         String sanitizedTitle = resourceSanitizer.sanitizeInput(title);
 
         if (sanitizedTitle.isEmpty()) {
+            logger.error("Title must not be empty");
             throw new IllegalArgumentException("Title must not be empty.");
         }
         if(sanitizedTitle.length() < minLength ) {
+            logger.error("Title must be at least 1 character long");
             throw new IllegalArgumentException("Title must be at least 1 character long");
         }
         if (sanitizedTitle.length() > maxLength ) {
+            logger.error("Title must not exceed 64 characters");
             throw new IllegalArgumentException("Title must not exceed 64 characters");
         }
         
         return sanitizedTitle;
     }
     public String getTitle() {
+        logger.debug("returning the title: " + title);
         return title;
     }
     public void setTitle(String title) {
+        logger.debug("setting the title");
         this.title = validateTitle(title);
     }
 
@@ -76,10 +84,12 @@ public class Resource extends Record {
     */
     private String validateUrl(final String url) {
         if (url == null) {
+            logger.error("URL must not be null");
             throw new IllegalArgumentException("URL must not be null.");
         }
 
         if (url.trim().isEmpty()) {
+            logger.error("URL must not be empty");
             throw new IllegalArgumentException("URL must not be empty.");
         }
 
@@ -88,14 +98,17 @@ public class Resource extends Record {
         // Create URL validator that only allows http and https
         UrlValidator urlValidator = new UrlValidator(new String[] {"http", "https"});
         if (!urlValidator.isValid(sanitizedUrl)) {
+            logger.error("URL is not valid. Must be a valid HTTP or HTTPS URL");
             throw new IllegalArgumentException("URL is not valid. Must be a valid HTTP or HTTPS URL.");
         }
         return sanitizedUrl;
     }
     public String getUrl() {
+        logger.debug("returning the url: " + url);
         return url;
     }
     public void setUrl(String url) {
+        logger.debug("setting the url");
         this.url = validateUrl(url);
     }
 
@@ -109,21 +122,25 @@ public class Resource extends Record {
      */
     private String validateDescription(final String description) {
         if (description == null) {
+            logger.error("Description must not be null");
             throw new IllegalArgumentException("Description must not be null.");
         }
 
         String sanitizedDescription = resourceSanitizer.sanitizeInput(description);
 
         if (sanitizedDescription.isEmpty()) {
+            logger.error("Description must not be empty");
             throw new IllegalArgumentException("Description must not be empty.");
         }
 
         return sanitizedDescription;
     }
     public String getDescription() {
+        logger.debug("returning the description");
         return description;
     }
     public void setDescription(String description) {
+        logger.debug("setting the description");
         this.description = validateDescription(description);
     }
 
@@ -138,14 +155,17 @@ public class Resource extends Record {
      */
     private List<Comment> validateComments(final List<Comment> comments) {
         if (comments == null) {
+            logger.error("Comments must not be null");
             throw new IllegalArgumentException("Comments must not be null.");
         }
         return comments;
     } 
     public List<Comment> getComments() {
+        logger.debug("returning the comment list");
         return comments;
     }
     public void setComments(List<Comment> comments) {
+        logger.debug("setting the comment list");
         this.comments = validateComments(comments);
     }
 
@@ -158,14 +178,17 @@ public class Resource extends Record {
      */
     private List<ReviewFlag> validateReviewFlags(final List<ReviewFlag> reviewFlags) {
         if (reviewFlags == null) {
+            logger.error("Review flags must not be null");
             throw new IllegalArgumentException("ReviewFlags must not be null.");
         }
         return reviewFlags;
     }
     public List<ReviewFlag> getReviewFlags() {
+        logger.debug("returning the review flags list");
         return reviewFlags;
     }
     public void setReviewFlags(List<ReviewFlag> reviewFlags) {
+        logger.debug("setting the review flags list");
         this.reviewFlags = validateReviewFlags(reviewFlags);
     }
 
@@ -179,14 +202,17 @@ public class Resource extends Record {
     private List<UpVote> validateUpVotes(final List<UpVote> upVotes)
     {
         if (upVotes == null) {
+            logger.error("Upvotes must not be null");
             throw new IllegalArgumentException("Upvotes must not be null.");
         }
         return upVotes;
     }
     public List<UpVote> getUpVotes() {
+        logger.debug("returning the upvotes list");
         return upVotes;
     }
     public void setUpVotes(List<UpVote> upVotes) {
+        logger.debug("setting the upvotes list");
         this.upVotes = validateUpVotes(upVotes);
     }
 
