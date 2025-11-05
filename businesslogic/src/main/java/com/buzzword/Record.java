@@ -32,6 +32,8 @@ abstract class Record{
         this.creationDate = new Date();
         this.isEdited = false;
         logger.debug("finishing default constructor");
+        firstName = new Name();
+        lastName = new Name();
     }
 
     /**

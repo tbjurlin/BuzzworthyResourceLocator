@@ -10,7 +10,7 @@ package com.buzzword;
  * @version 1.0
  */
 public class Name {
-    private String nameString;
+    private String nameString = "Name";
 
     private XssSanitizer mySanitizer;
 
