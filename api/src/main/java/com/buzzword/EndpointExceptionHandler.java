@@ -26,6 +26,9 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 @ControllerAdvice
 public class EndpointExceptionHandler {
 
+    private final Logger logger = LoggerFactory.getEventLogger();
+    private final Logger securityLogger = LoggerFactory.getSecurityLogger();
+
     /*
      * =======================================================================================
      *      400 Errors (BAD REQUEST)
@@ -40,6 +43,7 @@ public class EndpointExceptionHandler {
      */
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseEntity<String> handleMissingServletRequestParameterException(MissingServletRequestParameterException e) {
+        logger.error("Returning HTTP response code 400: Missing required parameter for the requested operation.");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                              .contentType(MediaType.APPLICATION_JSON)
                              .body("{\"errorMsg\": \"Missing required parameter for the requested operation.\"}");
@@ -53,6 +57,7 @@ public class EndpointExceptionHandler {
      */
     @ExceptionHandler(MissingRequestHeaderException.class)
     public ResponseEntity<String> handleMissingRequestHeaderException(MissingRequestHeaderException e) {
+        logger.error("Returning HTTP response code 400: Missing required header for the requested operation.");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                              .contentType(MediaType.APPLICATION_JSON)
                              .body("{\"errorMsg\": \"Missing required header for the requested operation.\"}");
@@ -66,6 +71,7 @@ public class EndpointExceptionHandler {
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<String> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+        logger.error("Returning HTTP response code 400: Invalid parameter provided for the requested operation.");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                              .contentType(MediaType.APPLICATION_JSON)
                              .body("{\"errorMsg\": \"Invalid parameter provided for the requested operation.\"}");
@@ -79,6 +85,7 @@ public class EndpointExceptionHandler {
      */
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<String> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
+        logger.error("Returning HTTP response code 400: Unable to read request body. Check that the request body matches the formatting outlined in the user documentation.");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                              .contentType(MediaType.APPLICATION_JSON)
                              .body("{\"errorMsg\": \"Unable to read request body. Check that the request body matches the formatting outlined in the user documentation.\"}");
@@ -92,6 +99,7 @@ public class EndpointExceptionHandler {
      */
     @ExceptionHandler(TypeMismatchException.class)
     public ResponseEntity<String> handleTypeMismatchException(TypeMismatchException e) {
+        logger.error("Returning HTTP response code 400: Invalid parameter provided for the requested operation.");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                              .contentType(MediaType.APPLICATION_JSON)
                              .body("{\"errorMsg\": \"Invalid parameter provided for the requested operation.\"}");
@@ -113,6 +121,7 @@ public class EndpointExceptionHandler {
      */
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<String> handleAuthenticationException(AuthenticationException e) {
+        securityLogger.error("Returning HTTP response code 401: Unable to authenticate user. Potential causes include invalid web token or inability to contact authentication services.");
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                              .contentType(MediaType.APPLICATION_JSON)
                              .body("{\"errorMsg\": \"Unable to authenticate user. Potential causes include invalid web token or inability to contact authentication services.\"}");
@@ -134,6 +143,7 @@ public class EndpointExceptionHandler {
      */
     /*@ExceptionHandler(AuthorizationException.class)
     public ResponseEntity<String> handleAuthorizationException(AuthorizationException e) {
+        securityLogger.error("Returning HTTP response code 403: User lacks necessary permissions to perform request.");
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
                              .contentType(MediaType.APPLICATION_JSON)
                              .body("{\"errorMsg\": \"User lacks necessary permissions to perform request.\"}");
@@ -153,6 +163,7 @@ public class EndpointExceptionHandler {
      */
     @ExceptionHandler(NoResourceFoundException.class)
     public ResponseEntity<String> handleNoResourceFoundException(NoResourceFoundException e) {
+        logger.error("Returning HTTP response code 404: Resource not found. Check that the request matches one of the REST operations outlined in the user documentation.");
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                              .contentType(MediaType.APPLICATION_JSON)
                              .body("{\"errorMsg\": \"Resource not found. Check that the request matches one of the REST operations outlined in the user documentation.\"}");
@@ -160,6 +171,7 @@ public class EndpointExceptionHandler {
 
     @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<String> handlesNoHandlerFoundException(NoHandlerFoundException e) {
+        logger.error("Returning HTTP response code 404: Resource not found. Check that the request matches one of the REST operations outlined in the user documentation.");
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                              .contentType(MediaType.APPLICATION_JSON)
                              .body("{\"errorMsg\": \"Resource not found. Check that the request matches one of the REST operations outlined in the user documentation.\"}");
@@ -179,6 +191,7 @@ public class EndpointExceptionHandler {
      */
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<String> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
+        logger.error("Returning HTTP response code 405: Request method not supported. Check that the request includes the appropriate CRUD operation and matches one of the REST operations outlined in the user documentation.");
         return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED)
                              .contentType(MediaType.APPLICATION_JSON)
                              .body("{\"errorMsg\": \"Request method not supported. Check that the request includes the appropriate CRUD operation and matches one of the REST operations outlined in the user documentation.\"}");
@@ -200,6 +213,7 @@ public class EndpointExceptionHandler {
      */
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
     public ResponseEntity<String> handleHttpMediaTypeNotSupportedException(HttpMediaTypeNotSupportedException e) {
+        logger.error("Returning HTTP response code 415: Request media type not supported. Please use application/json media type.");
         return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
                              .contentType(MediaType.APPLICATION_JSON)
                              .body("{\"errorMsg\": \"Request media type not supported. Please use application/json media type.\"}");
