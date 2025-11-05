@@ -1,15 +1,15 @@
 package com.buzzword;
 
 /**
- * Authentication interface. 
+ * Authenticator interface. 
  * This interface facilitates a connection to an authentication server to
  * retrieve user credentials using a Java Web Token (JWT) provided by
- * the authorization server for Single Sign-On (SSO).
+ * the authentication server for Single Sign-On (SSO).
  * 
  * @author Ben Edens
  * @version 1.0
  */
-public interface Authentication {
+public interface Authenticator {
 
     /**
      * Send a Java Web Token (JWT) to an authentication server to be

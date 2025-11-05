@@ -12,29 +12,33 @@ import java.net.MalformedURLException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * Implementation for Authentication.java.
+ * Implementation for Authenticator.java.
  * This class facilitates a connection to an authentication server to
  * retrieve user credentials using a Java Web Token (JWT) provided by
- * the authorization server for Single Sign-On (SSO).
+ * the authentication server for Single Sign-On (SSO).
  * 
  * @author Ben Edens
  * @version 1.0
  */
-public class AuthenticationImpl implements Authentication{
+public class AuthenticatorImpl implements Authenticator{
+
     private URL serverUrl;
+    private final Logger logger = LoggerFactory.getEventLogger();
 
     /**
-     * Authentication implementation constructor. Builds authentication server URL from provided string.
+     * Authenticator implementation constructor. Builds authentication server URL from provided string.
      * 
      * @param urlString A string version of the authentication server's URL.
      */
-    public AuthenticationImpl(String urlString) {
+    public AuthenticatorImpl(String urlString) {
         try {
             URI uri = new URI(urlString);
             serverUrl = uri.toURL();
         } catch (URISyntaxException e) {
+            logger.error("Cannot construct authentication server uri from provided String due to improper syntax.");
             throw new AuthenticationException("Cannot construct authentication server uri from provided String due to improper syntax.");
         } catch (MalformedURLException f) {
+            logger.error("Cannot construct authentication server url from provided uri due to improper syntax.");
             throw new AuthenticationException("Cannot construct authentication server url from provided uri due to improper syntax.");
         }
     }
@@ -47,24 +51,31 @@ public class AuthenticationImpl implements Authentication{
      * @return A Credentials object storing the user's credentials.
      */
     public Credentials Authenticate(Token token) {
-
+        logger.info("Authenticating token.");
         try {
             if(serverUrl == null) {
+                logger.error("Null server url. Authenticator class instance improperly constructed.");
                 throw new AuthenticationException("Null server url. Class instance improperly constructed.");
             }
+            if(token == null) {
+                logger.error("Null token provided: cannot authenticate.");
+                throw new AuthenticationException("Null token provided: cannot authenticate.");
+            }
+            logger.info("Setting up connection to external authentication server.");
             HttpURLConnection connection = (HttpURLConnection) serverUrl.openConnection();
             connection.setRequestMethod("POST");
             connection.setDoOutput(true);
             connection.setRequestProperty("Content-Type", "application/json");
             String tokenJson = String.format("{\"token\": \"%s\"}", token.getToken());
+            logger.info("Attempting to send data to authentication server.");
             try (OutputStream os = connection.getOutputStream()) {
                 byte[] output = (tokenJson).getBytes("utf-8");
                 os.write(output, 0, output.length);
             }
             int responseCode = connection.getResponseCode();
-            System.out.println("\nResponse Code: " + responseCode);
 
             if (responseCode == HttpURLConnection.HTTP_CREATED) {
+                logger.info("Received HTTP response code 201 from authentication server.");
                 BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
                 String inputLine;
                 StringBuilder response = new StringBuilder();
@@ -78,13 +89,20 @@ public class AuthenticationImpl implements Authentication{
                 Credentials userCredentials;
                 userCredentials = objectMapper.readValue(responseStr, Credentials.class);
                 connection.disconnect();
+                if(userCredentials == null) {
+                    logger.error("Authenticator must not return null credentials");
+                    throw new AuthenticationException("Authenticator must not return null credentials.");
+                }
+                logger.info("Successfully received credentials from authentication server.");
                 return userCredentials;
             } else {
                 connection.disconnect();
                 String errorMsg = String.format("Received response code %d from authentication server.", responseCode);
+                logger.error(errorMsg);
                 throw new AuthenticationException(errorMsg);
             }
         } catch (IOException e) {
+            logger.error("Error connecting to authentication server.");
             throw new AuthenticationException("Error connecting to authentication server.");
         }
     }

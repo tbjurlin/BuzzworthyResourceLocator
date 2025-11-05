@@ -1,5 +1,6 @@
 package com.buzzword;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -10,6 +11,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import jakarta.annotation.PostConstruct;
 import jakarta.validation.Valid;
 
 /**
@@ -23,7 +26,29 @@ import jakarta.validation.Valid;
 public class WikiEndpoint {
 
     String authServerUrl = "http://";
+    Authenticator auth = null;
     private final Logger logger = LoggerFactory.getEventLogger();
+
+    /**
+     * Constructor to initialize a new AuthenticatorImpl using the 
+     * provided authServerUrl String.
+     */
+    @PostConstruct
+    public void initialize() {
+        auth = new AuthenticatorImpl(authServerUrl);
+    }
+
+    /**
+     * Setter for injecting a custom Authenticator.
+     * 
+     * @param auth An Authenticator object.
+     */
+    public void setAuthenticator(Authenticator auth) {
+        this.auth = auth;
+        if(this.auth == null) {
+            auth = new AuthenticatorImpl(authServerUrl);
+        }
+    }
 
     /**
      * GET Request.
@@ -37,15 +62,15 @@ public class WikiEndpoint {
     public ResponseEntity<String> retrieveAllResources(@Valid @RequestHeader("Bearer") String tokenStr) {
         Token token = new Token();
         token.setToken(tokenStr);
-        Authentication auth = new AuthenticationImpl(authServerUrl);
         Credentials userCredentials = auth.Authenticate(token);
-        /* Pseudo code:
-        * DAO dbAccess = new DAOImpl(Config.Instance());
-        * String obj = dbAccess.getResources(userCredentials);
-        */
+        /*
+        UserDAO dao = new UserDAOImpl();
+        List<resource> resources = dao.SearchByAll("");
+        Objectmapper mapper = new Objectmapper(); */
+        String returnObj = ""; //mapper.writeValueAsString(resources);
         return ResponseEntity.ok()
                             .contentType(MediaType.APPLICATION_JSON)
-                            .body("{\"msg\": \"Retrieve all resources\"}");
+                            .body(returnObj);
     }
     
     /**
@@ -60,13 +85,12 @@ public class WikiEndpoint {
     public ResponseEntity<String> addResource(@Valid @RequestHeader("Bearer") String tokenStr, @Valid @RequestBody Resource resource) {
         Token token = new Token();
         token.setToken(tokenStr);
-        Authentication auth = new AuthenticationImpl(authServerUrl);
         Credentials userCredentials = auth.Authenticate(token);
         /* Pseudo code:
          * DAO dbAccess = new DAOImpl(Config.Instance());
          * String obj = dbAccess.insertResource(userCredentials, resource);
          */
-        return ResponseEntity.ok()
+        return ResponseEntity.status(HttpStatus.CREATED)
                              .contentType(MediaType.APPLICATION_JSON)
                              .body("{\"msg\": \"Add resource\"}");
     }
@@ -84,13 +108,12 @@ public class WikiEndpoint {
     public ResponseEntity<String> addComment(@Valid @RequestHeader("Bearer") String tokenStr, @Valid @PathVariable Long resourceId, @Valid @RequestBody Comment comment) {
         Token token = new Token();
         token.setToken(tokenStr);
-        Authentication auth = new AuthenticationImpl(authServerUrl);
         Credentials userCredentials = auth.Authenticate(token);
         /* Pseudo code:
          * DAO dbAccess = new DAOImpl(Config.Instance());
          * String obj = dbAccess.insertComment(userCredentials, resourceId, comment);
          */
-        return ResponseEntity.ok()
+        return ResponseEntity.status(HttpStatus.CREATED)
                              .contentType(MediaType.APPLICATION_JSON)
                              .body("{\"msg\": \"Add comment to resource " + resourceId + "\"}");
     }
@@ -101,20 +124,18 @@ public class WikiEndpoint {
      * 
      * @param tokenStr A string representation of the user's Java Web Token (JWT).
      * @param resourceId The index of the resource record to add the upvote to.
-     * @param upvote A JSON-formatted upvote object from the HTTP request body.
      * @return
      */
     @PostMapping("resource/{resourceId}/upvote")
-    public ResponseEntity<String> addUpVote(@Valid @RequestHeader("Bearer") String tokenStr, @Valid @PathVariable Long resourceId, @Valid @RequestBody UpVote upvote) {
+    public ResponseEntity<String> addUpvote(@Valid @RequestHeader("Bearer") String tokenStr, @Valid @PathVariable Long resourceId) {
         Token token = new Token();
         token.setToken(tokenStr);
-        Authentication auth = new AuthenticationImpl(authServerUrl);
         Credentials userCredentials = auth.Authenticate(token);
         /* Pseudo code:
          * DAO dbAccess = new DAOImpl(Config.Instance());
-         * String obj = dbAccess.insertUpVote(userCredentials, resourceId, upvote);
+         * String obj = dbAccess.insertUpvote(userCredentials, resourceId, upvote);
          */
-        return ResponseEntity.ok()
+        return ResponseEntity.status(HttpStatus.CREATED)
                              .contentType(MediaType.APPLICATION_JSON)
                              .body("{\"msg\": \"Add upvote to resource " + resourceId + "\"}");
     }
@@ -132,13 +153,12 @@ public class WikiEndpoint {
     public ResponseEntity<String> addReviewFlag(@Valid @RequestHeader("Bearer") String tokenStr, @Valid @PathVariable Long resourceId, @Valid @RequestBody ReviewFlag reviewFlag) {
         Token token = new Token();
         token.setToken(tokenStr);
-        Authentication auth = new AuthenticationImpl(authServerUrl);
         Credentials userCredentials = auth.Authenticate(token);
         /* Pseudo code:
          * DAO dbAccess = new DAOImpl(Config.Instance());
          * String obj = dbAccess.insertReviewFlag(userCredentials, resourceId, reviewFlag);
          */
-        return ResponseEntity.ok()
+        return ResponseEntity.status(HttpStatus.CREATED)
                              .contentType(MediaType.APPLICATION_JSON)
                              .body("{\"msg\": \"Add review flag to resource " + resourceId + "\"}");
     }
@@ -155,7 +175,6 @@ public class WikiEndpoint {
     public ResponseEntity<String> removeResource(@Valid @RequestHeader("Bearer") String tokenStr, @Valid @PathVariable Long resourceId) {
         Token token = new Token();
         token.setToken(tokenStr);
-        Authentication auth = new AuthenticationImpl(authServerUrl);
         Credentials userCredentials = auth.Authenticate(token);
         /* Pseudo code:
          * DAO dbAccess = new DAOImpl(Config.Instance());
@@ -179,7 +198,6 @@ public class WikiEndpoint {
     public ResponseEntity<String> removeComment(@Valid @RequestHeader("Bearer") String tokenStr, @Valid @PathVariable Long resourceId, @PathVariable Long commentId) {
         Token token = new Token();
         token.setToken(tokenStr);
-        Authentication auth = new AuthenticationImpl(authServerUrl);
         Credentials userCredentials = auth.Authenticate(token);
         /* Pseudo code:
          * DAO dbAccess = new DAOImpl(Config.Instance());
@@ -203,7 +221,6 @@ public class WikiEndpoint {
     public ResponseEntity<String> removeUpvote(@Valid @RequestHeader("Bearer") String tokenStr, @Valid @PathVariable Long resourceId, @PathVariable Long upvoteId) {
         Token token = new Token();
         token.setToken(tokenStr);
-        Authentication auth = new AuthenticationImpl(authServerUrl);
         Credentials userCredentials = auth.Authenticate(token);
         /* Pseudo code:
          * DAO dbAccess = new DAOImpl(Config.Instance());
@@ -227,7 +244,6 @@ public class WikiEndpoint {
     public ResponseEntity<String> removeReviewFlag(@Valid @RequestHeader("Bearer") String tokenStr, @Valid @PathVariable Long resourceId, @PathVariable Long flagId) {
         Token token = new Token();
         token.setToken(tokenStr);
-        Authentication auth = new AuthenticationImpl(authServerUrl);
         Credentials userCredentials = auth.Authenticate(token);
         /* Pseudo code:
          * DAO dbAccess = new DAOImpl(Config.Instance());
