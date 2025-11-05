@@ -47,8 +47,9 @@ public class CommentTest {
         assertEquals("x", testComment.getContents());
 
         // max length 200 should be allowed
-        StringBuilder sb = new StringBuilder();
-        for (int i = 1; i < 200; i++) sb.append('b');
+    StringBuilder sb = new StringBuilder();
+    // create exactly 200 characters to test upper-bound acceptance
+    for (int i = 0; i < 200; i++) sb.append('b');
         String maxContents = sb.toString();
         testComment.setContents(maxContents);
         assertEquals(maxContents, testComment.getContents());
