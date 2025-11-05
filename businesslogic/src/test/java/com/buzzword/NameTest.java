@@ -20,6 +20,7 @@ public class NameTest {
         String[] names = {"Bob", "aLice", "CARL", "dave", "li'l ernie"};
         for (String name : names) {
             testName.setName(name);
+            assertEquals(name, testName.getName());
         }
     }
 
