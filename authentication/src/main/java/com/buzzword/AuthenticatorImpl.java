@@ -52,6 +52,9 @@ public class AuthenticatorImpl implements Authenticator{
             if(serverUrl == null) {
                 throw new AuthenticationException("Null server url. Class instance improperly constructed.");
             }
+            if(token == null) {
+                throw new AuthenticationException("Null token provided.");
+            }
             HttpURLConnection connection = (HttpURLConnection) serverUrl.openConnection();
             connection.setRequestMethod("POST");
             connection.setDoOutput(true);
@@ -78,6 +81,9 @@ public class AuthenticatorImpl implements Authenticator{
                 Credentials userCredentials;
                 userCredentials = objectMapper.readValue(responseStr, Credentials.class);
                 connection.disconnect();
+                if(userCredentials == null) {
+                    throw new AuthenticationException("Cannot return null credentials.");
+                }
                 return userCredentials;
             } else {
                 connection.disconnect();
