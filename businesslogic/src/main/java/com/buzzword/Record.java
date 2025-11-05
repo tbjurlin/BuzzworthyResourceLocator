@@ -46,7 +46,6 @@ abstract class Record extends Name{
      * <ul>
      *   <li>the id must be non-negative</li>
      * </ul>
-     *
      * @param id the value to set into the recordId field
      * @throws IllegalArgumentException if the record id is invalid
      */
