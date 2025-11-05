@@ -13,11 +13,17 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import java.util.Map;
 
 @JsonAutoDetect(fieldVisibility = Visibility.ANY, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
-public class Credentials extends Name{
+public class Credentials {
     
     @JsonProperty("id")
     @JsonAlias({"id"})
     private Integer id;
+    @JsonProperty("fName")
+    @JsonAlias({"fName"})
+    private Name firstName;
+    @JsonProperty("lName")
+    @JsonAlias({"lName"})
+    private Name lastName;
     @JsonProperty("title")
     @JsonAlias({"title"})
     private String title;
@@ -38,7 +44,45 @@ public class Credentials extends Name{
     public Credentials() {
         mySanitizer = new XssSanitizerImpl();
         logger.debug("finishing the default constructor");
+        firstName = new Name();
     }
+
+    /**
+     * Returns the first name.
+     * <p>
+     * @return
+     */
+    public String getFirstName() {
+        return firstName.getName();
+    }
+
+    /**
+     * Sets the first name
+     * <p>
+     * @param name
+     */
+    public void setFirstName(String name) {
+        firstName.setName(name);
+    }
+
+    /**
+     * Returns the last name
+     * <p>
+     * @return lastName
+     */
+    public String getLastName() {
+        return lastName.getName();
+    }
+
+    /**
+     * Sets the last name
+     * <p>
+     * @param name
+     */
+    public void setLastName(String name) {
+        lastName.setName(name);
+    }
+
 
     /**
      * Returns the id for the Credentials

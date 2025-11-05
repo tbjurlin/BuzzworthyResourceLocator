@@ -11,9 +11,13 @@ import java.util.Date;
  * @author Dennis Shelby
  * @version 1.0
  */
-abstract class Record extends Name{
+abstract class Record{
     @JsonIgnore
     private int id;
+    @JsonIgnore
+    private Name firstName;
+    @JsonIgnore
+    private Name lastName;
     @JsonIgnore
     private int creatorId;
     @JsonIgnore
@@ -57,6 +61,42 @@ abstract class Record extends Name{
             throw new IllegalArgumentException("id must be non-negative");
         }
         this.id = id;
+    }
+
+    /**
+     * Returns the first name.
+     * <p>
+     * @return
+     */
+    public String getFirstName() {
+        return firstName.getName();
+    }
+
+    /**
+     * Sets the first name
+     * <p>
+     * @param name
+     */
+    public void setFirstName(String name) {
+        firstName.setName(name);
+    }
+
+    /**
+     * Returns the last name
+     * <p>
+     * @return lastName
+     */
+    public String getLastName() {
+        return lastName.getName();
+    }
+
+    /**
+     * Sets the last name
+     * <p>
+     * @param name
+     */
+    public void setLastName(String name) {
+        lastName.setName(name);
     }
 
     /**

@@ -12,28 +12,25 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * @author Dennis Shelby
  * @version 1.0
  */
-abstract public class Name {
-    @JsonIgnore
-    @JsonProperty("fName")
-    @JsonAlias({"fName"})
-    private String firstName;
-    @JsonIgnore
-    @JsonProperty("lName")
-    @JsonAlias({"lName"})
-    private String lastName;
+public class Name {
+    private String nameString;
 
     private XssSanitizer mySanitizer;
 
     private final Logger logger = LoggerFactory.getEventLogger();
 
-    /* Constructor */
+
     public Name() {
         mySanitizer = new XssSanitizerImpl();
-        logger.debug("finishing default constructor");
     }
 
-    /**
-     * Validates a first or last name string.
+    public Name(String nameString) {
+        mySanitizer = new XssSanitizerImpl();
+        this.nameString = nameString;
+    }
+
+     /**
+     * Validates a generic name string.
      * <br>
      * <br>
      * The business rules are:
@@ -44,10 +41,11 @@ abstract public class Name {
      *   <li>XSS strings within the first name will be removed</li>
      * </ul>
      *
-     * @param name is a first or last name
+     * @param name is a generic name
      * @throws IllegalArgumentException if the name is invalid
      */
-    private String validateName(final String name) {
+    public void setName(String name) {
+        logger.debug("setting the name");
         final int maxLenth = 64;
 
         if (name == null) {
@@ -66,65 +64,13 @@ abstract public class Name {
             throw new IllegalArgumentException("name must not exceed 64 characters");
         }
         
-        return santizedName;
-    } 
-
-    /**
-     * Returns the firstName value for the Record
-     * @return firstName
-     */
-    public String getFirstName() {
-        logger.debug("returning the first name: " + firstName);
-        return firstName;
+        // return santizedName;
+        this.nameString = santizedName;
     }
 
-    /**
-     * Sets the first name value for the creator.
-     * <br>
-     * <br>
-     * The business rules are:
-     * <ul>
-     *   <li>the first name must <strong>not</strong> be null</li>
-     *   <li>the first name must <strong>not</strong> be empty</li>
-     *   <li>the first name must max length of 40 chars</li>
-     *   <li>XSS strings within the first name will be removed</li>
-     * </ul>
-     *
-     * @param firstName the value to set into the firstName field
-     * @throws IllegalArgumentException if the first name is invalid
-     */
-    public void setFirstName(final String firstName) {
-        logger.debug("setting the first name");
-        this.firstName = validateName(firstName);
-    }
-
-    /**
-     * Returns the lastName value for the Record
-     * @return lastName
-     */
-    public String getLastName() {
-        logger.debug("returning the last name: " + lastName);
-        return lastName;
-    }
-
-    /**
-     * Sets the last name value for the creator.
-     * <br>
-     * <br>
-     * The business rules are:
-     * <ul>
-     *   <li>the last name must <strong>not</strong> be null</li>
-     *   <li>the last name must <strong>not</strong> be empty</li>
-     *   <li>the last name must max length of 40 chars</li>
-     *   <li>XSS strings within the last name will be removed</li>
-     * </ul>
-     *
-     * @param lastName the value to set into the lastName field
-     * @throws IllegalArgumentException if the last name is invalid
-     */
-    public void setLastName(final String lastName) {
-        logger.debug("setting the last name");
-        this.lastName = validateName(lastName);
+    public String getName() {
+        logger.debug("returning the name: " + nameString);
+        return nameString;
     }
 
 }

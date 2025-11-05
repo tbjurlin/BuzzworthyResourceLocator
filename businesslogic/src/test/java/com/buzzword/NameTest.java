@@ -8,90 +8,51 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class NameTest {
-    private DummyName testName = null;
+    private Name testName = null;
 
     @BeforeEach
     void setup() {
-        testName = new DummyName();
+        testName = new Name();
     }
 
     @Test
-    public void testValidCreatorFirstName() {
+    public void testValidName() {
         String[] names = {"Bob", "aLice", "CARL", "dave", "li'l ernie"};
         for (String name : names) {
-            testName.setFirstName(name);
+            testName.setName(name);
         }
     }
 
     @Test
-    public void testNullCreatorFirstName() {
+    public void testNullName() {
         assertThrows(IllegalArgumentException.class, () -> {
-            testName.setFirstName(null);
+            testName.setName(null);
         });
     }
 
     @Test
-    public void testEmptyCreatorFirstName() {
+    public void testEmptyName() {
         assertThrows(IllegalArgumentException.class, () -> {
-            testName.setFirstName("");
+            testName.setName(" ");
         });
     }
 
     @Test
-    public void testLongCreatorFirstName() {
+    public void testLongName() {
         assertThrows(IllegalArgumentException.class, () -> {
             String longName = RandomStringUtils.insecure().next(65);
-            testName.setFirstName(longName);
+            testName.setName(longName);
         });
     }
 
     @Test
-    public void testSanitizedFirstName() {
+    public void testSanitizedName() {
         String xssInput = "<script>alert('Sanitization Test');</script>Bob";
         String expected = "Bob";
 
-        testName.setFirstName(xssInput);
+        testName.setName(xssInput);
 
-        assertEquals(expected, testName.getFirstName());
+        assertEquals(expected, testName.getName());
     }
 
-    @Test
-    public void testValidCreatorLastName() {
-        String[] names = {"Smith", "O'Brien", "Forsythe-Marsdon", "johnson", "PO", "last name"};
-        for (String name : names) {
-            testName.setLastName(name);
-        }
-    }
-
-    @Test
-    public void testNullCreatorLastName() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            testName.setLastName(null);
-        });
-    }
-
-    @Test
-    public void testEmptyCreatorLastName() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            testName.setLastName("");
-        });
-    }
-
-    @Test
-    public void testLongCreatorLastName() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            String longName = RandomStringUtils.insecure().next(65);
-            testName.setLastName(longName);
-        });
-    }
-
-    @Test
-    public void testSanitizedLastName() {
-        String xssInput = "<script>alert('Sanitization Test');</script>Smith";
-        String expected = "Smith";
-
-        testName.setLastName(xssInput);
-
-        assertEquals(expected, testName.getLastName());
-    }
 }
