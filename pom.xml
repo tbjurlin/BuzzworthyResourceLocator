@@ -109,7 +109,7 @@
             <!-- Optional configurations -->
             <reportOutputDirectory>${project.build.directory}/javadoc</reportOutputDirectory>
             <destDir>api</destDir>
-            <windowtitle>My Project API Documentation</windowtitle>
+            <windowtitle>Buzzworthy Resource Locator Developer Documentation</windowtitle>
             <doctitle>API Documentation for ${project.name} ${project.version}</doctitle>
           </configuration>
         </plugin>
