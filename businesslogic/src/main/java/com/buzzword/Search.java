@@ -10,6 +10,8 @@ public class Search {
     private Date endDate;
     private Integer userId;
 
+    /*
+
     public List<String> getTags() {
         return tags;
     }
@@ -54,4 +56,6 @@ public class Search {
         // TODO: Add validation for userId
         this.userId = userId;
     }
+
+    */
 }

@@ -90,4 +90,31 @@ public class XssSanitizerTest {
 		String actual = testXssSanitizer.sanitizeOutput(data);
 		assertEquals(expected, actual);
 	}
+
+	@Test
+	public void testSanitizeTrimsInput()
+	{
+		String bad = "   Some data <script>alert()</script> more data   ";
+		String expected = "Some data more data";
+		String actual = testXssSanitizer.sanitizeInput(bad);
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void testWhitespaceOnlyInput()
+	{
+		String onlySpaces = "    ";
+		String expected = ""; // Jsoup.clean on whitespace-only returns empty, then trimmed
+		String actual = testXssSanitizer.sanitizeInput(onlySpaces);
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void testSanitizeOutputTrims()
+	{
+		String data = "   Some data <b>more</b> data   ";
+		String expected = "Some data &lt;b&gt;more&lt;/b&gt; data"; // trimmed and HTML-escaped
+		String actual = testXssSanitizer.sanitizeOutput(data);
+		assertEquals(expected, actual);
+	}
 }

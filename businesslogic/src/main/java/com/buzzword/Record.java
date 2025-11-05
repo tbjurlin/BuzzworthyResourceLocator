@@ -1,18 +1,39 @@
 package com.buzzword;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Date;
 
-abstract class Record {
+/**
+ * This abstract Record class is the parent class for the Resource,
+ * Comment, ReviewFlag, and Upvote classes. It contains the 
+ * business logic for common fields associated with a Record.
+ * <p>
+ * @author Dennis Shelby
+ * @version 1.0
+ */
+abstract class Record{
+    @JsonIgnore
     private int id;
+    @JsonIgnore
+    private Name firstName;
+    @JsonIgnore
+    private Name lastName;
+    @JsonIgnore
     private int creatorId;
-    private String creatorFirstName;
-    private String creatorLastName;
+    @JsonIgnore
     private Date creationDate;
-    private Boolean isEdited;
+    @JsonIgnore
+    private boolean isEdited;
+
+    private final Logger logger = LoggerFactory.getEventLogger();
 
     /* Constructor */
     public Record() {
-
+        this.creationDate = new Date();
+        this.isEdited = false;
+        logger.debug("finishing default constructor");
+        firstName = new Name();
+        lastName = new Name();
     }
 
     /**
@@ -29,14 +50,55 @@ abstract class Record {
      * <br>
      * The business rules are:
      * <ul>
-     *   <li>the id must be...</li>
+     *   <li>the id must be non-negative</li>
      * </ul>
      * @param id the value to set into the recordId field
      * @throws IllegalArgumentException if the record id is invalid
      */
     public void setId(int id) {
-        // TODO: Add validation for id
+        logger.debug("setting the id");
+
+        if (id < 0) {
+            logger.error("id must be non-negative");
+            throw new IllegalArgumentException("id must be non-negative");
+        }
         this.id = id;
+    }
+
+    /**
+     * Returns the first name.
+     * <p>
+     * @return
+     */
+    public String getFirstName() {
+        return firstName.getName();
+    }
+
+    /**
+     * Sets the first name
+     * <p>
+     * @param name
+     */
+    public void setFirstName(String name) {
+        firstName.setName(name);
+    }
+
+    /**
+     * Returns the last name
+     * <p>
+     * @return lastName
+     */
+    public String getLastName() {
+        return lastName.getName();
+    }
+
+    /**
+     * Sets the last name
+     * <p>
+     * @param name
+     */
+    public void setLastName(String name) {
+        lastName.setName(name);
     }
 
     /**
@@ -44,83 +106,29 @@ abstract class Record {
      * @return creatorId
      */
     public int getCreatorId() {
+        logger.debug("returning the id: " + id);
         return creatorId;
     }
 
     /**
-     * Sets the id value for the creator.
+     * Sets the creatorId value for the creator.
      * <br>
      * <br>
      * The business rules are:
      * <ul>
-     *   <li>the first name must <strong>not</strong> be null</li>
-     *   <li>the first name must <strong>not</strong> be empty</li>
-     *   <li>the creatorId must be...</li>
+     *   <li>the creatorId must be non-negative</li>
      * </ul>
      *
      * @param creatorId the value to set into the creatorId field
      * @throws IllegalArgumentException if the id is invalid
      */
     public void setCreatorId(int creatorId) {
-        // TODO: Add validation for creatorId
+        logger.debug(("setting the creatorId: " + creatorId));
+        if (creatorId < 0) {
+            logger.error("creatorId must be non-negative");
+            throw new IllegalArgumentException("creatorId must be non-negative");
+        }
         this.creatorId = creatorId;
-    }
-
-    /**
-     * Returns the creatorFirstName value for the Record
-     * @return creatorFirstName
-     */
-    public String getCreatorFirstName() {
-        return creatorFirstName;
-    }
-
-    /**
-     * Sets the first name value for the creator.
-     * <br>
-     * <br>
-     * The business rules are:
-     * <ul>
-     *   <li>the first name must <strong>not</strong> be null</li>
-     *   <li>the first name must <strong>not</strong> be empty</li>
-     *   <li>the first name must max length of 40 chars</li>
-     *   <li>XSS strings within the first name will be removed</li>
-     * </ul>
-     *
-     * @param creatorFirstName the value to set into the creatorFirstName field
-     * @throws IllegalArgumentException if the first name is invalid
-     */
-    public void setCreatorFirstName(String creatorFirstName) {
-        // TODO: Add validation for creatorFirstName
-        this.creatorFirstName = creatorFirstName;
-    }
-
-    /**
-     * Returns the creatorLastName value for the Record
-     * @return creatorLastName
-     */
-    public String getCreatorLastName() {
-        return creatorLastName;
-    }
-
-    /**
-     * Sets the last name value for the creator.
-     * <br>
-     * <br>
-     * The business rules are:
-     * <ul>
-     *   <li>the last name must <strong>not</strong> be null</li>
-     *   <li>the last name must <strong>not</strong> be empty</li>
-     *   <li>the last name must max length of 40 chars</li>
-     *   <li>XSS strings within the last name will be removed</li>
-     * </ul>
-     *
-     * @param creatorLastName the value to set into the creatorLastName field
-     * @throws IllegalArgumentException if the last name is invalid
-     */
-    public void setCreatorLastName(String creatorLastName) {
-        // TODO: Add validation for creatorLastName
-        this.creatorLastName = creatorLastName;
-
     }
 
     /**
@@ -128,6 +136,7 @@ abstract class Record {
      * @return creationDate
      */
     public Date getCreationDate() {
+        logger.debug("returns the creationDate: " + creationDate);
         return creationDate;
     }
 
@@ -136,7 +145,7 @@ abstract class Record {
      * <p>
      * The business rules are:
      * <ul>
-     *   <li>the creation date must <strong>not</strong> be null</li>
+     *   <li>if the creation date is not provided, the current date will be used.</li>
      *   <li>the creation date must <strong>today or earlier</strong></li>
      * </ul>
      * 
@@ -144,7 +153,16 @@ abstract class Record {
      * @throws IllegalArgumentException if the creation date is invalid
      */
     public void setCreationDate(Date creationDate) {
-        // TODO: Add validation for creationDate
+        logger.debug("setting the creationDate: " + creationDate);
+        if (creationDate == null) {
+            logger.error("creationDate must not be null");
+            throw new IllegalArgumentException("creationDate must not be null.");
+        }
+        Date nowDate = new Date();
+        if (creationDate.after(nowDate)) {
+            logger.error("creationDate must not be in the future");
+            throw new IllegalArgumentException("creationDate must not be in the future.");
+        }
         this.creationDate = creationDate;
     }
 
@@ -153,6 +171,7 @@ abstract class Record {
      * @return isEdited
      */
     public Boolean getIsEdited() {
+        logger.debug("returning isEdited: " + isEdited);
         return isEdited;
     }
 
@@ -165,10 +184,9 @@ abstract class Record {
      * </ul>
      * 
      * @param isEdited the value to set into the isEdited field
-     * @throws IllegalArgumentException if the is edited value is invalid
      */
-    public void setIsEdited(Boolean isEdited) {
-        // TODO: Add validation for isEdited
+    public void setIsEdited(boolean isEdited) {
+        logger.debug("setting isEdited");
         this.isEdited = isEdited;
     }
 }
