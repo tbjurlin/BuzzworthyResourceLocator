@@ -1,13 +1,10 @@
 package com.buzzword;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 /**
- * This abstract Name class is the parent class for the Record
- * and Credentials classes. It contains the business logic for 
- * handling first and last names.
+ * This Name class defines a generic name object that 
+ * can be used to create a first or last name. It 
+ * contains the business logic that applies to any
+ * name string.
  * <p>
  * @author Dennis Shelby
  * @version 1.0
@@ -64,10 +61,14 @@ public class Name {
             throw new IllegalArgumentException("name must not exceed 64 characters");
         }
         
-        // return santizedName;
         this.nameString = santizedName;
     }
 
+    /**
+     * Returns the name.
+     * <p>
+     * @return nameString
+     */
     public String getName() {
         logger.debug("returning the name: " + nameString);
         return nameString;
