@@ -25,7 +25,7 @@ import jakarta.validation.Valid;
 @RequestMapping("wiki")
 public class WikiEndpoint {
 
-    String authServerUrl = "http://";
+    String authServerUrl = "";
     Authenticator auth = null;
     private final Logger logger = LoggerFactory.getEventLogger();
 
@@ -60,6 +60,7 @@ public class WikiEndpoint {
      */
     @GetMapping("resource")
     public ResponseEntity<String> retrieveAllResources(@Valid @RequestHeader("Bearer") String tokenStr) {
+        logger.info("HTTP GET request (retrieveAllResources) received.");
         Token token = new Token();
         token.setToken(tokenStr);
         Credentials userCredentials = auth.Authenticate(token);
@@ -68,6 +69,7 @@ public class WikiEndpoint {
         List<resource> resources = dao.SearchByAll("");
         Objectmapper mapper = new Objectmapper(); */
         String returnObj = ""; //mapper.writeValueAsString(resources);
+        logger.info("Returning HTTP response code 200.");
         return ResponseEntity.ok()
                             .contentType(MediaType.APPLICATION_JSON)
                             .body(returnObj);
@@ -90,6 +92,8 @@ public class WikiEndpoint {
          * DAO dbAccess = new DAOImpl(Config.Instance());
          * String obj = dbAccess.insertResource(userCredentials, resource);
          */
+
+        logger.info("Returning HTTP response code 201.");
         return ResponseEntity.status(HttpStatus.CREATED)
                              .contentType(MediaType.APPLICATION_JSON)
                              .body("{\"msg\": \"Add resource\"}");
@@ -113,6 +117,7 @@ public class WikiEndpoint {
          * DAO dbAccess = new DAOImpl(Config.Instance());
          * String obj = dbAccess.insertComment(userCredentials, resourceId, comment);
          */
+        logger.info("Returning HTTP response code 201.");
         return ResponseEntity.status(HttpStatus.CREATED)
                              .contentType(MediaType.APPLICATION_JSON)
                              .body("{\"msg\": \"Add comment to resource " + resourceId + "\"}");
@@ -135,6 +140,7 @@ public class WikiEndpoint {
          * DAO dbAccess = new DAOImpl(Config.Instance());
          * String obj = dbAccess.insertUpvote(userCredentials, resourceId, upvote);
          */
+        logger.info("Returning HTTP response code 201.");
         return ResponseEntity.status(HttpStatus.CREATED)
                              .contentType(MediaType.APPLICATION_JSON)
                              .body("{\"msg\": \"Add upvote to resource " + resourceId + "\"}");
@@ -158,6 +164,7 @@ public class WikiEndpoint {
          * DAO dbAccess = new DAOImpl(Config.Instance());
          * String obj = dbAccess.insertReviewFlag(userCredentials, resourceId, reviewFlag);
          */
+        logger.info("Returning HTTP response code 201.");
         return ResponseEntity.status(HttpStatus.CREATED)
                              .contentType(MediaType.APPLICATION_JSON)
                              .body("{\"msg\": \"Add review flag to resource " + resourceId + "\"}");
@@ -180,6 +187,7 @@ public class WikiEndpoint {
          * DAO dbAccess = new DAOImpl(Config.Instance());
          * String obj = dbAccess.deleteResource(userCredentials, resourceId);
          */
+        logger.info("Returning HTTP response code 200.");
         return ResponseEntity.ok()
                              .contentType(MediaType.APPLICATION_JSON)
                              .body("{\"msg\": \"Remove resource " + resourceId + "\"}");
@@ -203,6 +211,7 @@ public class WikiEndpoint {
          * DAO dbAccess = new DAOImpl(Config.Instance());
          * String obj = dbAccess.deleteComment(userCredentials, resourceId, commentId);
          */
+        logger.info("Returning HTTP response code 200.");
         return ResponseEntity.ok()
                              .contentType(MediaType.APPLICATION_JSON)
                              .body("{\"msg\": \"Remove comment " + commentId + " from resource " + resourceId + "\"}");
@@ -226,6 +235,7 @@ public class WikiEndpoint {
          * DAO dbAccess = new DAOImpl(Config.Instance());
          * String obj = dbAccess.deleteUpvote(userCredentials, resourceId, upvoteId);
          */
+        logger.info("Returning HTTP response code 200.");
         return ResponseEntity.ok()
                              .contentType(MediaType.APPLICATION_JSON)
                              .body("{\"msg\": \"Remove upvote " + upvoteId + " from resource " + resourceId + "\"}");
@@ -249,6 +259,7 @@ public class WikiEndpoint {
          * DAO dbAccess = new DAOImpl(Config.Instance());
          * String obj = dbAccess.deleteReviewFlag(userCredentials, resourceId, flagId);
          */
+        logger.info("Returning HTTP response code 200.");
         return ResponseEntity.ok()
                              .contentType(MediaType.APPLICATION_JSON)
                              .body("{\"msg\": \"Remove review flag " + flagId + " from resource " + resourceId + "\"}");
