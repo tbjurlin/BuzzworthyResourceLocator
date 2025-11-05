@@ -9,7 +9,7 @@ public interface CommentDAO {
      * @param user credentials of the user
      * @param comment comment to be added
     */
-    void addComment(Credentials user, Comment comment);
+    void addComment(Credentials user, Comment comment, int resourceId);
     
     /**
      * <p>
@@ -18,5 +18,5 @@ public interface CommentDAO {
      * @param user credentials of the user
      * @param comment comment to be removed
     */
-    boolean removeComment(Credentials user, long id);
+    boolean removeComment(Credentials user, int commentId, int resourceId);
 }
