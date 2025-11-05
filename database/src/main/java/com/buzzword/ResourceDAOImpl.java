@@ -1,7 +1,9 @@
 package com.buzzword;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.bson.Document;
 
@@ -12,10 +14,16 @@ import com.mongodb.client.result.DeleteResult;
 
 public class ResourceDAOImpl implements ResourceDAO {
     private final MongoCollection<Document> resources;
+    private final MongoCollection<Document> comments;
+    private final MongoCollection<Document> flags;
+    private final MongoCollection<Document> upvotes;
     private final Logger logger = LoggerFactory.getEventLogger();
 
     public ResourceDAOImpl(MongoDatabase db) {
         this.resources = db.getCollection("resources");
+        this.comments = db.getCollection("comments");
+        this.flags = db.getCollection("flags");
+        this.upvotes = db.getCollection("upvotes");
     }
 
     /**
@@ -116,13 +124,58 @@ public class ResourceDAOImpl implements ResourceDAO {
             throw new AuthorizationException("User does not have a valid system role.");
         }
 
-        List<Resource> allResources = new ArrayList<>();
+
+        Map<Integer, Resource> resourceMap = new HashMap<Integer, Resource>();
 
         resources.find().forEach(resDoc -> {
             Resource resource = convertDocumentToResource(resDoc);
-            allResources.add(resource);
+            resource.setComments(new ArrayList<Comment>());
+            resource.setReviewFlags(new ArrayList<ReviewFlag>());
+            resource.setUpVoteFlags(new ArrayList<UpVote>());
+            resourceMap.put(resource.getId(), resource);
+            System.out.println(resourceMap);
         });
 
-        return allResources;
+        comments.find().forEach(commentDoc -> {
+            Comment comment = new Comment();
+            comment.setId(commentDoc.getInteger("commentId"));
+            comment.setCreatorId(commentDoc.getInteger("creatorId"));
+            comment.setCreatorFirstName(commentDoc.getString("firstName"));
+            comment.setCreatorLastName(commentDoc.getString("lastName"));
+            comment.setCreationDate(commentDoc.getDate("dateCreated"));
+            comment.setContents(commentDoc.getString("contents"));
+
+            Resource parent = resourceMap.get(commentDoc.getInteger("resourceId"));
+            List<Comment> comments = parent.getComments();
+            comments.add(comment);
+        });
+
+        flags.find().forEach(flagDoc -> {
+            ReviewFlag flag = new ReviewFlag();
+            flag.setId(flagDoc.getInteger("flagId"));
+            flag.setCreatorId(flagDoc.getInteger("creatorId"));
+            flag.setCreatorFirstName(flagDoc.getString("firstName"));
+            flag.setCreatorLastName(flagDoc.getString("lastName"));
+            flag.setCreationDate(flagDoc.getDate("dateCreated"));
+
+            Resource parent = resourceMap.get(flagDoc.getInteger("resourceId"));
+            List<ReviewFlag> flags = parent.getReviewFlags();
+            flags.add(flag);
+        });
+
+        upvotes.find().forEach(upvoteDoc -> {
+            UpVote upVote = new UpVote();
+            upVote.setId(upvoteDoc.getInteger("upvoteId"));
+            upVote.setCreatorId(upvoteDoc.getInteger("creatorId"));
+            upVote.setCreatorFirstName(upvoteDoc.getString("firstName"));
+            upVote.setCreatorLastName(upvoteDoc.getString("lastName"));
+            upVote.setCreationDate(upvoteDoc.getDate("dateCreated"));
+
+            Resource parent = resourceMap.get(upvoteDoc.getInteger("resourceId"));
+            List<UpVote> upvotes = parent.getUpVoteFlags();
+            upvotes.add(upVote);
+        });
+
+        return new ArrayList<Resource>(resourceMap.values());
     }
 }

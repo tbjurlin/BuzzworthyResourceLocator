@@ -40,13 +40,29 @@ public class ResourceDAOTest {
     MongoDatabase testDatabase;
 
     @Mock
-    MongoCollection<Document> testCollection;
+    MongoCollection<Document> resourceCollection;
+
+    @Mock
+    MongoCollection<Document> commentCollection;
+
+    @Mock
+    MongoCollection<Document> flagCollection;
+
+    @Mock
+    MongoCollection<Document> upvoteCollection;
 
     ResourceDAO resourceDAO;
 
     @BeforeEach
     void setUpDatabase() {
-        when(testDatabase.getCollection("resources")).thenReturn(testCollection);
+
+        when(testDatabase.getCollection("comments")).thenReturn(commentCollection);
+
+        when(testDatabase.getCollection("flags")).thenReturn(flagCollection);
+
+        when(testDatabase.getCollection("upvotes")).thenReturn(upvoteCollection);
+
+        when(testDatabase.getCollection("resources")).thenReturn(resourceCollection);
         resourceDAO = new ResourceDAOImpl(testDatabase);
     }
 
@@ -68,7 +84,7 @@ public class ResourceDAOTest {
         resourceDAO.insertResource(mockCredentials, mockResource);
 
         ArgumentCaptor<Document> captor = ArgumentCaptor.forClass(Document.class);
-        verify(testCollection).insertOne(captor.capture());
+        verify(resourceCollection).insertOne(captor.capture());
 
         Document capturedDoc = captor.getValue();
         Document expectedDoc = new Document()
@@ -103,7 +119,7 @@ public class ResourceDAOTest {
         resourceDAO.insertResource(mockCredentials, mockResource);
 
         ArgumentCaptor<Document> captor = ArgumentCaptor.forClass(Document.class);
-        verify(testCollection).insertOne(captor.capture());
+        verify(resourceCollection).insertOne(captor.capture());
 
         Document capturedDoc = captor.getValue();
         Document expectedDoc = new Document()
@@ -131,7 +147,7 @@ public class ResourceDAOTest {
             resourceDAO.insertResource(mockCredentials, mockResource);
         });
 
-        verify(testCollection, never()).insertOne(any());
+        verify(resourceCollection, never()).insertOne(any());
 
     }
 
@@ -143,12 +159,12 @@ public class ResourceDAOTest {
 
         DeleteResult mockResult = mock(DeleteResult.class);
         when(mockResult.getDeletedCount()).thenReturn(1L);
-        when(testCollection.deleteOne(any(Bson.class))).thenReturn(mockResult);
+        when(resourceCollection.deleteOne(any(Bson.class))).thenReturn(mockResult);
 
         resourceDAO.removeResource(mockCredentials, 1);
 
         ArgumentCaptor<Bson> captor = ArgumentCaptor.forClass(Bson.class);
-        verify(testCollection).deleteOne(captor.capture());
+        verify(resourceCollection).deleteOne(captor.capture());
 
         Bson capturedFilter = captor.getValue();
         Bson expectedFilter = Filters.eq("resourceId", 1L);
@@ -175,15 +191,15 @@ public class ResourceDAOTest {
             .append("dateCreated", Date.from(Instant.ofEpochSecond(946684800)))
             .append("url", "localhost");
         when(mockIterable.first()).thenReturn(targetDocument);
-        when(testCollection.find(any(Bson.class))).thenReturn(mockIterable);
+        when(resourceCollection.find(any(Bson.class))).thenReturn(mockIterable);
         DeleteResult mockResult = mock(DeleteResult.class);
         when(mockResult.getDeletedCount()).thenReturn(1L);
-        when(testCollection.deleteOne(any(Bson.class))).thenReturn(mockResult);
+        when(resourceCollection.deleteOne(any(Bson.class))).thenReturn(mockResult);
 
         resourceDAO.removeResource(mockCredentials, 1);
 
         ArgumentCaptor<Bson> captor = ArgumentCaptor.forClass(Bson.class);
-        verify(testCollection).deleteOne(captor.capture());
+        verify(resourceCollection).deleteOne(captor.capture());
 
         Bson capturedFilter = captor.getValue();
         Bson expectedFilter = Filters.eq("resourceId", 1L);
@@ -210,13 +226,13 @@ public class ResourceDAOTest {
             .append("dateCreated", Date.from(Instant.ofEpochSecond(946684800)))
             .append("url", "localhost");
         when(mockIterable.first()).thenReturn(targetDocument);
-        when(testCollection.find(any(Bson.class))).thenReturn(mockIterable);
+        when(resourceCollection.find(any(Bson.class))).thenReturn(mockIterable);
 
         assertThrows(AuthorizationException.class, () -> {
             resourceDAO.removeResource(mockCredentials, 1);
         });
 
-        verify(testCollection, never()).deleteOne(any(Bson.class));
+        verify(resourceCollection, never()).deleteOne(any(Bson.class));
     }
 
     @Test
@@ -230,7 +246,7 @@ public class ResourceDAOTest {
             resourceDAO.removeResource(mockCredentials, 1);
         });
 
-        verify(testCollection, never()).deleteOne(any(Bson.class));
+        verify(resourceCollection, never()).deleteOne(any(Bson.class));
     }
 
     @Test
@@ -238,7 +254,7 @@ public class ResourceDAOTest {
         Credentials mockCredentials = mock(Credentials.class);
         when(mockCredentials.getSystemRole()).thenReturn("Commenter");
 
-        Document targetDocument1  = new Document()
+        Document resourceDocument1  = new Document()
             .append("resourceId", 1)
             .append("creatorId", 1)
             .append("firstName", "Foo")
@@ -248,7 +264,7 @@ public class ResourceDAOTest {
             .append("dateCreated", Date.from(Instant.ofEpochSecond(946684800)))
             .append("url", "localhost");
 
-        Document targetDocument2  = new Document()
+        Document resourceDocument2  = new Document()
             .append("resourceId", 2)
             .append("creatorId", 1)
             .append("firstName", "Foo")
@@ -258,23 +274,165 @@ public class ResourceDAOTest {
             .append("dateCreated", Date.from(Instant.ofEpochSecond(946684800)))
             .append("url", "localhost");
 
-        List<Document> testResponse = new ArrayList<Document>();
+        List<Document> resourceResponse = new ArrayList<Document>();
         
-        testResponse.add(targetDocument1);
-        testResponse.add(targetDocument2);
+        resourceResponse.add(resourceDocument1);
+        resourceResponse.add(resourceDocument2);
 
         @SuppressWarnings("unchecked")
-        FindIterable<Document> mockFindIterable = (FindIterable<Document>) mock(FindIterable.class);
-        when(testCollection.find()).thenReturn(mockFindIterable);
+        FindIterable<Document> resourceFindIterable = (FindIterable<Document>) mock(FindIterable.class);
+        when(resourceCollection.find()).thenReturn(resourceFindIterable);
         doAnswer(new Answer<Void>() {
             public Void answer(InvocationOnMock invocation) {
                 Object[] args = invocation.getArguments();
                 @SuppressWarnings("unchecked")
                 Consumer<Document> consumer = (Consumer<Document>) args[0];
-                testResponse.iterator().forEachRemaining(consumer);
+                resourceResponse.iterator().forEachRemaining(consumer);
                 return null;
             }
-        }).when(mockFindIterable).forEach(any());
+        }).when(resourceFindIterable).forEach(any());
+
+        Document commentDocument1  = new Document()
+            .append("commentId", 1)
+            .append("resourceId", 1)
+            .append("creatorId", 1)
+            .append("firstName", "Foo")
+            .append("lastName", "Bar")
+            .append("dateCreated", Date.from(Instant.ofEpochSecond(946684800)))
+            .append("contents", "What a comment");
+
+        Document commentDocument2  = new Document()
+            .append("commentId", 2)
+            .append("resourceId", 1)
+            .append("creatorId", 1)
+            .append("firstName", "Foo")
+            .append("lastName", "Bar")
+            .append("dateCreated", Date.from(Instant.ofEpochSecond(946684800)))
+            .append("contents", "What a comment.");
+
+        Document commentDocument3  = new Document()
+            .append("commentId", 3)
+            .append("resourceId", 2)
+            .append("creatorId", 1)
+            .append("firstName", "Foo")
+            .append("lastName", "Bar")
+            .append("dateCreated", Date.from(Instant.ofEpochSecond(946684800)))
+            .append("contents", "What a comment?");
+
+        Document commentDocument4  = new Document()
+            .append("commentId", 4)
+            .append("resourceId", 2)
+            .append("creatorId", 1)
+            .append("firstName", "Foo")
+            .append("lastName", "Bar")
+            .append("dateCreated", Date.from(Instant.ofEpochSecond(946684800)))
+            .append("contents", "What a comment!");
+
+        List<Document> commentResponse = new ArrayList<Document>();
+        
+        commentResponse.add(commentDocument1);
+        commentResponse.add(commentDocument2);
+        commentResponse.add(commentDocument3);
+        commentResponse.add(commentDocument4);
+
+        @SuppressWarnings("unchecked")
+        FindIterable<Document> commentFindIterable = (FindIterable<Document>) mock(FindIterable.class);
+        when(commentCollection.find()).thenReturn(commentFindIterable);
+        doAnswer(new Answer<Void>() {
+            public Void answer(InvocationOnMock invocation) {
+                Object[] args = invocation.getArguments();
+                @SuppressWarnings("unchecked")
+                Consumer<Document> consumer = (Consumer<Document>) args[0];
+                commentResponse.iterator().forEachRemaining(consumer);
+                return null;
+            }
+        }).when(commentFindIterable).forEach(any());
+
+        Document flagDocument1  = new Document()
+            .append("flagId", 1)
+            .append("resourceId", 1)
+            .append("creatorId", 1)
+            .append("firstName", "Foo")
+            .append("lastName", "Bar")
+            .append("dateCreated", Date.from(Instant.ofEpochSecond(946684800)));
+
+        Document flagDocument2  = new Document()
+            .append("flagId", 2)
+            .append("resourceId", 1)
+            .append("creatorId", 1)
+            .append("firstName", "Foo")
+            .append("lastName", "Bar")
+            .append("dateCreated", Date.from(Instant.ofEpochSecond(946684800)));
+
+        Document flagDocument3  = new Document()
+            .append("flagId", 3)
+            .append("resourceId", 2)
+            .append("creatorId", 1)
+            .append("firstName", "Foo")
+            .append("lastName", "Bar")
+            .append("dateCreated", Date.from(Instant.ofEpochSecond(946684800)));
+
+        List<Document> flagResponse = new ArrayList<Document>();
+        
+        flagResponse.add(flagDocument1);
+        flagResponse.add(flagDocument2);
+        flagResponse.add(flagDocument3);
+
+        @SuppressWarnings("unchecked")
+        FindIterable<Document> flagFindIterable = (FindIterable<Document>) mock(FindIterable.class);
+        when(flagCollection.find()).thenReturn(flagFindIterable);
+        doAnswer(new Answer<Void>() {
+            public Void answer(InvocationOnMock invocation) {
+                Object[] args = invocation.getArguments();
+                @SuppressWarnings("unchecked")
+                Consumer<Document> consumer = (Consumer<Document>) args[0];
+                flagResponse.iterator().forEachRemaining(consumer);
+                return null;
+            }
+        }).when(flagFindIterable).forEach(any());
+
+        Document upvoteDocument1  = new Document()
+            .append("upvoteId", 1)
+            .append("resourceId", 1)
+            .append("creatorId", 1)
+            .append("firstName", "Foo")
+            .append("lastName", "Bar")
+            .append("dateCreated", Date.from(Instant.ofEpochSecond(946684800)));
+
+        Document upvoteDocument2  = new Document()
+            .append("upvoteId", 2)
+            .append("resourceId", 2)
+            .append("creatorId", 1)
+            .append("firstName", "Foo")
+            .append("lastName", "Bar")
+            .append("dateCreated", Date.from(Instant.ofEpochSecond(946684800)));
+
+        Document upvoteDocument3  = new Document()
+            .append("upvoteId", 3)
+            .append("resourceId", 2)
+            .append("creatorId", 1)
+            .append("firstName", "Foo")
+            .append("lastName", "Bar")
+            .append("dateCreated", Date.from(Instant.ofEpochSecond(946684800)));
+
+        List<Document> upvoteResponse = new ArrayList<Document>();
+        
+        upvoteResponse.add(upvoteDocument1);
+        upvoteResponse.add(upvoteDocument2);
+        upvoteResponse.add(upvoteDocument3);
+
+        @SuppressWarnings("unchecked")
+        FindIterable<Document> upvoteFindIterable = (FindIterable<Document>) mock(FindIterable.class);
+        when(upvoteCollection.find()).thenReturn(upvoteFindIterable);
+        doAnswer(new Answer<Void>() {
+            public Void answer(InvocationOnMock invocation) {
+                Object[] args = invocation.getArguments();
+                @SuppressWarnings("unchecked")
+                Consumer<Document> consumer = (Consumer<Document>) args[0];
+                upvoteResponse.iterator().forEachRemaining(consumer);
+                return null;
+            }
+        }).when(upvoteFindIterable).forEach(any());
 
         List<Resource> results = resourceDAO.listAllResources(mockCredentials);
 
@@ -290,6 +448,61 @@ public class ResourceDAOTest {
         targetResource1.setCreationDate(Date.from(Instant.ofEpochSecond(946684800)));
         targetResource1.setUrl("localhost");
 
+        List<Comment> r1Comments = new ArrayList<Comment>();
+
+        Comment targetComment1  = new Comment();
+        targetComment1.setId(1);
+        targetComment1.setCreatorId(1);
+        targetComment1.setCreatorFirstName("Foo");
+        targetComment1.setCreatorLastName("Bar");
+        targetComment1.setCreationDate(Date.from(Instant.ofEpochSecond(946684800)));
+        targetComment1.setContents("What a comment");
+
+        Comment targetComment2  = new Comment();
+        targetComment2.setId(2);
+        targetComment2.setCreatorId(1);
+        targetComment2.setCreatorFirstName("Foo");
+        targetComment2.setCreatorLastName("Bar");
+        targetComment2.setCreationDate(Date.from(Instant.ofEpochSecond(946684800)));
+        targetComment2.setContents("What a comment.");
+
+        r1Comments.add(targetComment1);
+        r1Comments.add(targetComment2);
+
+        List<ReviewFlag> r1Flags = new ArrayList<ReviewFlag>();
+
+        ReviewFlag targetFlag1  = new ReviewFlag();
+        targetFlag1.setId(1);
+        targetFlag1.setCreatorId(1);
+        targetFlag1.setCreatorFirstName("Foo");
+        targetFlag1.setCreatorLastName("Bar");
+        targetFlag1.setCreationDate(Date.from(Instant.ofEpochSecond(946684800)));
+
+        ReviewFlag targetFlag2  = new ReviewFlag();
+        targetFlag2.setId(2);
+        targetFlag2.setCreatorId(1);
+        targetFlag2.setCreatorFirstName("Foo");
+        targetFlag2.setCreatorLastName("Bar");
+        targetFlag2.setCreationDate(Date.from(Instant.ofEpochSecond(946684800)));
+
+        r1Flags.add(targetFlag1);
+        r1Flags.add(targetFlag2);
+
+        List<UpVote> r1Upvotes = new ArrayList<UpVote>();
+
+        UpVote targetUpvote1  = new UpVote();
+        targetUpvote1.setId(1);
+        targetUpvote1.setCreatorId(1);
+        targetUpvote1.setCreatorFirstName("Foo");
+        targetUpvote1.setCreatorLastName("Bar");
+        targetUpvote1.setCreationDate(Date.from(Instant.ofEpochSecond(946684800)));
+
+        r1Upvotes.add(targetUpvote1);
+
+        targetResource1.setComments(r1Comments);
+        targetResource1.setReviewFlags(r1Flags);
+        targetResource1.setUpVoteFlags(r1Upvotes);
+
         Resource targetResource2  = new Resource();
         targetResource2.setId(2);
         targetResource2.setCreatorId(1);
@@ -299,6 +512,61 @@ public class ResourceDAOTest {
         targetResource2.setDescription("Description");
         targetResource2.setCreationDate(Date.from(Instant.ofEpochSecond(946684800)));
         targetResource2.setUrl("localhost");
+
+        List<Comment> r2Comments = new ArrayList<Comment>();
+
+        Comment targetComment3  = new Comment();
+        targetComment3.setId(3);
+        targetComment3.setCreatorId(1);
+        targetComment3.setCreatorFirstName("Foo");
+        targetComment3.setCreatorLastName("Bar");
+        targetComment3.setCreationDate(Date.from(Instant.ofEpochSecond(946684800)));
+        targetComment3.setContents("What a comment?");
+
+        Comment targetComment4  = new Comment();
+        targetComment4.setId(4);
+        targetComment4.setCreatorId(1);
+        targetComment4.setCreatorFirstName("Foo");
+        targetComment4.setCreatorLastName("Bar");
+        targetComment4.setCreationDate(Date.from(Instant.ofEpochSecond(946684800)));
+        targetComment4.setContents("What a comment!");
+
+        r2Comments.add(targetComment3);
+        r2Comments.add(targetComment4);
+
+        List<ReviewFlag> r2Flags = new ArrayList<ReviewFlag>();
+
+        ReviewFlag targetFlag3  = new ReviewFlag();
+        targetFlag3.setId(3);
+        targetFlag3.setCreatorId(1);
+        targetFlag3.setCreatorFirstName("Foo");
+        targetFlag3.setCreatorLastName("Bar");
+        targetFlag3.setCreationDate(Date.from(Instant.ofEpochSecond(946684800)));
+
+        r2Flags.add(targetFlag3);
+
+        List<UpVote> r2Upvotes = new ArrayList<UpVote>();
+
+        UpVote targetUpvote2  = new UpVote();
+        targetUpvote2.setId(2);
+        targetUpvote2.setCreatorId(1);
+        targetUpvote2.setCreatorFirstName("Foo");
+        targetUpvote2.setCreatorLastName("Bar");
+        targetUpvote2.setCreationDate(Date.from(Instant.ofEpochSecond(946684800)));
+
+        UpVote targetUpvote3  = new UpVote();
+        targetUpvote3.setId(3);
+        targetUpvote3.setCreatorId(1);
+        targetUpvote3.setCreatorFirstName("Foo");
+        targetUpvote3.setCreatorLastName("Bar");
+        targetUpvote3.setCreationDate(Date.from(Instant.ofEpochSecond(946684800)));
+
+        r2Upvotes.add(targetUpvote2);
+        r2Upvotes.add(targetUpvote3);
+
+        targetResource2.setComments(r2Comments);
+        targetResource2.setReviewFlags(r2Flags);
+        targetResource2.setUpVoteFlags(r2Upvotes);
 
         expected.add(targetResource1);
         expected.add(targetResource2);
