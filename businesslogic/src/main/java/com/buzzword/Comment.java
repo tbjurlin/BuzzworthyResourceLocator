@@ -20,7 +20,6 @@ public class Comment extends Record {
      * @return
      */
     private String validateContents(final String contents) {
-        final int minLength = 1;
         final int maxLength = 200;
 
         if (contents == null) {
@@ -31,9 +30,6 @@ public class Comment extends Record {
 
         if (sanitizedContents.isEmpty()) {
             throw new IllegalArgumentException("Contents must not be empty.");
-        }
-        if(sanitizedContents.length() < minLength ) {
-            throw new IllegalArgumentException("Contents must be at least 1 character long");
         }
         if (sanitizedContents.length() > maxLength ) {
             throw new IllegalArgumentException("Contents must not exceed 200 characters");
