@@ -102,14 +102,15 @@ public class ResourceDAOImpl implements ResourceDAO {
 
     private Resource convertDocumentToResource(Document doc) {
         Resource resource = new Resource();
+        System.out.println(doc);
         resource.setId(doc.getInteger("resourceId"));
         resource.setTitle(doc.getString("title"));
         resource.setDescription(doc.getString("description"));
         resource.setUrl(doc.getString("url"));
         resource.setCreatorId(doc.getInteger("creatorId"));
         resource.setCreationDate(doc.getDate("dateCreated"));
-        resource.setCreatorFirstName(doc.getString("firstName"));
-        resource.setCreatorLastName(doc.getString("lastName"));
+        resource.setFirstName(doc.getString("firstName"));
+        resource.setLastName(doc.getString("lastName"));
         return resource;
     }
 
@@ -131,7 +132,7 @@ public class ResourceDAOImpl implements ResourceDAO {
             Resource resource = convertDocumentToResource(resDoc);
             resource.setComments(new ArrayList<Comment>());
             resource.setReviewFlags(new ArrayList<ReviewFlag>());
-            resource.setUpVoteFlags(new ArrayList<UpVote>());
+            resource.setUpVotes(new ArrayList<UpVote>());
             resourceMap.put(resource.getId(), resource);
             System.out.println(resourceMap);
         });
@@ -140,8 +141,8 @@ public class ResourceDAOImpl implements ResourceDAO {
             Comment comment = new Comment();
             comment.setId(commentDoc.getInteger("commentId"));
             comment.setCreatorId(commentDoc.getInteger("creatorId"));
-            comment.setCreatorFirstName(commentDoc.getString("firstName"));
-            comment.setCreatorLastName(commentDoc.getString("lastName"));
+            comment.setFirstName(commentDoc.getString("firstName"));
+            comment.setLastName(commentDoc.getString("lastName"));
             comment.setCreationDate(commentDoc.getDate("dateCreated"));
             comment.setContents(commentDoc.getString("contents"));
 
@@ -154,8 +155,8 @@ public class ResourceDAOImpl implements ResourceDAO {
             ReviewFlag flag = new ReviewFlag();
             flag.setId(flagDoc.getInteger("flagId"));
             flag.setCreatorId(flagDoc.getInteger("creatorId"));
-            flag.setCreatorFirstName(flagDoc.getString("firstName"));
-            flag.setCreatorLastName(flagDoc.getString("lastName"));
+            flag.setFirstName(flagDoc.getString("firstName"));
+            flag.setLastName(flagDoc.getString("lastName"));
             flag.setCreationDate(flagDoc.getDate("dateCreated"));
 
             Resource parent = resourceMap.get(flagDoc.getInteger("resourceId"));
@@ -167,12 +168,12 @@ public class ResourceDAOImpl implements ResourceDAO {
             UpVote upVote = new UpVote();
             upVote.setId(upvoteDoc.getInteger("upvoteId"));
             upVote.setCreatorId(upvoteDoc.getInteger("creatorId"));
-            upVote.setCreatorFirstName(upvoteDoc.getString("firstName"));
-            upVote.setCreatorLastName(upvoteDoc.getString("lastName"));
+            upVote.setFirstName(upvoteDoc.getString("firstName"));
+            upVote.setLastName(upvoteDoc.getString("lastName"));
             upVote.setCreationDate(upvoteDoc.getDate("dateCreated"));
 
             Resource parent = resourceMap.get(upvoteDoc.getInteger("resourceId"));
-            List<UpVote> upvotes = parent.getUpVoteFlags();
+            List<UpVote> upvotes = parent.getUpVotes();
             upvotes.add(upVote);
         });
 

@@ -79,7 +79,7 @@ public class ResourceDAOTest {
         when(mockResource.getCreationDate()).thenReturn(Date.from(Instant.ofEpochSecond(946684800)));
         when(mockResource.getTitle()).thenReturn("Title");
         when(mockResource.getDescription()).thenReturn("Description");
-        when(mockResource.getUrl()).thenReturn("localhost");
+        when(mockResource.getUrl()).thenReturn("http://example.com");
 
         resourceDAO.insertResource(mockCredentials, mockResource);
 
@@ -95,7 +95,7 @@ public class ResourceDAOTest {
             .append("title", "Title")
             .append("description", "Description")
             .append("dateCreated", Date.from(Instant.ofEpochSecond(946684800)))
-            .append("url", "localhost");
+            .append("url", "http://example.com");
         Assertions.assertThat(capturedDoc)
             .usingRecursiveComparison()
             .isEqualTo(expectedDoc);
@@ -114,7 +114,7 @@ public class ResourceDAOTest {
         when(mockResource.getCreationDate()).thenReturn(Date.from(Instant.ofEpochSecond(946684800)));
         when(mockResource.getTitle()).thenReturn("Title");
         when(mockResource.getDescription()).thenReturn("Description");
-        when(mockResource.getUrl()).thenReturn("localhost");
+        when(mockResource.getUrl()).thenReturn("http://example.com");
 
         resourceDAO.insertResource(mockCredentials, mockResource);
 
@@ -130,7 +130,7 @@ public class ResourceDAOTest {
             .append("title", "Title")
             .append("description", "Description")
             .append("dateCreated", Date.from(Instant.ofEpochSecond(946684800)))
-            .append("url", "localhost");
+            .append("url", "http://example.com");
         Assertions.assertThat(capturedDoc)
             .usingRecursiveComparison()
             .isEqualTo(expectedDoc);
@@ -189,7 +189,7 @@ public class ResourceDAOTest {
             .append("title", "Title")
             .append("description", "Description")
             .append("dateCreated", Date.from(Instant.ofEpochSecond(946684800)))
-            .append("url", "localhost");
+            .append("url", "http://example.com");
         when(mockIterable.first()).thenReturn(targetDocument);
         when(resourceCollection.find(any(Bson.class))).thenReturn(mockIterable);
         DeleteResult mockResult = mock(DeleteResult.class);
@@ -224,7 +224,7 @@ public class ResourceDAOTest {
             .append("title", "Title")
             .append("description", "Description")
             .append("dateCreated", Date.from(Instant.ofEpochSecond(946684800)))
-            .append("url", "localhost");
+            .append("url", "http://example.com");
         when(mockIterable.first()).thenReturn(targetDocument);
         when(resourceCollection.find(any(Bson.class))).thenReturn(mockIterable);
 
@@ -262,7 +262,7 @@ public class ResourceDAOTest {
             .append("title", "Title")
             .append("description", "Description")
             .append("dateCreated", Date.from(Instant.ofEpochSecond(946684800)))
-            .append("url", "localhost");
+            .append("url", "http://example.com");
 
         Document resourceDocument2  = new Document()
             .append("resourceId", 2)
@@ -272,7 +272,7 @@ public class ResourceDAOTest {
             .append("title", "Title")
             .append("description", "Description")
             .append("dateCreated", Date.from(Instant.ofEpochSecond(946684800)))
-            .append("url", "localhost");
+            .append("url", "http://example.com");
 
         List<Document> resourceResponse = new ArrayList<Document>();
         
@@ -441,28 +441,28 @@ public class ResourceDAOTest {
         Resource targetResource1  = new Resource();
         targetResource1.setId(1);
         targetResource1.setCreatorId(1);
-        targetResource1.setCreatorFirstName("Foo");
-        targetResource1.setCreatorLastName("Bar");
+        targetResource1.setFirstName("Foo");
+        targetResource1.setLastName("Bar");
         targetResource1.setTitle("Title");
         targetResource1.setDescription("Description");
         targetResource1.setCreationDate(Date.from(Instant.ofEpochSecond(946684800)));
-        targetResource1.setUrl("localhost");
+        targetResource1.setUrl("http://example.com");
 
         List<Comment> r1Comments = new ArrayList<Comment>();
 
         Comment targetComment1  = new Comment();
         targetComment1.setId(1);
         targetComment1.setCreatorId(1);
-        targetComment1.setCreatorFirstName("Foo");
-        targetComment1.setCreatorLastName("Bar");
+        targetComment1.setFirstName("Foo");
+        targetComment1.setLastName("Bar");
         targetComment1.setCreationDate(Date.from(Instant.ofEpochSecond(946684800)));
         targetComment1.setContents("What a comment");
 
         Comment targetComment2  = new Comment();
         targetComment2.setId(2);
         targetComment2.setCreatorId(1);
-        targetComment2.setCreatorFirstName("Foo");
-        targetComment2.setCreatorLastName("Bar");
+        targetComment2.setFirstName("Foo");
+        targetComment2.setLastName("Bar");
         targetComment2.setCreationDate(Date.from(Instant.ofEpochSecond(946684800)));
         targetComment2.setContents("What a comment.");
 
@@ -474,15 +474,15 @@ public class ResourceDAOTest {
         ReviewFlag targetFlag1  = new ReviewFlag();
         targetFlag1.setId(1);
         targetFlag1.setCreatorId(1);
-        targetFlag1.setCreatorFirstName("Foo");
-        targetFlag1.setCreatorLastName("Bar");
+        targetFlag1.setFirstName("Foo");
+        targetFlag1.setLastName("Bar");
         targetFlag1.setCreationDate(Date.from(Instant.ofEpochSecond(946684800)));
 
         ReviewFlag targetFlag2  = new ReviewFlag();
         targetFlag2.setId(2);
         targetFlag2.setCreatorId(1);
-        targetFlag2.setCreatorFirstName("Foo");
-        targetFlag2.setCreatorLastName("Bar");
+        targetFlag2.setFirstName("Foo");
+        targetFlag2.setLastName("Bar");
         targetFlag2.setCreationDate(Date.from(Instant.ofEpochSecond(946684800)));
 
         r1Flags.add(targetFlag1);
@@ -493,41 +493,41 @@ public class ResourceDAOTest {
         UpVote targetUpvote1  = new UpVote();
         targetUpvote1.setId(1);
         targetUpvote1.setCreatorId(1);
-        targetUpvote1.setCreatorFirstName("Foo");
-        targetUpvote1.setCreatorLastName("Bar");
+        targetUpvote1.setFirstName("Foo");
+        targetUpvote1.setLastName("Bar");
         targetUpvote1.setCreationDate(Date.from(Instant.ofEpochSecond(946684800)));
 
         r1Upvotes.add(targetUpvote1);
 
         targetResource1.setComments(r1Comments);
         targetResource1.setReviewFlags(r1Flags);
-        targetResource1.setUpVoteFlags(r1Upvotes);
+        targetResource1.setUpVotes(r1Upvotes);
 
         Resource targetResource2  = new Resource();
         targetResource2.setId(2);
         targetResource2.setCreatorId(1);
-        targetResource2.setCreatorFirstName("Foo");
-        targetResource2.setCreatorLastName("Bar");
+        targetResource2.setFirstName("Foo");
+        targetResource2.setLastName("Bar");
         targetResource2.setTitle("Title");
         targetResource2.setDescription("Description");
         targetResource2.setCreationDate(Date.from(Instant.ofEpochSecond(946684800)));
-        targetResource2.setUrl("localhost");
+        targetResource2.setUrl("http://example.com");
 
         List<Comment> r2Comments = new ArrayList<Comment>();
 
         Comment targetComment3  = new Comment();
         targetComment3.setId(3);
         targetComment3.setCreatorId(1);
-        targetComment3.setCreatorFirstName("Foo");
-        targetComment3.setCreatorLastName("Bar");
+        targetComment3.setFirstName("Foo");
+        targetComment3.setLastName("Bar");
         targetComment3.setCreationDate(Date.from(Instant.ofEpochSecond(946684800)));
         targetComment3.setContents("What a comment?");
 
         Comment targetComment4  = new Comment();
         targetComment4.setId(4);
         targetComment4.setCreatorId(1);
-        targetComment4.setCreatorFirstName("Foo");
-        targetComment4.setCreatorLastName("Bar");
+        targetComment4.setFirstName("Foo");
+        targetComment4.setLastName("Bar");
         targetComment4.setCreationDate(Date.from(Instant.ofEpochSecond(946684800)));
         targetComment4.setContents("What a comment!");
 
@@ -539,8 +539,8 @@ public class ResourceDAOTest {
         ReviewFlag targetFlag3  = new ReviewFlag();
         targetFlag3.setId(3);
         targetFlag3.setCreatorId(1);
-        targetFlag3.setCreatorFirstName("Foo");
-        targetFlag3.setCreatorLastName("Bar");
+        targetFlag3.setFirstName("Foo");
+        targetFlag3.setLastName("Bar");
         targetFlag3.setCreationDate(Date.from(Instant.ofEpochSecond(946684800)));
 
         r2Flags.add(targetFlag3);
@@ -550,15 +550,15 @@ public class ResourceDAOTest {
         UpVote targetUpvote2  = new UpVote();
         targetUpvote2.setId(2);
         targetUpvote2.setCreatorId(1);
-        targetUpvote2.setCreatorFirstName("Foo");
-        targetUpvote2.setCreatorLastName("Bar");
+        targetUpvote2.setFirstName("Foo");
+        targetUpvote2.setLastName("Bar");
         targetUpvote2.setCreationDate(Date.from(Instant.ofEpochSecond(946684800)));
 
         UpVote targetUpvote3  = new UpVote();
         targetUpvote3.setId(3);
         targetUpvote3.setCreatorId(1);
-        targetUpvote3.setCreatorFirstName("Foo");
-        targetUpvote3.setCreatorLastName("Bar");
+        targetUpvote3.setFirstName("Foo");
+        targetUpvote3.setLastName("Bar");
         targetUpvote3.setCreationDate(Date.from(Instant.ofEpochSecond(946684800)));
 
         r2Upvotes.add(targetUpvote2);
@@ -566,7 +566,7 @@ public class ResourceDAOTest {
 
         targetResource2.setComments(r2Comments);
         targetResource2.setReviewFlags(r2Flags);
-        targetResource2.setUpVoteFlags(r2Upvotes);
+        targetResource2.setUpVotes(r2Upvotes);
 
         expected.add(targetResource1);
         expected.add(targetResource2);
