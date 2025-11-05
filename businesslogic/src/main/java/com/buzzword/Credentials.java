@@ -1,11 +1,16 @@
 package com.buzzword;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import org.apache.commons.lang3.RandomStringUtils;
+
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+
+import java.util.Map;
 
 @JsonAutoDetect(fieldVisibility = Visibility.ANY, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class Credentials {
@@ -15,10 +20,10 @@ public class Credentials {
     private Integer id;
     @JsonProperty("fName")
     @JsonAlias({"fName"})
-    private String firstName;
+    private Name firstName;
     @JsonProperty("lName")
     @JsonAlias({"lName"})
-    private String lastName;
+    private Name lastName;
     @JsonProperty("title")
     @JsonAlias({"title"})
     private String title;
@@ -31,70 +36,211 @@ public class Credentials {
     @JsonIgnore
     private String systemRole;
 
-    public Credentials() {
+    private XssSanitizer mySanitizer;
 
+    private final Logger logger = LoggerFactory.getEventLogger();
+
+    /* Constructor */
+    public Credentials() {
+        mySanitizer = new XssSanitizerImpl();
+        logger.debug("finishing the default constructor");
+        firstName = new Name();
     }
 
+    /**
+     * Returns the first name.
+     * <p>
+     * @return
+     */
+    public String getFirstName() {
+        return firstName.getName();
+    }
+
+    /**
+     * Sets the first name
+     * <p>
+     * @param name
+     */
+    public void setFirstName(String name) {
+        firstName.setName(name);
+    }
+
+    /**
+     * Returns the last name
+     * <p>
+     * @return lastName
+     */
+    public String getLastName() {
+        return lastName.getName();
+    }
+
+    /**
+     * Sets the last name
+     * <p>
+     * @param name
+     */
+    public void setLastName(String name) {
+        lastName.setName(name);
+    }
+
+
+    /**
+     * Returns the id for the Credentials
+     * <p>
+     * @return id
+     */
     public Integer getId() {
+        logger.debug("returning the id: " + id);
         return id;
     }
 
+    /**
+     * Sets the id for the Credentials
+     * <p>
+     * The business rules are:
+     * <ul>
+     *   <li>the id must be non-negative</li>
+     * </ul>
+     *
+     * @param id the value to set into the id field
+     * @throws IllegalArgumentException if the id is invalid
+     */
     public void setId(Integer id) {
-        // TODO: Add validation logic for id
+        logger.debug("setting the id");
+        if (id < 0) {
+            logger.error("id must be non-negative");
+            throw new IllegalArgumentException("id must be non-negative");
+        }
         this.id = id;
     }
 
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        // TODO: Add validation logic for firstName
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        // TODO: Add validation logic for lastName
-        this.lastName = lastName;
-    }
-
+    /**
+     * Returns the title of the Credentials
+     * <p>
+     * 
+     * @return title
+     */
     public String getTitle() {
+        logger.debug("returning the title: " + title);
         return title;
     }
 
+    /**
+     * Sets the title of the Credentials
+     * <p>
+     * The business rules are:
+     * <ul>
+     *   <li>the name must have a max length of 64 chars</li>
+     *   <li>XSS strings within the title will be removed</li>
+     * </ul>
+     * @param title
+     * @throws IllegalArgumentException if the title is invalid
+     */
     public void setTitle(String title) {
-        // TODO: Add validation logic for title
-        this.title = title;
+        logger.debug("setting the title");
+        final int maxLenth = 64;
+
+        String sanitizedTitle = mySanitizer.sanitizeInput(title);
+
+        if (sanitizedTitle.length() > maxLenth ) {
+            logger.error("name must not exceed 64 characters");
+            throw new IllegalArgumentException("name must not exceed 64 characters");
+        }
+
+        this.title = sanitizedTitle;
     }
 
+    /**
+     * Returns the department of the Credentials
+     * <p>
+     * @return department
+     */
     public String getDepartment() {
+        logger.debug("returning the department: " + department);
         return department;
     }
 
+    /**
+     * Sets the department of the Credentials
+     * <p>
+     * The business rules are:
+     * <ul>
+     *   <li>the department must have a max length of 64 chars</li>
+     *   <li>XSS strings within the department will be removed</li>
+     * </ul>
+     * @param department
+     * @throws IllegalArgumentException if the department is invalid
+     */
     public void setDepartment(String department) {
-        // TODO: Add validation for department
-        this.department = department;
+        logger.debug("setting the department");
+        final int maxLenth = 64;
+
+        String sanitizedDepartment = mySanitizer.sanitizeInput(department);
+
+        if (sanitizedDepartment.length() > maxLenth ) {
+            logger.error("name must not exceed 64 characters");
+            throw new IllegalArgumentException("name must not exceed 64 characters");
+        }
+
+        this.department = sanitizedDepartment;
     }
 
+    /**
+     * Returns the location of the Credentials
+     * <p>
+     * @return location
+     */
     public String getLocation() {
+        logger.debug("returning the location: " + location);
         return location;
     }
 
+    /**
+     * Sets the location of the Credentials
+     * <p>
+     * The business rules are:
+     * <ul>
+     *   <li>the location must max length of 64 chars</li>
+     *   <li>XSS strings within the location will be removed</li>
+     * </ul>
+     * @param location
+     * @throws IllegalArgumentException if the location is invalid
+     */
     public void setLocation(String location) {
-        // TODO: Add validation for location
-        this.location = location;
+        logger.debug("setting the location");
+        final int maxLenth = 64;
+
+        String sanitizedLocation = mySanitizer.sanitizeInput(location);
+
+        if (sanitizedLocation.length() > maxLenth ) {
+            logger.error("name must not exceed 64 characters");
+            throw new IllegalArgumentException("name must not exceed 64 characters");
+        }
+        this.location = sanitizedLocation;
+    }
+    
+    /** 
+     * Returns the system role of the user
+     * <p>
+     * @return systemRole
+     */
+    public String getSystemRole() {
+        logger.debug("returning the system role: " + systemRole);
+        return systemRole;
     }
 
+    /**
+     * Sets the user's system role
+     * <p>
+     * The business rules are:
+     * <ul>
+     *   <li></li>
+     * </ul>
+     */
     private void setSystemRole() {
         // TODO: Add logic to compute system role
-        this.systemRole = "General User";
-    }
+        logger.debug("setting the system role");
 
-    public String getSystemRole() {
-        return systemRole;
+        // this.systemRole = Map.get(title);
     }
 }
