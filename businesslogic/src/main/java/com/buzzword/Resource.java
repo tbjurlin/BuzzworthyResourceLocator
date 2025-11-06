@@ -6,7 +6,11 @@ import org.apache.commons.validator.routines.UrlValidator;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-
+/**
+ * The Resource class creates a REsource object that holds the title, 
+ * descripiton and URL of a resource as well as all fields from the Record 
+ * class.
+ */
 public class Resource extends Record {
     private String title; 
     private String description; 
@@ -16,7 +20,7 @@ public class Resource extends Record {
     @JsonIgnore
     private List<ReviewFlag> reviewFlags;
     @JsonIgnore
-    private List<UpVote> upVotes;
+    private List<Upvote> upVotes;
 
     private final XssSanitizer resourceSanitizer;
 
@@ -199,7 +203,7 @@ public class Resource extends Record {
      * 
      * @param upVotes
      */
-    private List<UpVote> validateUpVotes(final List<UpVote> upVotes)
+    private List<Upvote> validateUpvotes(final List<Upvote> upVotes)
     {
         if (upVotes == null) {
             logger.error("Upvotes must not be null");
@@ -207,13 +211,13 @@ public class Resource extends Record {
         }
         return upVotes;
     }
-    public List<UpVote> getUpVotes() {
+    public List<Upvote> getUpvotes() {
         logger.debug("returning the upvotes list");
         return upVotes;
     }
-    public void setUpVotes(List<UpVote> upVotes) {
+    public void setUpvotes(List<Upvote> upVotes) {
         logger.debug("setting the upvotes list");
-        this.upVotes = validateUpVotes(upVotes);
+        this.upVotes = validateUpvotes(upVotes);
     }
 
 }

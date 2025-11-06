@@ -519,9 +519,9 @@ public class ResourceDAOTest {
         r1Flags.add(targetFlag1);
         r1Flags.add(targetFlag2);
 
-        List<UpVote> r1Upvotes = new ArrayList<UpVote>();
+        List<Upvote> r1Upvotes = new ArrayList<Upvote>();
 
-        UpVote targetUpvote1  = new UpVote();
+        Upvote targetUpvote1  = new Upvote();
         targetUpvote1.setId(1);
         targetUpvote1.setCreatorId(1);
         targetUpvote1.setFirstName("Foo");
@@ -532,7 +532,7 @@ public class ResourceDAOTest {
 
         targetResource1.setComments(r1Comments);
         targetResource1.setReviewFlags(r1Flags);
-        targetResource1.setUpVotes(r1Upvotes);
+        targetResource1.setUpvotes(r1Upvotes);
 
         Resource targetResource2  = new Resource();
         targetResource2.setId(2);
@@ -576,16 +576,16 @@ public class ResourceDAOTest {
 
         r2Flags.add(targetFlag3);
 
-        List<UpVote> r2Upvotes = new ArrayList<UpVote>();
+        List<Upvote> r2Upvotes = new ArrayList<Upvote>();
 
-        UpVote targetUpvote2  = new UpVote();
+        Upvote targetUpvote2  = new Upvote();
         targetUpvote2.setId(2);
         targetUpvote2.setCreatorId(1);
         targetUpvote2.setFirstName("Foo");
         targetUpvote2.setLastName("Bar");
         targetUpvote2.setCreationDate(Date.from(Instant.ofEpochSecond(946684800)));
 
-        UpVote targetUpvote3  = new UpVote();
+        Upvote targetUpvote3  = new Upvote();
         targetUpvote3.setId(3);
         targetUpvote3.setCreatorId(1);
         targetUpvote3.setFirstName("Foo");
@@ -597,7 +597,7 @@ public class ResourceDAOTest {
 
         targetResource2.setComments(r2Comments);
         targetResource2.setReviewFlags(r2Flags);
-        targetResource2.setUpVotes(r2Upvotes);
+        targetResource2.setUpvotes(r2Upvotes);
 
         expected.add(targetResource1);
         expected.add(targetResource2);

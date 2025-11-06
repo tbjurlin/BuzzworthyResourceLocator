@@ -38,7 +38,7 @@ public class UpvoteDAOImpl
      * {@inheritDoc}
      */
     @Override
-    public void addUpvote(Credentials user, UpVote upvote, int resourceId) {
+    public void addUpvote(Credentials user, Upvote upvote, int resourceId) {
         if (user.getSystemRole() != "Admin" && user.getSystemRole() != "Contributor" && user.getSystemRole() != "Commenter") {
             logger.error(String.format("User %d with missing or invalid system role %s attempted to add an upvote.", user.getId(), user.getSystemRole()));
             throw new AuthorizationException("System role of user is missing or invalid.");

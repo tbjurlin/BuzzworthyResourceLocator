@@ -1,5 +1,9 @@
 package com.buzzword;
 
+/**
+ * The Comment class creates a comment object that holds the content of a 
+ * comment as well as all fields from the Record class.
+ */
 public class Comment extends Record {
     private String contents;
 

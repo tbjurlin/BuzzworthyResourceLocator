@@ -142,7 +142,7 @@ public class ResourceDAOImpl implements ResourceDAO {
             Resource resource = convertDocumentToResource(resDoc);
             resource.setComments(new ArrayList<Comment>());
             resource.setReviewFlags(new ArrayList<ReviewFlag>());
-            resource.setUpVotes(new ArrayList<UpVote>());
+            resource.setUpvotes(new ArrayList<Upvote>());
             resourceMap.put(resource.getId(), resource);
             System.out.println(resourceMap);
         });
@@ -175,7 +175,7 @@ public class ResourceDAOImpl implements ResourceDAO {
         });
 
         upvotes.find().forEach(upvoteDoc -> {
-            UpVote upVote = new UpVote();
+            Upvote upVote = new Upvote();
             upVote.setId(upvoteDoc.getInteger("upvoteId"));
             upVote.setCreatorId(upvoteDoc.getInteger("creatorId"));
             upVote.setFirstName(upvoteDoc.getString("firstName"));
@@ -183,7 +183,7 @@ public class ResourceDAOImpl implements ResourceDAO {
             upVote.setCreationDate(upvoteDoc.getDate("dateCreated"));
 
             Resource parent = resourceMap.get(upvoteDoc.getInteger("resourceId"));
-            List<UpVote> upvotes = parent.getUpVotes();
+            List<Upvote> upvotes = parent.getUpvotes();
             upvotes.add(upVote);
         });
 
