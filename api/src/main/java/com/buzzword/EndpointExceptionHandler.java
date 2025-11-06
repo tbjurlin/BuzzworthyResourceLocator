@@ -105,6 +105,34 @@ public class EndpointExceptionHandler {
                              .body("{\"errorMsg\": \"Invalid parameter provided for the requested operation.\"}");
     }
 
+    /**
+     * Exception handler for when a record being added already exists. 
+     * 
+     * @param e A RecordAlreadyExistsException.
+     * @return  A JSON-formatted HTTP response with a 400 error code and message.
+     */
+    @ExceptionHandler(RecordAlreadyExistsException.class)
+    public ResponseEntity<String> handleRecordAlreadyExistsException(RecordAlreadyExistsException e) {
+        logger.error("Returning HTTP response code 400: The record to be added already exists.");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                             .contentType(MediaType.APPLICATION_JSON)
+                             .body("{\"errorMsg\": \"The record to be added already exists.\"}");
+    }
+
+    /**
+     * Exception handler for when a requested record does not exist. 
+     * 
+     * @param e A RecordDoesNotExistException.
+     * @return  A JSON-formatted HTTP response with a 400 error code and message.
+     */
+    @ExceptionHandler(RecordDoesNotExistException.class)
+    public ResponseEntity<String> handleRecordDoesNotExistException(RecordDoesNotExistException e) {
+        logger.error("Returning HTTP response code 400: The requested record does not exist.");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                             .contentType(MediaType.APPLICATION_JSON)
+                             .body("{\"errorMsg\": \"The requested record does not exist.\"}");
+    }
+
 
     
     /*
@@ -141,13 +169,13 @@ public class EndpointExceptionHandler {
      * @param e An AuthorizationException.
      * @return  A JSON-formatted HTTP response with a 403 error code and message.
      */
-    /*@ExceptionHandler(AuthorizationException.class)
+    @ExceptionHandler(AuthorizationException.class)
     public ResponseEntity<String> handleAuthorizationException(AuthorizationException e) {
         securityLogger.error("Returning HTTP response code 403: User lacks necessary permissions to perform request.");
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
                              .contentType(MediaType.APPLICATION_JSON)
                              .body("{\"errorMsg\": \"User lacks necessary permissions to perform request.\"}");
-    }*/
+    }
 
     /*
      * =======================================================================================
@@ -227,17 +255,32 @@ public class EndpointExceptionHandler {
      * =======================================================================================
      */
 
-
-
-
-
-
-/*  Exception Handler Template
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleException(Exception e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+    /**
+     * Exception handler for when an internal error occurs due to an illegal argument.
+     * 
+     * @param e An IllegalArgumentException.
+     * @return  A JSON-formatted HTTP response with a 500 error code and message.
+     */
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException e) {
+        logger.error("Returning HTTP response code 500: Fatal internal error occurred");
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                              .contentType(MediaType.APPLICATION_JSON)
-                             .body(e.toString());
-    } */
+                             .body("{\"errorMsg\": \"Fatal internal error occurred.\"}");
+    }
+
+    /**
+     * Exception handler for when an internal error occurs due to a null pointer.
+     * 
+     * @param e A NullPointerException.
+     * @return  A JSON-formatted HTTP response with a 500 error code and message.
+     */
+    @ExceptionHandler(NullPointerException.class)
+    public ResponseEntity<String> handleNullPointerException(NullPointerException e) {
+        logger.error("Returning HTTP response code 500: Fatal internal error occurred");
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                             .contentType(MediaType.APPLICATION_JSON)
+                             .body("{\"errorMsg\": \"Fatal internal error occurred.\"}");
+    }
+
 }
