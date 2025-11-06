@@ -141,13 +141,13 @@ public class EndpointExceptionHandler {
      * @param e An AuthorizationException.
      * @return  A JSON-formatted HTTP response with a 403 error code and message.
      */
-    /*@ExceptionHandler(AuthorizationException.class)
+    @ExceptionHandler(AuthorizationException.class)
     public ResponseEntity<String> handleAuthorizationException(AuthorizationException e) {
         securityLogger.error("Returning HTTP response code 403: User lacks necessary permissions to perform request.");
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
                              .contentType(MediaType.APPLICATION_JSON)
                              .body("{\"errorMsg\": \"User lacks necessary permissions to perform request.\"}");
-    }*/
+    }
 
     /*
      * =======================================================================================
@@ -227,6 +227,33 @@ public class EndpointExceptionHandler {
      * =======================================================================================
      */
 
+    /**
+     * Exception handler for when an internal error occurs due to an illegal argument.
+     * 
+     * @param e An IllegalArgumentException.
+     * @return  A JSON-formatted HTTP response with a 500 error code and message.
+     */
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException e) {
+        logger.error("Returning HTTP response code 500: Fatal internal error occurred");
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                             .contentType(MediaType.APPLICATION_JSON)
+                             .body("{\"errorMsg\": \"Fatal internal error occurred.\"}");
+    }
+
+    /**
+     * Exception handler for when an internal error occurs due to a null pointer.
+     * 
+     * @param e A NullPointerException.
+     * @return  A JSON-formatted HTTP response with a 500 error code and message.
+     */
+    @ExceptionHandler(NullPointerException.class)
+    public ResponseEntity<String> handleNullPointerException(NullPointerException e) {
+        logger.error("Returning HTTP response code 500: Fatal internal error occurred");
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                             .contentType(MediaType.APPLICATION_JSON)
+                             .body("{\"errorMsg\": \"Fatal internal error occurred.\"}");
+    }
 
 
 
