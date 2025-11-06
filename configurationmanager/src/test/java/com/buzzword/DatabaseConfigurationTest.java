@@ -42,7 +42,7 @@ class DatabaseConfigurationTest {
     @Test
     void rejectsNullDatabaseName() {
         when(manager.getDatabaseName()).thenReturn(null);
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(ConfigurationException.class, () -> {
             new DatabaseConfigurationImpl(manager);
         });
     }
@@ -50,7 +50,7 @@ class DatabaseConfigurationTest {
     @Test
     void rejectsNullDatabaseUserName() {
         when(manager.getDatabaseUserName()).thenReturn(null);
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(ConfigurationException.class, () -> {
             new DatabaseConfigurationImpl(manager);
         });
     }
@@ -58,7 +58,7 @@ class DatabaseConfigurationTest {
     @Test
     void rejectsNullDatabasePassword() {
         when(manager.getDatabasePassword()).thenReturn(null);
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(ConfigurationException.class, () -> {
             new DatabaseConfigurationImpl(manager);
         });
     }
@@ -66,7 +66,7 @@ class DatabaseConfigurationTest {
     @Test
     void rejectsNullDatabaseHost() {
         when(manager.getDatabaseHost()).thenReturn(null);
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(ConfigurationException.class, () -> {
             new DatabaseConfigurationImpl(manager);
         });
     }
@@ -74,7 +74,7 @@ class DatabaseConfigurationTest {
     @Test
     void rejectsNullDatabasePort() {
         when(manager.getDatabasePort()).thenReturn(null);
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(ConfigurationException.class, () -> {
             new DatabaseConfigurationImpl(manager);
         });
     }
@@ -82,7 +82,7 @@ class DatabaseConfigurationTest {
     @Test
     void rejectsNullDatabaseMinPoolSize() {
         when(manager.getDatabaseMinPoolSize()).thenReturn(null);
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(ConfigurationException.class, () -> {
             new DatabaseConfigurationImpl(manager);
         });
     }
@@ -90,7 +90,7 @@ class DatabaseConfigurationTest {
     @Test
     void rejectsNullDatabaseMaxPoolSize() {
         when(manager.getDatabaseMaxPoolSize()).thenReturn(null);
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(ConfigurationException.class, () -> {
             new DatabaseConfigurationImpl(manager);
         });
     }
@@ -106,7 +106,7 @@ class DatabaseConfigurationTest {
     @Test
     void rejectsEmptyPassword() {
         when(manager.getDatabasePassword()).thenReturn("");
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(ConfigurationException.class, () -> {
             new DatabaseConfigurationImpl(manager);
         });
     }
@@ -114,7 +114,7 @@ class DatabaseConfigurationTest {
     @Test
     void rejectsEmptyHost() {
         when(manager.getDatabaseHost()).thenReturn("");
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(ConfigurationException.class, () -> {
             new DatabaseConfigurationImpl(manager);
         });
     }
@@ -122,7 +122,7 @@ class DatabaseConfigurationTest {
     @Test
     void rejectsTooSmallPort() {
         when(manager.getDatabasePort()).thenReturn("0");
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(ConfigurationException.class, () -> {
             new DatabaseConfigurationImpl(manager);
         });
     }
@@ -130,7 +130,7 @@ class DatabaseConfigurationTest {
     @Test
     void rejectsTooLargePort() {
         when(manager.getDatabasePort()).thenReturn("65536");
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(ConfigurationException.class, () -> {
             new DatabaseConfigurationImpl(manager);
         });
     }
@@ -138,7 +138,7 @@ class DatabaseConfigurationTest {
     @Test
     void rejectsTooSmallMinPool() {
         when(manager.getDatabaseMinPoolSize()).thenReturn("-1");
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(ConfigurationException.class, () -> {
             new DatabaseConfigurationImpl(manager);
         });
     }
@@ -146,7 +146,7 @@ class DatabaseConfigurationTest {
     @Test
     void rejectsTooNonNumericMinPool() {
         when(manager.getDatabaseMinPoolSize()).thenReturn("five");
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(ConfigurationException.class, () -> {
             new DatabaseConfigurationImpl(manager);
         });
     }
@@ -154,7 +154,7 @@ class DatabaseConfigurationTest {
     @Test
     void rejectsTooSmallMaxPool() {
         when(manager.getDatabaseMaxPoolSize()).thenReturn("0");
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(ConfigurationException.class, () -> {
             new DatabaseConfigurationImpl(manager);
         });
     }
@@ -162,7 +162,7 @@ class DatabaseConfigurationTest {
     @Test
     void rejectsTooNonNumericMaxPool() {
         when(manager.getDatabaseMaxPoolSize()).thenReturn("five");
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(ConfigurationException.class, () -> {
             new DatabaseConfigurationImpl(manager);
         });
     }
@@ -171,7 +171,7 @@ class DatabaseConfigurationTest {
     void rejectsMaxPoolLessThanMinPool() {
         when(manager.getDatabaseMinPoolSize()).thenReturn("10");
         when(manager.getDatabaseMaxPoolSize()).thenReturn("5");
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(ConfigurationException.class, () -> {
             new DatabaseConfigurationImpl(manager);
         });
     }

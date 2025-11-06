@@ -27,7 +27,7 @@ public class DatabaseConfigurationImpl implements DatabaseConfiguration {
      * <p>
      * Constructs a database configuration, reading configuration information from the
      * configuration manager. 
-     * @throws IllegalArgumentException If a field in the config file is invalid or missing.
+     * @throws ConfigurationException If a field in the config file is invalid or missing.
      */
     public DatabaseConfigurationImpl(ConfigurationManager manager) {
         
@@ -60,41 +60,41 @@ public class DatabaseConfigurationImpl implements DatabaseConfiguration {
      * @param password the password of the database user.
      * @param host the host URL of the database.
      * @param port the port the databse is hosted on.
-     * @throws IllegalArgumentException if any of the fields are invalid.
+     * @throws ConfigurationException if any of the fields are invalid.
      */
-    private void createDatabaseConnectionString(String userName, String password, String host, String port) throws IllegalArgumentException {
+    private void createDatabaseConnectionString(String userName, String password, String host, String port) {
 
         if (userName == null) {
             logger.error("Config file is missing required field database.userName.");
-            throw new IllegalArgumentException("Database username is missing.");
+            throw new ConfigurationException("Database username is missing.");
         }
         if (password == null) {
             logger.error("Config file is missing required field database.password.");
-            throw new IllegalArgumentException("Database password is missing.");
+            throw new ConfigurationException("Database password is missing.");
         }
         if (host == null) {
             logger.error("Config file is missing required field host.");
-            throw new IllegalArgumentException("Host is null.");
+            throw new ConfigurationException("Host is null.");
         }
         if (port == null) {
             logger.error("Config file is missing required field port.");
-            throw new IllegalArgumentException("Port is null.");
+            throw new ConfigurationException("Port is null.");
         }
 
         String safeUserName = sanitizer.sanitizeInput(userName);
 
         if (safeUserName.length() < 1 || safeUserName.length() > 128) {
             logger.error("Database userName length is invalid.");
-            throw new IllegalArgumentException("Database username has invalid length.");
+            throw new ConfigurationException("Database username has invalid length.");
         }
 
         if (password == "") {
             logger.error("Database password is empty.");
-            throw new IllegalArgumentException("Database password is empty.");
+            throw new ConfigurationException("Database password is empty.");
         }
         if (host == "") {
             logger.error("Database host is empty.");
-            throw new IllegalArgumentException("Database host is empty.");
+            throw new ConfigurationException("Database host is empty.");
         }
 
         String safePassword = sanitizer.sanitizeInput(password);
@@ -106,11 +106,11 @@ public class DatabaseConfigurationImpl implements DatabaseConfiguration {
             Integer portNum = Integer.parseInt(safePort);
             if (portNum < 1 || portNum > 65535) {
                 logger.error("Port number is not in the valid port range.");
-                throw new IllegalArgumentException("Invalid port number.");
+                throw new ConfigurationException("Invalid port number.");
             }
         }  catch (NumberFormatException e) {
             logger.error("database.port is not a number.");
-            throw new IllegalArgumentException("Invalid port number.");
+            throw new ConfigurationException("Invalid port number.");
         }
 
 
@@ -124,7 +124,7 @@ public class DatabaseConfigurationImpl implements DatabaseConfiguration {
     }
 
     /**
-     * {@inheritDocs}
+     * {@inheritDoc}
      */
     @Override
     public String getDatabaseConnectionString() {
@@ -141,13 +141,13 @@ public class DatabaseConfigurationImpl implements DatabaseConfiguration {
             
             if (numConnections < 0) {
                 logger.error("Number of minimum connections is less than zero.");
-                throw new IllegalArgumentException("Invalid minimum number of connections.");
+                throw new ConfigurationException("Invalid minimum number of connections.");
             }
 
             minDatabaseConnections = numConnections;
         } catch (NumberFormatException e) {
             logger.error("Minimum connections is not a number.");
-            throw new IllegalArgumentException("Invalid minimum number of connections.");
+            throw new ConfigurationException("Invalid minimum number of connections.");
         }
     }
 
@@ -161,18 +161,18 @@ public class DatabaseConfigurationImpl implements DatabaseConfiguration {
             
             if (numConnections < 1 || numConnections < minDatabaseConnections) {
                 logger.error("Maximum number of connections is less than one or the minimum number of connections.");
-                throw new IllegalArgumentException("Invalid maximum number of connections.");
+                throw new ConfigurationException("Invalid maximum number of connections.");
             }
 
             maxDatabaseConnections = numConnections;
         } catch (NumberFormatException e) {
             logger.error("Maximum number of connections is not a number.");
-            throw new IllegalArgumentException("Invalid maximum number of connections.");
+            throw new ConfigurationException("Invalid maximum number of connections.");
         }
     }
 
     /**
-     * {@inheritDocs}
+     * {@inheritDoc}
      */
     @Override
     public Integer getMinDatabaseConnections() {
@@ -180,7 +180,7 @@ public class DatabaseConfigurationImpl implements DatabaseConfiguration {
     }
 
     /**
-     * {@inheritDocs}
+     * {@inheritDoc}
      */
     @Override
     public Integer getMaxDatabaseConnections() {
@@ -194,14 +194,14 @@ public class DatabaseConfigurationImpl implements DatabaseConfiguration {
     private void setDatabaseName(String databaseName) {
         if (databaseName == null) {
             logger.error("Config file is missing required field database.name.");
-            throw new IllegalArgumentException("Database name is missing.");
+            throw new ConfigurationException("Database name is missing.");
         }
         String safeDatabaseName = sanitizer.sanitizeInput(databaseName);
         this.databaseName = safeDatabaseName;
     }
 
     /**
-     * {@inheritDocs}
+     * {@inheritDoc}
      */
     @Override
     public String getDatabaseName() {

@@ -30,7 +30,7 @@ import jakarta.validation.Valid;
 @RequestMapping("wiki")
 public class WikiEndpoint {
 
-    private String authServerUrl = "";
+    private String authServerUrl;
     private final Logger logger = LoggerFactory.getEventLogger();
     private DatabaseConnectionPool databaseConnectionPool;
 
@@ -40,6 +40,8 @@ public class WikiEndpoint {
      */
     @PostConstruct
     public void initialize() {
+        AuthServerConfiguration config = new AuthServerConfigurationImpl(ConfigurationManagerImpl.getInstance());
+        authServerUrl = config.getAuthServerConnectionString();
         try{
             databaseConnectionPool = DatabaseConnectionPool.getInstance();
         } catch(IOException | IllegalArgumentException e) {

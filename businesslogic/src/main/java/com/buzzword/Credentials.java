@@ -40,7 +40,7 @@ public class Credentials {
 
     private XssSanitizer mySanitizer;
 
-    private final Logger logger = LoggerFactory.getEventLogger();
+    private final Logger logger = LoggerFactory.getSecurityLogger();
 
     /* Constructor */
     public Credentials() {
@@ -227,22 +227,19 @@ public class Credentials {
      * @return systemRole
      */
     public String getSystemRole() {
+        RoleConfiguration config = new RoleConfigurationImpl(ConfigurationManagerImpl.getInstance());
+        Map<String, String> roleMap = config.getRoleMap();
+
+        String systemRole = roleMap.get(title);
+
+        if (systemRole != "Admin" && systemRole != "Contributor" && systemRole != "Commenter") {
+            logger.error(String.format("User possesses invalid system role %s", systemRole));
+            throw new IllegalArgumentException("Invalid system role");
+        }
+        this.systemRole = systemRole;
+        logger.debug(String.format("setting the system role: %s", systemRole));
+
         logger.debug("returning the system role: " + systemRole);
         return systemRole;
-    }
-
-    /**
-     * Sets the user's system role
-     * <p>
-     * The business rules are:
-     * <ul>
-     *   <li></li>
-     * </ul>
-     */
-    private void setSystemRole() {
-        // TODO: Add logic to compute system role
-        logger.debug("setting the system role");
-
-        // this.systemRole = Map.get(title);
     }
 }
