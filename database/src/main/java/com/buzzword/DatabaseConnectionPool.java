@@ -69,7 +69,7 @@ public class DatabaseConnectionPool {
      */
     public MongoDatabase getDatabaseConnection() {
         MongoDatabase db = client.getDatabase(config.getDatabaseName());
-        logger.info(String.format("Acquired database {}", config.getDatabaseName()));
+        logger.info(String.format("Acquired database %s", config.getDatabaseName()));
         return db;
     }
     

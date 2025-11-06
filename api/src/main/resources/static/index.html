@@ -21,7 +21,7 @@
         <h3>Purpose — Insert a new resource record into the database.</h3>
         <h3>Request header — Bearer: abcdefg...tuvwxyz where this string is an SSO token.</h3>
         <h3>Request body — {resource} where the resource is in the format shown at the bottom of this page.</h3>
-        <p>* Note that inserted resources should omit the "comments", "upVotes", and "reviewFlags" fields</p>
+        <p>* Note that inserted resources should omit the "comments", "upvotes", and "reviewFlags" fields</p>
         <h3>Return body — {resource} where the resource is the inserted resource in the format shown at the bottom of this page.</h3>
         <h3>Return code — 201 (successfully added), 400 (misformatted request), 401 (unable to authenticate user), 403 (insufficient user permissions), 404 (unable to add resource)</h3>
         <hr>
@@ -35,9 +35,9 @@
         <h2>POST http://localhost:8080/BRL/api/wiki/resource/{resourceId}/upvote</h2>
         <h3>Purpose — Add an upvote to an existing resource record.</h3>
         <h3>Request header — Bearer: abcdefg...tuvwxyz where this string is an SSO token.</h3>
-        <h3>Request body — {upVote} where the upVote is in the format shown at the bottom of this page.</h3>
+        <h3>Request body — {upvote} where the upvote is in the format shown at the bottom of this page.</h3>
         <h3>Return body — {resource} where the resource is the newly upvoted resource in the format shown at the bottom of this page.</h3>
-        <h3>Return code — 201 (successfully added), 400 (misformatted request), 401 (unable to authenticate user), 403 (insufficient user permissions), 404 (unable to add upVote)</h3>
+        <h3>Return code — 201 (successfully added), 400 (misformatted request), 401 (unable to authenticate user), 403 (insufficient user permissions), 404 (unable to add upvote)</h3>
         <hr>
         <h2>POST http://localhost:8080/BRL/api/wiki/resource/{resourceId}/reviewFlag</h2>
         <h3>Purpose — Add a flag for manager review to an existing resource record.</h3>
@@ -57,9 +57,9 @@
         <h3>Return code — 200 (successfully deleted), 400 (misformatted request), 401 (unable to authenticate user), 403 (insufficient user permissions), 404 (unable to delete specified comment)</h3>
         <hr>
         <h2>DELETE http://localhost:8080/BRL/api/wiki/resource/{resourceId}/upvote/{upvoteId}</h2>
-        <h3>Purpose — Delete a specific upVote from a specific existing resource record.</h3>
+        <h3>Purpose — Delete a specific upvote from a specific existing resource record.</h3>
         <h3>Request header — Bearer: abcdefg...tuvwxyz where this string is an SSO token.</h3>
-        <h3>Return code — 200 (successfully deleted), 400 (misformatted request), 401 (unable to authenticate user), 403 (insufficient user permissions), 404 (unable to delete specified upVote)</h3>
+        <h3>Return code — 200 (successfully deleted), 400 (misformatted request), 401 (unable to authenticate user), 403 (insufficient user permissions), 404 (unable to delete specified upvote)</h3>
         <hr>
         <h2>DELETE http://localhost:8080/BRL/api/wiki/resource/{resourceId}/reviewFlag/{flagId}</h2>
         <h3>Purpose — Delete a specific reviewFlag from a specific existing resource record.</h3>
@@ -78,7 +78,7 @@
             "description": "A meaningful description...", <br>
             "url": "http://...", <br>
             "comments": {{comment},{comment},...,{comment}}, <br>
-            "upVotes": {{upVote},{upVote},...,{upVote}}, <br>
+            "upvotes": {{upvote},{upvote},...,{upvote}}, <br>
             "reviewFlags": {{reviewFlag},{reviewFlag},...,{reviewFlag}}, <br>
             }
         </p>
@@ -93,7 +93,7 @@
             }
         </p>
         <p style="padding-left: 110px; text-indent: -110px;">
-            {upVote} = {"id": #, <br>
+            {upvote} = {"id": #, <br>
             "creatorID": #, <br>
             "creatorFirstName": "First", <br>
             "creatorLastName": "Last", <br>
