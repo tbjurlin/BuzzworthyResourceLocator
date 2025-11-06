@@ -203,7 +203,7 @@ public class Resource extends Record {
      * 
      * @param upVotes
      */
-    private List<Upvote> validateUpVotes(final List<Upvote> upVotes)
+    private List<Upvote> validateUpvotes(final List<Upvote> upVotes)
     {
         if (upVotes == null) {
             logger.error("Upvotes must not be null");
@@ -211,13 +211,13 @@ public class Resource extends Record {
         }
         return upVotes;
     }
-    public List<Upvote> getUpVotes() {
+    public List<Upvote> getUpvotes() {
         logger.debug("returning the upvotes list");
         return upVotes;
     }
-    public void setUpVotes(List<Upvote> upVotes) {
+    public void setUpvotes(List<Upvote> upVotes) {
         logger.debug("setting the upvotes list");
-        this.upVotes = validateUpVotes(upVotes);
+        this.upVotes = validateUpvotes(upVotes);
     }
 
 }
