@@ -10,7 +10,6 @@ import static org.mockito.Mockito.when;
 
 import java.time.Instant;
 import java.util.Date;
-
 import org.assertj.core.api.Assertions;
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -74,17 +73,11 @@ public class FlagDAOTest {
 
         when(mockCounterDAO.getNextReviewFlagId(1)).thenReturn(1);
 
-        ReviewFlag mockUpvote = mock(ReviewFlag.class);
-        when(mockUpvote.getCreationDate()).thenReturn(Date.from(Instant.ofEpochSecond(946684800)));
+        ReviewFlag mockFlag = mock(ReviewFlag.class);
+        when(mockFlag.getCreationDate()).thenReturn(Date.from(Instant.ofEpochSecond(946684800)));
+        when(mockFlag.getContents()).thenReturn("Thanks for the suggestion!");
 
-        @SuppressWarnings("unchecked")
-        FindIterable<Document> mockIterable = (FindIterable<Document>) mock(FindIterable.class);
-        
-        when(mockIterable.first()).thenReturn(null);
-        when(testCollection.find(any(Bson.class))).thenReturn(mockIterable);
-
-
-        flagDAO.addReviewFlag(mockCredentials, mockUpvote, 1);
+        flagDAO.addReviewFlag(mockCredentials, mockFlag, 1);
 
         ArgumentCaptor<Document> captor = ArgumentCaptor.forClass(Document.class);
         verify(testCollection).insertOne(captor.capture());
@@ -96,7 +89,8 @@ public class FlagDAOTest {
             .append("flagId", 1)
             .append("firstName", "Foo")
             .append("lastName", "Bar")
-            .append("dateCreated", Date.from(Instant.ofEpochSecond(946684800)));
+            .append("dateCreated", Date.from(Instant.ofEpochSecond(946684800)))
+            .append("contents", "Thanks for the suggestion!");
         Assertions.assertThat(capturedDoc)
             .usingRecursiveComparison()
             .isEqualTo(expectedDoc);
@@ -112,17 +106,11 @@ public class FlagDAOTest {
 
         when(mockCounterDAO.getNextReviewFlagId(1)).thenReturn(1);
 
-        ReviewFlag mockUpvote = mock(ReviewFlag.class);
-        when(mockUpvote.getCreationDate()).thenReturn(Date.from(Instant.ofEpochSecond(946684800)));
+        ReviewFlag mockFlag = mock(ReviewFlag.class);
+        when(mockFlag.getCreationDate()).thenReturn(Date.from(Instant.ofEpochSecond(946684800)));
+        when(mockFlag.getContents()).thenReturn("Thanks for the suggestion!");
 
-        @SuppressWarnings("unchecked")
-        FindIterable<Document> mockIterable = (FindIterable<Document>) mock(FindIterable.class);
- 
-        when(mockIterable.first()).thenReturn(null);
-        when(testCollection.find(any(Bson.class))).thenReturn(mockIterable);
-
-
-        flagDAO.addReviewFlag(mockCredentials, mockUpvote, 1);
+        flagDAO.addReviewFlag(mockCredentials, mockFlag, 1);
 
         ArgumentCaptor<Document> captor = ArgumentCaptor.forClass(Document.class);
         verify(testCollection).insertOne(captor.capture());
@@ -134,7 +122,8 @@ public class FlagDAOTest {
             .append("firstName", "Foo")
             .append("creatorId", 1)
             .append("lastName", "Bar")
-            .append("dateCreated", Date.from(Instant.ofEpochSecond(946684800)));
+            .append("dateCreated", Date.from(Instant.ofEpochSecond(946684800)))
+            .append("contents", "Thanks for the suggestion!");
         Assertions.assertThat(capturedDoc)
             .usingRecursiveComparison()
             .isEqualTo(expectedDoc);
@@ -150,17 +139,11 @@ public class FlagDAOTest {
 
         when(mockCounterDAO.getNextReviewFlagId(1)).thenReturn(1);
 
-        ReviewFlag mockUpvote = mock(ReviewFlag.class);
-        when(mockUpvote.getCreationDate()).thenReturn(Date.from(Instant.ofEpochSecond(946684800)));
+        ReviewFlag mockFlag = mock(ReviewFlag.class);
+        when(mockFlag.getCreationDate()).thenReturn(Date.from(Instant.ofEpochSecond(946684800)));
+        when(mockFlag.getContents()).thenReturn("Thanks for the suggestion!");
 
-        @SuppressWarnings("unchecked")
-        FindIterable<Document> mockIterable = (FindIterable<Document>) mock(FindIterable.class);
-        
-        when(mockIterable.first()).thenReturn(null);
-        when(testCollection.find(any(Bson.class))).thenReturn(mockIterable);
-
-
-        flagDAO.addReviewFlag(mockCredentials, mockUpvote, 1);
+        flagDAO.addReviewFlag(mockCredentials, mockFlag, 1);
 
         ArgumentCaptor<Document> captor = ArgumentCaptor.forClass(Document.class);
         verify(testCollection).insertOne(captor.capture());
@@ -172,37 +155,11 @@ public class FlagDAOTest {
             .append("firstName", "Foo")
             .append("creatorId", 1)
             .append("lastName", "Bar")
-            .append("dateCreated", Date.from(Instant.ofEpochSecond(946684800)));
+            .append("dateCreated", Date.from(Instant.ofEpochSecond(946684800)))
+            .append("contents", "Thanks for the suggestion!");
         Assertions.assertThat(capturedDoc)
             .usingRecursiveComparison()
             .isEqualTo(expectedDoc);
-    }
-
-    @Test
-    void duplicateUpvoteMayNotBeSubmitted() {
-        Credentials mockCredentials = mock(Credentials.class);
-        when(mockCredentials.getId()).thenReturn(1);
-        when(mockCredentials.getSystemRole()).thenReturn("Commenter");
-
-        ReviewFlag mockUpvote = mock(ReviewFlag.class);
-
-        @SuppressWarnings("unchecked")
-        FindIterable<Document> mockIterable = (FindIterable<Document>) mock(FindIterable.class);
-        Document targetDocument  = new Document()
-            .append("flagId", 1)
-            .append("resourceId", 1)
-            .append("creatorId", 1)
-            .append("firstName", "Foo")
-            .append("lastName", "Bar")
-            .append("dateCreated", Date.from(Instant.ofEpochSecond(946684800)));
-        when(mockIterable.first()).thenReturn(targetDocument);
-        when(testCollection.find(any(Bson.class))).thenReturn(mockIterable);
-
-        assertThrows(RecordAlreadyExistsException.class, () -> {
-            flagDAO.addReviewFlag(mockCredentials, mockUpvote, 1);
-        });
-
-        verify(testCollection, never()).insertOne(any());
     }
 
     @Test
@@ -210,10 +167,10 @@ public class FlagDAOTest {
         Credentials mockCredentials = mock(Credentials.class);
         when(mockCredentials.getSystemRole()).thenReturn("Some Invalid Role");
 
-        ReviewFlag mockUpvote = mock(ReviewFlag.class);
+        ReviewFlag mockFlag = mock(ReviewFlag.class);
 
         assertThrows(AuthorizationException.class, () -> {
-            flagDAO.addReviewFlag(mockCredentials, mockUpvote, 1);
+            flagDAO.addReviewFlag(mockCredentials, mockFlag, 1);
         });
 
         verify(testCollection, never()).insertOne(any());
@@ -235,12 +192,12 @@ public class FlagDAOTest {
         verify(testCollection).deleteOne(captor.capture());
 
         Bson capturedFilter = captor.getValue();
-        Bson expectedFilter = Filters.and(Filters.eq("flagId", 1), Filters.eq("resourceId", 1));
+        Bson expectedFilter = Filters.and(Filters.eq("resourceId", 1), Filters.eq("flagId", 1));
         Assertions.assertThat(capturedFilter)
             .usingRecursiveComparison()
             .isEqualTo(expectedFilter);
     }
-    
+
     @Test
     void developerMayDeleteIfCreator() {
         Credentials mockCredentials = mock(Credentials.class);
@@ -255,7 +212,8 @@ public class FlagDAOTest {
             .append("creatorId", 1)
             .append("firstName", "Foo")
             .append("lastName", "Bar")
-            .append("dateCreated", Date.from(Instant.ofEpochSecond(946684800)));
+            .append("dateCreated", Date.from(Instant.ofEpochSecond(946684800)))
+            .append("contents", "Thanks for the suggestion!");
         when(mockIterable.first()).thenReturn(targetDocument);
         when(testCollection.find(any(Bson.class))).thenReturn(mockIterable);
         DeleteResult mockResult = mock(DeleteResult.class);
@@ -268,7 +226,7 @@ public class FlagDAOTest {
         verify(testCollection).deleteOne(captor.capture());
 
         Bson capturedFilter = captor.getValue();
-        Bson expectedFilter = Filters.and(Filters.eq("flagId", 1), Filters.eq("resourceId", 1));
+        Bson expectedFilter = Filters.and(Filters.eq("resourceId", 1), Filters.eq("flagId", 1));
         Assertions.assertThat(capturedFilter)
             .usingRecursiveComparison()
             .isEqualTo(expectedFilter);
@@ -288,7 +246,8 @@ public class FlagDAOTest {
             .append("creatorId", 2)
             .append("firstName", "Foo")
             .append("lastName", "Bar")
-            .append("dateCreated", Date.from(Instant.ofEpochSecond(946684800)));
+            .append("dateCreated", Date.from(Instant.ofEpochSecond(946684800)))
+            .append("contents", "Thanks for the suggestion!");
         when(mockIterable.first()).thenReturn(targetDocument);
         when(testCollection.find(any(Bson.class))).thenReturn(mockIterable);
 
@@ -313,7 +272,8 @@ public class FlagDAOTest {
             .append("creatorId", 1)
             .append("firstName", "Foo")
             .append("lastName", "Bar")
-            .append("dateCreated", Date.from(Instant.ofEpochSecond(946684800)));
+            .append("dateCreated", Date.from(Instant.ofEpochSecond(946684800)))
+            .append("contents", "Thanks for the suggestion!");
         when(mockIterable.first()).thenReturn(targetDocument);
         when(testCollection.find(any(Bson.class))).thenReturn(mockIterable);
         DeleteResult mockResult = mock(DeleteResult.class);
@@ -326,7 +286,7 @@ public class FlagDAOTest {
         verify(testCollection).deleteOne(captor.capture());
 
         Bson capturedFilter = captor.getValue();
-        Bson expectedFilter = Filters.and(Filters.eq("flagId", 1), Filters.eq("resourceId", 1));
+        Bson expectedFilter = Filters.and(Filters.eq("resourceId", 1), Filters.eq("flagId", 1));
         Assertions.assertThat(capturedFilter)
             .usingRecursiveComparison()
             .isEqualTo(expectedFilter);
