@@ -43,4 +43,16 @@ public interface ConfigurationManager {
      * @return the database name
      */
     public abstract String getDatabaseName();
+
+    /**
+     * Gets the auth server hostname from the config file.
+     * @return the auth server url
+     */
+    public abstract String getAuthServerHost();
+
+    /**
+     * Gets the auth server port from the config file. 
+     * @return the auth server url
+     */
+    public abstract String getAuthServerPort();
 }

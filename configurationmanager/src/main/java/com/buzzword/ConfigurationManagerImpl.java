@@ -29,10 +29,9 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
      * application config file. The manager first looks for a BRL_CONFIG environmental
      * variable specifying the configuration path. If this is not found, it looks for
      * a config file in the working directory.
-     * @throws IOException If the config file fails to parse as a java properties file.
-     * @throws FileNotFoundExcepton - If the config file could not be found.
+     * @throws ConfigurationException if there is a configuration loading error
      */
-    private ConfigurationManagerImpl() throws IOException, IllegalArgumentException {
+    private ConfigurationManagerImpl()  {
         String configPath = System.getenv("BRL_CONFIG");
         if (configPath == null) {
             configPath = "brl.properties";
@@ -44,20 +43,18 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
             propertiesFile.load(stream);
         } catch (FileNotFoundException e) {
             logger.error("No configuration file found.");
-            throw e;
+            throw new ConfigurationException("No configuration file found.");
         } catch (IOException e) {
             logger.error("Malformed configuration file.");
-            throw e;
+            throw new ConfigurationException("Malformed configuration file.");
         }
     }
 
     /**
      * Gets a reference to the ConfigurationManager.
      * @return a reference to the singleton instance of the ConfigurationManager
-     * @throws IllegalArgumentException if there is an invalid field in the config file.
-     * @throws IOException if the config file does not exist.
      */
-    public static ConfigurationManagerImpl getInstance() throws IllegalArgumentException, IOException {
+    public static ConfigurationManagerImpl getInstance() {
         if (instance == null) {
             instance = new ConfigurationManagerImpl();
         }
@@ -66,7 +63,7 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
     }
 
     /**
-     * {@inheritDocs}
+     * {@inheritDoc}
      */
     @Override
     public String getDatabaseUserName() {
@@ -74,7 +71,7 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
     }
 
     /**
-     * {@inheritDocs}
+     * {@inheritDoc}
      */
     @Override
     public String getDatabasePassword() {
@@ -82,7 +79,7 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
     }
 
     /**
-     * {@inheritDocs}
+     * {@inheritDoc}
      */
     @Override
     public String getDatabaseHost() {
@@ -90,7 +87,7 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
     }
 
     /**
-     * {@inheritDocs}
+     * {@inheritDoc}
      */
     @Override
     public String getDatabasePort() {
@@ -98,7 +95,7 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
     }
 
     /**
-     * {@inheritDocs}
+     * {@inheritDoc}
      */
     @Override
     public String getDatabaseMinPoolSize() {
@@ -106,7 +103,7 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
     }
 
     /**
-     * {@inheritDocs}
+     * {@inheritDoc}
      */
     @Override
     public String getDatabaseMaxPoolSize() {
@@ -114,10 +111,26 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
     }
 
     /**
-     * {@inheritDocs}
+     * {@inheritDoc}
      */
     @Override
     public String getDatabaseName() {
         return propertiesFile.getProperty("database.name");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getAuthServerHost() {
+        return propertiesFile.getProperty("authentication.url");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getAuthServerPort() {
+        return propertiesFile.getProperty("authentication.port");
     }
 }
