@@ -10,7 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
- * Unit test .
+ * Unit tests
  */
 public class ResourceTest {
 
@@ -104,17 +104,17 @@ public class ResourceTest {
     @Test
     public void testSetReviewFlagsAndUpvotesNullThrows() {
         assertThrows(IllegalArgumentException.class, () -> testResource.setReviewFlags(null));
-        assertThrows(IllegalArgumentException.class, () -> testResource.setUpVotes(null));
+        assertThrows(IllegalArgumentException.class, () -> testResource.setUpvotes(null));
     }
 
     @Test
     public void testSetReviewFlagsAndUpvotesValid() {
         List<ReviewFlag> rf = new ArrayList<>();
-        List<UpVote> uv = new ArrayList<>();
+        List<Upvote> uv = new ArrayList<>();
         testResource.setReviewFlags(rf);
-        testResource.setUpVotes(uv);
+        testResource.setUpvotes(uv);
         assertEquals(rf, testResource.getReviewFlags());
-        assertEquals(uv, testResource.getUpVotes());
+        assertEquals(uv, testResource.getUpvotes());
     }
 
 }

@@ -2,9 +2,7 @@ package com.buzzword;
 
 /**
  * This Name class defines a generic name object that 
- * can be used to create a first or last name. It 
- * contains the business logic that applies to any
- * name string.
+ * can be used to create a first or last name.
  * <p>
  * @author Dennis Shelby
  * @version 1.0

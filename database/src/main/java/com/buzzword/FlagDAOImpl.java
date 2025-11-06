@@ -18,9 +18,19 @@ public class FlagDAOImpl
 
     private final MongoCollection<Document> flags;
     private final Logger logger = LoggerFactory.getEventLogger();
+    private CounterDAO counterDAO;
 
     public FlagDAOImpl(MongoDatabase db) {
         this.flags = db.getCollection("flags");
+        counterDAO = new CounterDAOImpl(db);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setCounterDAO(CounterDAO counterDAO) {
+        this.counterDAO = counterDAO;
     }
 
 
@@ -47,7 +57,7 @@ public class FlagDAOImpl
 
         Document flagDoc = new Document()
             .append("creatorId", user.getId())
-            .append("flagId", flag.getId())
+            .append("flagId", counterDAO.getNextReviewFlagId(resourceId))
             .append("resourceId", resourceId)
             .append("firstName", user.getFirstName())
             .append("lastName", user.getLastName())
@@ -70,8 +80,13 @@ public class FlagDAOImpl
             throw new AuthorizationException("User attempted to delete flag with invalid or missing system role.");
         }
         if (user.getSystemRole() != "Admin") {
-            Document targetUpvote = flags.find(Filters.and(Filters.eq("upvoteId", flagId), Filters.eq("resourceId", resourceId))).first();
-            if (targetUpvote != null && targetUpvote.getInteger("creatorId") != user.getId()) {
+            Document targetFlag = flags.find(Filters.and(Filters.eq("upvoteId", flagId), Filters.eq("resourceId", resourceId))).first();
+            
+            if (targetFlag == null) {
+                logger.warn(String.format("Failed to remove flag from user %d for resource %d - resource or upvote not found", user.getId(), resourceId));
+                throw new RecordDoesNotExistException("Failed to find flag for removal");
+            }
+            if (targetFlag.getInteger("creatorId") != user.getId()) {
                 logger.error(String.format("User %d attempted to delete an flag they did not create.", user.getId()));
                 throw new AuthorizationException("User attempted to delete an flag they did not create");
             }
@@ -87,7 +102,7 @@ public class FlagDAOImpl
 
         if (result.getDeletedCount() == 0) {
             logger.warn(String.format("Failed to remove flag from user %d for resource %d - resource or upvote not found", user.getId(), resourceId));
-            return;
+            throw new RecordDoesNotExistException("Failed to find flag for removal");
         }
 
         logger.info(String.format("User %d removed flag from resource %d", user.getId(), resourceId));

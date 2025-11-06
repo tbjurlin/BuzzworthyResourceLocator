@@ -18,12 +18,22 @@ public class ResourceDAOImpl implements ResourceDAO {
     private final MongoCollection<Document> flags;
     private final MongoCollection<Document> upvotes;
     private final Logger logger = LoggerFactory.getEventLogger();
+    private CounterDAO counterDAO;
 
     public ResourceDAOImpl(MongoDatabase db) {
         this.resources = db.getCollection("resources");
         this.comments = db.getCollection("comments");
         this.flags = db.getCollection("flags");
         this.upvotes = db.getCollection("upvotes");
+        counterDAO = new CounterDAOImpl(db);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setCounterDAO(CounterDAO counterDAO) {
+        this.counterDAO = counterDAO;
     }
 
     /**
@@ -37,9 +47,8 @@ public class ResourceDAOImpl implements ResourceDAO {
             throw new AuthorizationException("User must be authenticated to insert resources");
         }
 
-        // Build a sub-document for the resource and push it into the user's resources array
         Document resourceDoc = new Document()
-            .append("resourceId", resource.getId())
+            .append("resourceId", counterDAO.getNextResourceId())
             .append("title", resource.getTitle())
             .append("description", resource.getDescription())
             .append("url", resource.getUrl())
@@ -58,7 +67,7 @@ public class ResourceDAOImpl implements ResourceDAO {
      * {@inheritDoc}
      */
     @Override
-    public boolean removeResource(Credentials user, long id) {
+    public void removeResource(Credentials user, int id) {
         if (user.getSystemRole() != "Admin" && user.getSystemRole() != "Contributor") {
             logger.error(String.format("User %d with role %s denied permission to delete resource %d", 
                 user.getId(), user.getSystemRole(), id));
@@ -71,7 +80,7 @@ public class ResourceDAOImpl implements ResourceDAO {
 
             if (doc == null) {
                 logger.warn(String.format("Failed to find resource %d for removal by user %d", id, user.getId()));
-                return false;  // Resource not found
+                throw new RecordDoesNotExistException("Failed to find resource for removal");
             }
 
             // Check if user has permission to delete this resource.
@@ -93,11 +102,12 @@ public class ResourceDAOImpl implements ResourceDAO {
         
         boolean removed = result.getDeletedCount() > 0;
         if (removed) {
+            counterDAO.removeResourceCounters(id);
             logger.info(String.format("User %d removed resource %d", user.getId(), id));
         } else {
             logger.warn(String.format("User %d failed to remove resource %d", user.getId(),id));
+            throw new RecordDoesNotExistException("Failed to find resource for removal");
         }
-        return removed;
     }
 
     private Resource convertDocumentToResource(Document doc) {
@@ -132,7 +142,7 @@ public class ResourceDAOImpl implements ResourceDAO {
             Resource resource = convertDocumentToResource(resDoc);
             resource.setComments(new ArrayList<Comment>());
             resource.setReviewFlags(new ArrayList<ReviewFlag>());
-            resource.setUpVotes(new ArrayList<UpVote>());
+            resource.setUpvotes(new ArrayList<Upvote>());
             resourceMap.put(resource.getId(), resource);
             System.out.println(resourceMap);
         });
@@ -165,7 +175,7 @@ public class ResourceDAOImpl implements ResourceDAO {
         });
 
         upvotes.find().forEach(upvoteDoc -> {
-            UpVote upVote = new UpVote();
+            Upvote upVote = new Upvote();
             upVote.setId(upvoteDoc.getInteger("upvoteId"));
             upVote.setCreatorId(upvoteDoc.getInteger("creatorId"));
             upVote.setFirstName(upvoteDoc.getString("firstName"));
@@ -173,7 +183,7 @@ public class ResourceDAOImpl implements ResourceDAO {
             upVote.setCreationDate(upvoteDoc.getDate("dateCreated"));
 
             Resource parent = resourceMap.get(upvoteDoc.getInteger("resourceId"));
-            List<UpVote> upvotes = parent.getUpVotes();
+            List<Upvote> upvotes = parent.getUpvotes();
             upvotes.add(upVote);
         });
 

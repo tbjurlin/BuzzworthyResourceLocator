@@ -2,18 +2,14 @@ package com.buzzword;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import java.util.function.Consumer;
 
 import org.assertj.core.api.Assertions;
 import org.bson.Document;
@@ -23,10 +19,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.stubbing.Answer;
-
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
@@ -42,12 +35,33 @@ public class FlagDAOTest {
     @Mock
     MongoCollection<Document> testCollection;
 
+    @Mock
+    CounterDAO mockCounterDAO;
+
     FlagDAO flagDAO;
 
     @BeforeEach
     void setUpDatabase() {
         when(testDatabase.getCollection("flags")).thenReturn(testCollection);
         flagDAO = new FlagDAOImpl(testDatabase);
+        flagDAO.setCounterDAO(mockCounterDAO);
+    }
+
+    @Test
+    void cannotRemovingMissingFlag() {
+        Credentials mockCredentials = mock(Credentials.class);
+        when(mockCredentials.getId()).thenReturn(1);
+        when(mockCredentials.getSystemRole()).thenReturn("Admin");
+
+        DeleteResult mockResult = mock(DeleteResult.class);
+        when(mockResult.getDeletedCount()).thenReturn(0L);
+        when(testCollection.deleteOne(any(Bson.class))).thenReturn(mockResult);
+
+        assertThrows(RecordDoesNotExistException.class, () -> {
+            flagDAO.removeReviewFlag(mockCredentials, 1, 1);
+        });
+
+        verifyNoInteractions(mockCounterDAO);
     }
 
     @Test
@@ -58,8 +72,9 @@ public class FlagDAOTest {
         when(mockCredentials.getId()).thenReturn(1);
         when(mockCredentials.getSystemRole()).thenReturn("Contributor");
 
+        when(mockCounterDAO.getNextReviewFlagId(1)).thenReturn(1);
+
         ReviewFlag mockUpvote = mock(ReviewFlag.class);
-        when(mockUpvote.getId()).thenReturn(1);
         when(mockUpvote.getCreationDate()).thenReturn(Date.from(Instant.ofEpochSecond(946684800)));
 
         @SuppressWarnings("unchecked")
@@ -95,8 +110,9 @@ public class FlagDAOTest {
         when(mockCredentials.getId()).thenReturn(1);
         when(mockCredentials.getSystemRole()).thenReturn("Admin");
 
+        when(mockCounterDAO.getNextReviewFlagId(1)).thenReturn(1);
+
         ReviewFlag mockUpvote = mock(ReviewFlag.class);
-        when(mockUpvote.getId()).thenReturn(1);
         when(mockUpvote.getCreationDate()).thenReturn(Date.from(Instant.ofEpochSecond(946684800)));
 
         @SuppressWarnings("unchecked")
@@ -132,8 +148,9 @@ public class FlagDAOTest {
         when(mockCredentials.getId()).thenReturn(1);
         when(mockCredentials.getSystemRole()).thenReturn("Commenter");
 
+        when(mockCounterDAO.getNextReviewFlagId(1)).thenReturn(1);
+
         ReviewFlag mockUpvote = mock(ReviewFlag.class);
-        when(mockUpvote.getId()).thenReturn(1);
         when(mockUpvote.getCreationDate()).thenReturn(Date.from(Instant.ofEpochSecond(946684800)));
 
         @SuppressWarnings("unchecked")
