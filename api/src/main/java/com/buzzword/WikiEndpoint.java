@@ -43,7 +43,7 @@ public class WikiEndpoint {
         try{
             databaseConnectionPool = DatabaseConnectionPool.getInstance();
         } catch(IOException | IllegalArgumentException e) {
-
+            throw new IllegalArgumentException("Cannot get instance of database connection pool.");
         }
     }
 
@@ -65,7 +65,8 @@ public class WikiEndpoint {
         ResourceDAO resourceDAO = new ResourceDAOImpl(databaseConnectionPool.getDatabaseConnection());
         List<Resource> resources = resourceDAO.listAllResources(userCredentials);
         if(resources == null) {
-            throw new IllegalArgumentException();
+            logger.error("Cannot return a null list of resources.");
+            throw new NullPointerException("Cannot return a null list of resources.");
         }
         ObjectMapper objectMapper = new ObjectMapper();
         try {
@@ -73,10 +74,10 @@ public class WikiEndpoint {
         
             logger.info("Returning HTTP response code 200.");
             return ResponseEntity.ok()
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .body(returnObj);
+                                 .contentType(MediaType.APPLICATION_JSON)
+                                 .body(returnObj);
         } catch(JsonProcessingException e) {
-            throw new IllegalArgumentException();
+            throw new NullPointerException("Unable to parse JSON from list of resources.");
         }
     }
     
@@ -90,6 +91,7 @@ public class WikiEndpoint {
      */
     @PostMapping("resource")
     public ResponseEntity<String> addResource(@Valid @RequestHeader("Bearer") String tokenStr, @Valid @RequestBody Resource resource) {
+        logger.info("HTTP POST request (addResource) received.");
         Token token = new Token();
         token.setToken(tokenStr);
         Authenticator auth = new AuthenticatorImpl(authServerUrl);
@@ -99,7 +101,7 @@ public class WikiEndpoint {
         logger.info("Returning HTTP response code 201.");
         return ResponseEntity.status(HttpStatus.CREATED)
                              .contentType(MediaType.APPLICATION_JSON)
-                             .body("{\"msg\": \"Add resource\"}");
+                             .body("{\"msg\": \"Successfully added a new resource.\"}");
     }
 
     /**
@@ -113,6 +115,7 @@ public class WikiEndpoint {
      */
     @PostMapping("resource/{resourceId}/comment")
     public ResponseEntity<String> addComment(@Valid @RequestHeader("Bearer") String tokenStr, @Valid @PathVariable int resourceId, @Valid @RequestBody Comment comment) {
+        logger.info("HTTP POST request (addResource) received.");
         Token token = new Token();
         token.setToken(tokenStr);
         Authenticator auth = new AuthenticatorImpl(authServerUrl);
@@ -122,7 +125,7 @@ public class WikiEndpoint {
         logger.info("Returning HTTP response code 201.");
         return ResponseEntity.status(HttpStatus.CREATED)
                              .contentType(MediaType.APPLICATION_JSON)
-                             .body("{\"msg\": \"Add comment to resource " + resourceId + "\"}");
+                             .body("{\"msg\": \"Successfully added comment to resource " + resourceId + ".\"}");
     }
 
     /**
@@ -135,6 +138,7 @@ public class WikiEndpoint {
      */
     @PostMapping("resource/{resourceId}/upvote")
     public ResponseEntity<String> addUpvote(@Valid @RequestHeader("Bearer") String tokenStr, @Valid @PathVariable int resourceId) {
+        logger.info("HTTP POST request (addUpvote) received.");
         Token token = new Token();
         token.setToken(tokenStr);
         Authenticator auth = new AuthenticatorImpl(authServerUrl);
@@ -144,7 +148,7 @@ public class WikiEndpoint {
         logger.info("Returning HTTP response code 201.");
         return ResponseEntity.status(HttpStatus.CREATED)
                              .contentType(MediaType.APPLICATION_JSON)
-                             .body("{\"msg\": \"Add upvote to resource " + resourceId + "\"}");
+                             .body("{\"msg\": \"Successfully added new upvote to resource " + resourceId + ".\"}");
     }
 
     /**
@@ -158,6 +162,7 @@ public class WikiEndpoint {
      */
     @PostMapping("resource/{resourceId}/reviewFlag")
     public ResponseEntity<String> addReviewFlag(@Valid @RequestHeader("Bearer") String tokenStr, @Valid @PathVariable int resourceId, @Valid @RequestBody ReviewFlag reviewFlag) {
+        logger.info("HTTP POST request (addReviewFlag) received.");
         Token token = new Token();
         token.setToken(tokenStr);
         Authenticator auth = new AuthenticatorImpl(authServerUrl);
@@ -167,7 +172,7 @@ public class WikiEndpoint {
         logger.info("Returning HTTP response code 201.");
         return ResponseEntity.status(HttpStatus.CREATED)
                              .contentType(MediaType.APPLICATION_JSON)
-                             .body("{\"msg\": \"Add review flag to resource " + resourceId + "\"}");
+                             .body("{\"msg\": \"Successfully added new review flag to resource " + resourceId + ".\"}");
     }
 
     /**
@@ -180,6 +185,7 @@ public class WikiEndpoint {
      */
     @DeleteMapping("resource/{resourceId}")
     public ResponseEntity<String> removeResource(@Valid @RequestHeader("Bearer") String tokenStr, @Valid @PathVariable int resourceId) {
+        logger.info("HTTP DELETE request (removeResource) received.");
         Token token = new Token();
         token.setToken(tokenStr);
         Authenticator auth = new AuthenticatorImpl(authServerUrl);
@@ -189,7 +195,7 @@ public class WikiEndpoint {
         logger.info("Returning HTTP response code 200.");
         return ResponseEntity.ok()
                              .contentType(MediaType.APPLICATION_JSON)
-                             .body("{\"msg\": \"Remove resource " + resourceId + "\"}");
+                             .body("{\"msg\": \"Successfully removed resource " + resourceId + ".\"}");
     }
 
     /**
@@ -203,6 +209,7 @@ public class WikiEndpoint {
      */
     @DeleteMapping("resource/{resourceId}/comment/{commentId}")
     public ResponseEntity<String> removeComment(@Valid @RequestHeader("Bearer") String tokenStr, @Valid @PathVariable int resourceId, @PathVariable int commentId) {
+        logger.info("HTTP DELETE request (removeComment) received.");
         Token token = new Token();
         token.setToken(tokenStr);
         Authenticator auth = new AuthenticatorImpl(authServerUrl);
@@ -212,7 +219,7 @@ public class WikiEndpoint {
         logger.info("Returning HTTP response code 200.");
         return ResponseEntity.ok()
                              .contentType(MediaType.APPLICATION_JSON)
-                             .body("{\"msg\": \"Remove comment " + commentId + " from resource " + resourceId + "\"}");
+                             .body("{\"msg\": \"Successfully removed comment " + commentId + " from resource " + resourceId + ".\"}");
     }
 
     /**
@@ -226,6 +233,7 @@ public class WikiEndpoint {
      */
     @DeleteMapping("resource/{resourceId}/upvote/{upvoteId}")
     public ResponseEntity<String> removeUpvote(@Valid @RequestHeader("Bearer") String tokenStr, @Valid @PathVariable int resourceId, @PathVariable int upvoteId) {
+        logger.info("HTTP DELETE request (removeUpvote) received.");
         Token token = new Token();
         token.setToken(tokenStr);
         Authenticator auth = new AuthenticatorImpl(authServerUrl);
@@ -235,7 +243,7 @@ public class WikiEndpoint {
         logger.info("Returning HTTP response code 200.");
         return ResponseEntity.ok()
                              .contentType(MediaType.APPLICATION_JSON)
-                             .body("{\"msg\": \"Remove upvote " + upvoteId + " from resource " + resourceId + "\"}");
+                             .body("{\"msg\": \"Successfully removed upvote " + upvoteId + " from resource " + resourceId + ".\"}");
     }
 
     /**
@@ -249,6 +257,7 @@ public class WikiEndpoint {
      */
     @DeleteMapping("resource/{resourceId}/reviewFlag/{flagId}")
     public ResponseEntity<String> removeReviewFlag(@Valid @RequestHeader("Bearer") String tokenStr, @Valid @PathVariable int resourceId, @PathVariable int flagId) {
+        logger.info("HTTP DELETE request (removeReviewFlag) received.");
         Token token = new Token();
         token.setToken(tokenStr);
         Authenticator auth = new AuthenticatorImpl(authServerUrl);
@@ -258,6 +267,6 @@ public class WikiEndpoint {
         logger.info("Returning HTTP response code 200.");
         return ResponseEntity.ok()
                              .contentType(MediaType.APPLICATION_JSON)
-                             .body("{\"msg\": \"Remove review flag " + flagId + " from resource " + resourceId + "\"}");
+                             .body("{\"msg\": \"Successfully removed review flag " + flagId + " from resource " + resourceId + ".\"}");
     }
 }

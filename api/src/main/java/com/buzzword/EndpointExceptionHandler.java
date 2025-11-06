@@ -105,6 +105,34 @@ public class EndpointExceptionHandler {
                              .body("{\"errorMsg\": \"Invalid parameter provided for the requested operation.\"}");
     }
 
+    /**
+     * Exception handler for when a record being added already exists. 
+     * 
+     * @param e A RecordAlreadyExistsException.
+     * @return  A JSON-formatted HTTP response with a 400 error code and message.
+     */
+    @ExceptionHandler(RecordAlreadyExistsException.class)
+    public ResponseEntity<String> handleRecordAlreadyExistsException(RecordAlreadyExistsException e) {
+        logger.error("Returning HTTP response code 400: The record to be added already exists.");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                             .contentType(MediaType.APPLICATION_JSON)
+                             .body("{\"errorMsg\": \"The record to be added already exists.\"}");
+    }
+
+    /**
+     * Exception handler for when a requested record does not exist. 
+     * 
+     * @param e A RecordDoesNotExistException.
+     * @return  A JSON-formatted HTTP response with a 400 error code and message.
+     */
+    @ExceptionHandler(RecordDoesNotExistException.class)
+    public ResponseEntity<String> handleRecordDoesNotExistException(RecordDoesNotExistException e) {
+        logger.error("Returning HTTP response code 400: The requested record does not exist.");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                             .contentType(MediaType.APPLICATION_JSON)
+                             .body("{\"errorMsg\": \"The requested record does not exist.\"}");
+    }
+
 
     
     /*
@@ -255,16 +283,4 @@ public class EndpointExceptionHandler {
                              .body("{\"errorMsg\": \"Fatal internal error occurred.\"}");
     }
 
-
-
-
-
-/*  Exception Handler Template
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleException(Exception e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                             .contentType(MediaType.APPLICATION_JSON)
-                             .body(e.toString());
-    } */
 }
