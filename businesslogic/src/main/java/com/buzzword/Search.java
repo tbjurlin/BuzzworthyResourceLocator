@@ -8,7 +8,7 @@ public class Search {
     private String phrase;
     private Date startDate;
     private Date endDate;
-    private Integer userId;
+    private int userId;
 
     /*
 
@@ -48,11 +48,11 @@ public class Search {
         this.endDate = endDate;
     }
 
-    public Integer getUserId() {
+    public int getUserId() {
         return userId;
     }
 
-    public void setTags(Integer userId) {
+    public void setTags(int userId) {
         // TODO: Add validation for userId
         this.userId = userId;
     }
