@@ -1,16 +1,18 @@
 package com.buzzword;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import org.apache.commons.lang3.RandomStringUtils;
-
 import com.fasterxml.jackson.annotation.JsonAlias;
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 
 import java.util.Map;
+
+/**
+ * The Credentials class creates an object that contains
+ * credentials that can be used to determine a user's
+ * authorization.
+ */
 
 @JsonAutoDetect(fieldVisibility = Visibility.ANY, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class Credentials {

@@ -41,6 +41,7 @@ public class CredentialsTest {
         String[] titles = {"Developer", "Manager"};
         for (String title : titles) {
             testCredentials.setTitle(title);
+            assertEquals(title, testCredentials.getTitle());
         }
     }
 
@@ -69,6 +70,7 @@ public class CredentialsTest {
         String[] departments = {"Sales", "Information Technology"};
         for (String department : departments) {
             testCredentials.setDepartment(department);
+            assertEquals(department, testCredentials.getDepartment());
         }
     }
 
@@ -96,6 +98,7 @@ public class CredentialsTest {
         String[] locations = {"United States", "Japan"};
         for (String location : locations) {
             testCredentials.setLocation(location);
+            assertEquals(location, testCredentials.getLocation());
         }
     }
 

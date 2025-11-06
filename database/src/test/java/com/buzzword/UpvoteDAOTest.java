@@ -58,7 +58,7 @@ public class UpvoteDAOTest {
         when(mockCredentials.getId()).thenReturn(1);
         when(mockCredentials.getSystemRole()).thenReturn("Contributor");
 
-        UpVote mockUpvote = mock(UpVote.class);
+        Upvote mockUpvote = mock(Upvote.class);
         when(mockUpvote.getId()).thenReturn(1);
         when(mockUpvote.getCreationDate()).thenReturn(Date.from(Instant.ofEpochSecond(946684800)));
 
@@ -95,7 +95,7 @@ public class UpvoteDAOTest {
         when(mockCredentials.getId()).thenReturn(1);
         when(mockCredentials.getSystemRole()).thenReturn("Admin");
 
-        UpVote mockUpvote = mock(UpVote.class);
+        Upvote mockUpvote = mock(Upvote.class);
         when(mockUpvote.getId()).thenReturn(1);
         when(mockUpvote.getCreationDate()).thenReturn(Date.from(Instant.ofEpochSecond(946684800)));
 
@@ -132,7 +132,7 @@ public class UpvoteDAOTest {
         when(mockCredentials.getId()).thenReturn(1);
         when(mockCredentials.getSystemRole()).thenReturn("Commenter");
 
-        UpVote mockUpvote = mock(UpVote.class);
+        Upvote mockUpvote = mock(Upvote.class);
         when(mockUpvote.getId()).thenReturn(1);
         when(mockUpvote.getCreationDate()).thenReturn(Date.from(Instant.ofEpochSecond(946684800)));
 
@@ -167,7 +167,7 @@ public class UpvoteDAOTest {
         when(mockCredentials.getId()).thenReturn(1);
         when(mockCredentials.getSystemRole()).thenReturn("Commenter");
 
-        UpVote mockUpvote = mock(UpVote.class);
+        Upvote mockUpvote = mock(Upvote.class);
 
         @SuppressWarnings("unchecked")
         FindIterable<Document> mockIterable = (FindIterable<Document>) mock(FindIterable.class);
@@ -193,7 +193,7 @@ public class UpvoteDAOTest {
         Credentials mockCredentials = mock(Credentials.class);
         when(mockCredentials.getSystemRole()).thenReturn("Some Invalid Role");
 
-        UpVote mockUpvote = mock(UpVote.class);
+        Upvote mockUpvote = mock(Upvote.class);
 
         assertThrows(AuthorizationException.class, () -> {
             upvoteDAO.addUpvote(mockCredentials, mockUpvote, 1);

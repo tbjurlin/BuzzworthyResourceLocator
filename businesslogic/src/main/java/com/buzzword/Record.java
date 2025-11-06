@@ -5,8 +5,8 @@ import java.util.Date;
 
 /**
  * This abstract Record class is the parent class for the Resource,
- * Comment, ReviewFlag, and Upvote classes. It contains the 
- * business logic for common fields associated with a Record.
+ * Comment, ReviewFlag, and Upvote classes and contains the 
+ * business logic for the common fields associated with a Record.
  * <p>
  * @author Dennis Shelby
  * @version 1.0
