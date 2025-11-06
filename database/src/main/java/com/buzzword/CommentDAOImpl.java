@@ -9,9 +9,19 @@ import com.mongodb.client.model.Filters;
 public class CommentDAOImpl implements CommentDAO {
     private final MongoCollection<Document> resources;
     private final Logger logger = LoggerFactory.getEventLogger();
+    private CounterDAO counterDAO;
 
     public CommentDAOImpl(MongoDatabase db) {
         this.resources = db.getCollection("comments");
+        counterDAO = new CounterDAOImpl(db);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setCounterDAO(CounterDAO counterDAO) {
+        this.counterDAO = counterDAO;
     }
 
     /**
@@ -26,7 +36,7 @@ public class CommentDAOImpl implements CommentDAO {
 
         // All users can add comments (General User, Developer, Manager)
         Document commentDoc = new Document()
-            .append("commentId", comment.getId())
+            .append("commentId", counterDAO.getNextCommentId(resourceId))
             .append("resourceId", resourceId)
             .append("creatorId", user.getId())
             .append("firstName", user.getFirstName())
@@ -44,7 +54,7 @@ public class CommentDAOImpl implements CommentDAO {
      * {@inheritDoc}
      */
     @Override
-    public boolean removeComment(Credentials user, int commentId, int resourceId) {
+    public void removeComment(Credentials user, int commentId, int resourceId) {
         if (user.getSystemRole() != "Admin" && user.getSystemRole() != "Contributor" && user.getSystemRole() != "Commenter") {
             logger.error(String.format("User %d with invalid system role %s prevented from deleting a comment", user.getId(), user.getSystemRole()));
             throw new AuthorizationException("User with missing or invalid system role attempted to delete a comment.");
@@ -54,7 +64,7 @@ public class CommentDAOImpl implements CommentDAO {
             Document doc = resources.find(
                 Filters.and(Filters.eq("commentId", commentId), Filters.eq("resourceId", resourceId))).first();
             if (doc == null) {
-                return false;  // Comment not found
+                throw new RecordDoesNotExistException("Failed to find comment for removal");
             }
 
             // Check if user has permission to delete this comment.
@@ -78,7 +88,8 @@ public class CommentDAOImpl implements CommentDAO {
         if (removed) {
             logger.info(String.format("User %d removed comment %d from resource %d", user.getId(), commentId, resourceId));
         } else {
-            logger.warn(String.format("User %d failed to remove comment %d from resource %d", user.getId(), commentId, resourceId));  }
-        return removed;
+            logger.warn(String.format("User %d failed to remove comment %d from resource %d", user.getId(), commentId, resourceId));
+            throw new RecordDoesNotExistException("Failed to find comment for removal");
+        }
     }
 }

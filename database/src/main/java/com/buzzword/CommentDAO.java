@@ -3,6 +3,12 @@ package com.buzzword;
 public interface CommentDAO {
 
     /**
+     * Set the counterDAO used to get ids for new records.
+     * @param counterDAO the data access object for record Ids
+     */
+    public void setCounterDAO(CounterDAO counterDAO);
+
+    /**
      * <p>
      * Allows a user to add a comment to a specific resource.
      * 
@@ -18,5 +24,5 @@ public interface CommentDAO {
      * @param user credentials of the user
      * @param comment comment to be removed
     */
-    boolean removeComment(Credentials user, int commentId, int resourceId);
+    void removeComment(Credentials user, int commentId, int resourceId);
 }

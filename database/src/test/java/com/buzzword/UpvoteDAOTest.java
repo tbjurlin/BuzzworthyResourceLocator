@@ -2,19 +2,14 @@ package com.buzzword;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import java.util.function.Consumer;
-
 import org.assertj.core.api.Assertions;
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -23,10 +18,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.stubbing.Answer;
-
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
@@ -42,12 +34,47 @@ public class UpvoteDAOTest {
     @Mock
     MongoCollection<Document> testCollection;
 
+    @Mock
+    CounterDAO mockCounterDAO;
+
     UpvoteDAO upvoteDAO;
 
     @BeforeEach
     void setUpDatabase() {
         when(testDatabase.getCollection("upvotes")).thenReturn(testCollection);
         upvoteDAO = new UpvoteDAOImpl(testDatabase);
+        upvoteDAO.setCounterDAO(mockCounterDAO);
+    }
+
+    @Test
+    void cannotRemovingMissingUpvote() {
+        Credentials mockCredentials = mock(Credentials.class);
+        when(mockCredentials.getId()).thenReturn(1);
+        when(mockCredentials.getSystemRole()).thenReturn("Admin");
+
+
+        @SuppressWarnings("unchecked")
+        FindIterable<Document> mockIterable = (FindIterable<Document>) mock(FindIterable.class);
+        Document targetDocument  = new Document()
+            .append("upvoteId", 1)
+            .append("resourceId", 1)
+            .append("creatorId", 1)
+            .append("firstName", "Foo")
+            .append("lastName", "Bar")
+            .append("dateCreated", Date.from(Instant.ofEpochSecond(946684800)));
+        when(mockIterable.first()).thenReturn(targetDocument);
+        when(testCollection.find(any(Bson.class))).thenReturn(mockIterable);
+
+
+        DeleteResult mockResult = mock(DeleteResult.class);
+        when(mockResult.getDeletedCount()).thenReturn(0L);
+        when(testCollection.deleteOne(any(Bson.class))).thenReturn(mockResult);
+
+        assertThrows(RecordDoesNotExistException.class, () -> {
+            upvoteDAO.removeUpvote(mockCredentials, 1, 1);
+        });
+
+        verifyNoInteractions(mockCounterDAO);
     }
 
     @Test
@@ -57,9 +84,10 @@ public class UpvoteDAOTest {
         when(mockCredentials.getLastName()).thenReturn("Bar");
         when(mockCredentials.getId()).thenReturn(1);
         when(mockCredentials.getSystemRole()).thenReturn("Contributor");
+        
+        when(mockCounterDAO.getNextUpvoteId(1)).thenReturn(1);
 
         Upvote mockUpvote = mock(Upvote.class);
-        when(mockUpvote.getId()).thenReturn(1);
         when(mockUpvote.getCreationDate()).thenReturn(Date.from(Instant.ofEpochSecond(946684800)));
 
         @SuppressWarnings("unchecked")
@@ -94,9 +122,10 @@ public class UpvoteDAOTest {
         when(mockCredentials.getLastName()).thenReturn("Bar");
         when(mockCredentials.getId()).thenReturn(1);
         when(mockCredentials.getSystemRole()).thenReturn("Admin");
+        
+        when(mockCounterDAO.getNextUpvoteId(1)).thenReturn(1);
 
         Upvote mockUpvote = mock(Upvote.class);
-        when(mockUpvote.getId()).thenReturn(1);
         when(mockUpvote.getCreationDate()).thenReturn(Date.from(Instant.ofEpochSecond(946684800)));
 
         @SuppressWarnings("unchecked")
@@ -131,9 +160,10 @@ public class UpvoteDAOTest {
         when(mockCredentials.getLastName()).thenReturn("Bar");
         when(mockCredentials.getId()).thenReturn(1);
         when(mockCredentials.getSystemRole()).thenReturn("Commenter");
+        
+        when(mockCounterDAO.getNextUpvoteId(1)).thenReturn(1);
 
         Upvote mockUpvote = mock(Upvote.class);
-        when(mockUpvote.getId()).thenReturn(1);
         when(mockUpvote.getCreationDate()).thenReturn(Date.from(Instant.ofEpochSecond(946684800)));
 
         @SuppressWarnings("unchecked")
