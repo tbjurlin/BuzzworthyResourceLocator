@@ -71,6 +71,23 @@ public class ResourceDAOTest {
     }
 
     @Test
+    void cannotRemovingMissingResource() {
+        Credentials mockCredentials = mock(Credentials.class);
+        when(mockCredentials.getId()).thenReturn(1);
+        when(mockCredentials.getSystemRole()).thenReturn("Admin");
+
+        DeleteResult mockResult = mock(DeleteResult.class);
+        when(mockResult.getDeletedCount()).thenReturn(0L);
+        when(resourceCollection.deleteOne(any(Bson.class))).thenReturn(mockResult);
+
+        assertThrows(RecordDoesNotExistException.class, () -> {
+            resourceDAO.removeResource(mockCredentials, 1);
+        });
+
+        verifyNoInteractions(mockCounterDAO);
+    }
+
+    @Test
     void developerMayInsert() {
         Credentials mockCredentials = mock(Credentials.class);
         when(mockCredentials.getFirstName()).thenReturn("Foo");

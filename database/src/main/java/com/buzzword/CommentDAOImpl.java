@@ -64,7 +64,7 @@ public class CommentDAOImpl implements CommentDAO {
             Document doc = resources.find(
                 Filters.and(Filters.eq("commentId", commentId), Filters.eq("resourceId", resourceId))).first();
             if (doc == null) {
-                return;
+                throw new RecordDoesNotExistException("Failed to find comment for removal");
             }
 
             // Check if user has permission to delete this comment.
@@ -88,6 +88,8 @@ public class CommentDAOImpl implements CommentDAO {
         if (removed) {
             logger.info(String.format("User %d removed comment %d from resource %d", user.getId(), commentId, resourceId));
         } else {
-            logger.warn(String.format("User %d failed to remove comment %d from resource %d", user.getId(), commentId, resourceId));  }
+            logger.warn(String.format("User %d failed to remove comment %d from resource %d", user.getId(), commentId, resourceId));
+            throw new RecordDoesNotExistException("Failed to find comment for removal");
+        }
     }
 }

@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.time.Instant;
@@ -43,6 +44,23 @@ public class CommentDAOTest {
         when(testDatabase.getCollection("comments")).thenReturn(testCollection);
         commentDAO = new CommentDAOImpl(testDatabase);
         commentDAO.setCounterDAO(mockCounterDAO);
+    }
+
+    @Test
+    void cannotRemovingMissingComment() {
+        Credentials mockCredentials = mock(Credentials.class);
+        when(mockCredentials.getId()).thenReturn(1);
+        when(mockCredentials.getSystemRole()).thenReturn("Admin");
+
+        DeleteResult mockResult = mock(DeleteResult.class);
+        when(mockResult.getDeletedCount()).thenReturn(0L);
+        when(testCollection.deleteOne(any(Bson.class))).thenReturn(mockResult);
+
+        assertThrows(RecordDoesNotExistException.class, () -> {
+            commentDAO.removeComment(mockCredentials, 1, 1);
+        });
+
+        verifyNoInteractions(mockCounterDAO);
     }
 
     @Test

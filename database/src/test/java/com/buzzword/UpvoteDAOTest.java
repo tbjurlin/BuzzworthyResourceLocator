@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.time.Instant;
@@ -43,6 +44,37 @@ public class UpvoteDAOTest {
         when(testDatabase.getCollection("upvotes")).thenReturn(testCollection);
         upvoteDAO = new UpvoteDAOImpl(testDatabase);
         upvoteDAO.setCounterDAO(mockCounterDAO);
+    }
+
+    @Test
+    void cannotRemovingMissingUpvote() {
+        Credentials mockCredentials = mock(Credentials.class);
+        when(mockCredentials.getId()).thenReturn(1);
+        when(mockCredentials.getSystemRole()).thenReturn("Admin");
+
+
+        @SuppressWarnings("unchecked")
+        FindIterable<Document> mockIterable = (FindIterable<Document>) mock(FindIterable.class);
+        Document targetDocument  = new Document()
+            .append("upvoteId", 1)
+            .append("resourceId", 1)
+            .append("creatorId", 1)
+            .append("firstName", "Foo")
+            .append("lastName", "Bar")
+            .append("dateCreated", Date.from(Instant.ofEpochSecond(946684800)));
+        when(mockIterable.first()).thenReturn(targetDocument);
+        when(testCollection.find(any(Bson.class))).thenReturn(mockIterable);
+
+
+        DeleteResult mockResult = mock(DeleteResult.class);
+        when(mockResult.getDeletedCount()).thenReturn(0L);
+        when(testCollection.deleteOne(any(Bson.class))).thenReturn(mockResult);
+
+        assertThrows(RecordDoesNotExistException.class, () -> {
+            upvoteDAO.removeUpvote(mockCredentials, 1, 1);
+        });
+
+        verifyNoInteractions(mockCounterDAO);
     }
 
     @Test

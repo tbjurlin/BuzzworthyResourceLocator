@@ -80,7 +80,12 @@ public class UpvoteDAOImpl
             throw new AuthorizationException("User attempted to delete upvote with invalid or missing system role.");
         }
         Document targetUpvote = upvotes.find(Filters.and(Filters.eq("upvoteId", upvoteId), Filters.eq("resourceId", resourceId))).first();
-        if (targetUpvote != null && targetUpvote.getInteger("creatorId") != user.getId()) {
+
+        if (targetUpvote == null) {
+            logger.warn(String.format("Failed to remove upvote from user %d for resource %d - resource or upvote not found", user.getId(), resourceId));
+            throw new RecordDoesNotExistException(String.format("Failed to remove upvote from resource %d.", resourceId));
+        }
+        if (targetUpvote.getInteger("creatorId") != user.getId()) {
             logger.error(String.format("User %d attempted to delete an upvote they did not create.", user.getId()));
             throw new AuthorizationException("User attempted to delete an upvote they did not create");
         }
@@ -88,14 +93,14 @@ public class UpvoteDAOImpl
         // Delete the upvote document and decrement the counter atomically
         com.mongodb.client.result.DeleteResult result = upvotes.deleteOne(
             Filters.and(
-                Filters.eq("upvoteId", user.getId()),
+                Filters.eq("upvoteId", upvoteId),
                 Filters.eq("resourceId", resourceId)
             )
         );
 
         if (result.getDeletedCount() == 0) {
             logger.warn(String.format("Failed to remove upvote from user %d for resource %d - resource or upvote not found", user.getId(), resourceId));
-            return;
+            throw new RecordDoesNotExistException(String.format("Failed to remove upvote from resource %d.", resourceId));
         }
 
         logger.info(String.format("User %d removed upvote from resource %d", user.getId(), resourceId));

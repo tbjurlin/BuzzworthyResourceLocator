@@ -80,7 +80,7 @@ public class ResourceDAOImpl implements ResourceDAO {
 
             if (doc == null) {
                 logger.warn(String.format("Failed to find resource %d for removal by user %d", id, user.getId()));
-                return;
+                throw new RecordDoesNotExistException("Failed to find resource for removal");
             }
 
             // Check if user has permission to delete this resource.
@@ -106,6 +106,7 @@ public class ResourceDAOImpl implements ResourceDAO {
             logger.info(String.format("User %d removed resource %d", user.getId(), id));
         } else {
             logger.warn(String.format("User %d failed to remove resource %d", user.getId(),id));
+            throw new RecordDoesNotExistException("Failed to find resource for removal");
         }
     }
 
