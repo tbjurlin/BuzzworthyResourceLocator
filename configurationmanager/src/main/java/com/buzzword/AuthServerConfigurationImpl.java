@@ -27,7 +27,8 @@ public class AuthServerConfigurationImpl implements AuthServerConfiguration {
         
         createAuthServerConnectionString(
             manager.getAuthServerHost(),
-            manager.getAuthServerPort()
+            manager.getAuthServerPort(),
+            manager.getAuthServerSubdomain()
         );
     }
 
@@ -37,7 +38,7 @@ public class AuthServerConfigurationImpl implements AuthServerConfiguration {
      * @param port the port the auth server is hosted on.
      * @throws ConfigurationException if any of the fields are invalid.
      */
-    private void createAuthServerConnectionString(String host, String port) {
+    private void createAuthServerConnectionString(String host, String port, String subdomain) {
 
         if (host == null) {
             logger.error("Config file is missing required field host.");
@@ -47,11 +48,20 @@ public class AuthServerConfigurationImpl implements AuthServerConfiguration {
             logger.error("Database host is empty.");
             throw new ConfigurationException("Database host is empty.");
         }
+        if (subdomain == null) {
+            logger.error("Config file is missing required field subdomain.");
+            throw new ConfigurationException("Subdomain is null.");
+        }
+        if (subdomain == "") {
+            logger.error("Database subdomain is empty.");
+            throw new ConfigurationException("Database subdomain is empty.");
+        }
 
         String safeHost = sanitizer.sanitizeInput(host);
+        String safeSubdomain = sanitizer.sanitizeInput(subdomain);
 
         if (port == null) {
-            authServerConnectionString = safeHost;
+            authServerConnectionString = String.format("%s%s", safeHost, safeSubdomain);
         } else {
             try {
                 Integer portNum = Integer.parseInt(port);
@@ -60,9 +70,10 @@ public class AuthServerConfigurationImpl implements AuthServerConfiguration {
                     throw new ConfigurationException("Invalid port number.");
                 }
                 authServerConnectionString = String.format(
-                    "%s:%d",
+                    "%s:%d%s",
                     safeHost,
-                    portNum
+                    portNum,
+                    safeSubdomain
                 );
             }  catch (NumberFormatException e) {
                 logger.error("database.port is not a number.");

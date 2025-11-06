@@ -19,6 +19,43 @@ public class AuthServerConfigurationTest {
     void throwsErrorOnMissingURLInput() {
         when(manager.getAuthServerHost()).thenReturn(null);
         when(manager.getAuthServerPort()).thenReturn("8080");
+        when(manager.getAuthServerSubdomain()).thenReturn("/auth");
+
+        assertThrows(ConfigurationException.class, () -> {
+            new AuthServerConfigurationImpl(manager);
+        });
+
+    }
+
+    @Test
+    void throwsErrorOnMissingSubdomainInput() {
+        when(manager.getAuthServerHost()).thenReturn("https://example.com");
+        when(manager.getAuthServerPort()).thenReturn("8080");
+        when(manager.getAuthServerSubdomain()).thenReturn(null);
+
+        assertThrows(ConfigurationException.class, () -> {
+            new AuthServerConfigurationImpl(manager);
+        });
+
+    }
+
+    @Test
+    void throwsErrorOnEmptyURLInput() {
+        when(manager.getAuthServerHost()).thenReturn("");
+        when(manager.getAuthServerPort()).thenReturn("8080");
+        when(manager.getAuthServerSubdomain()).thenReturn("/auth");
+
+        assertThrows(ConfigurationException.class, () -> {
+            new AuthServerConfigurationImpl(manager);
+        });
+
+    }
+
+    @Test
+    void throwsErrorOnEmptySubdomainInput() {
+        when(manager.getAuthServerHost()).thenReturn("https://example.com");
+        when(manager.getAuthServerPort()).thenReturn("8080");
+        when(manager.getAuthServerSubdomain()).thenReturn("");
 
         assertThrows(ConfigurationException.class, () -> {
             new AuthServerConfigurationImpl(manager);
@@ -30,6 +67,7 @@ public class AuthServerConfigurationTest {
     void throwsErrorOnInvalidPortInput() {
         when(manager.getAuthServerHost()).thenReturn("https://example.com");
         when(manager.getAuthServerPort()).thenReturn("Not a port number");
+        when(manager.getAuthServerSubdomain()).thenReturn("/auth");
 
         assertThrows(ConfigurationException.class, () -> {
             new AuthServerConfigurationImpl(manager);
@@ -41,19 +79,21 @@ public class AuthServerConfigurationTest {
     void constructsURLWithPort() {
         when(manager.getAuthServerHost()).thenReturn("https://example.com");
         when(manager.getAuthServerPort()).thenReturn("8080");
+        when(manager.getAuthServerSubdomain()).thenReturn("/auth");
 
         AuthServerConfiguration config = new AuthServerConfigurationImpl(manager);
 
-        assertEquals("https://example.com:8080", config.getAuthServerConnectionString());
+        assertEquals("https://example.com:8080/auth", config.getAuthServerConnectionString());
     }
 
     @Test
     void constructsURLWithoutPort() {
         when(manager.getAuthServerHost()).thenReturn("https://example.com");
         when(manager.getAuthServerPort()).thenReturn(null);
+        when(manager.getAuthServerSubdomain()).thenReturn("/auth");
 
         AuthServerConfiguration config = new AuthServerConfigurationImpl(manager);
 
-        assertEquals("https://example.com", config.getAuthServerConnectionString());
+        assertEquals("https://example.com/auth", config.getAuthServerConnectionString());
     }
 }

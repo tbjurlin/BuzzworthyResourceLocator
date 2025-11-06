@@ -1,5 +1,7 @@
 package com.buzzword;
 
+import java.util.List;
+
 public interface ConfigurationManager {
     
     /**
@@ -52,7 +54,31 @@ public interface ConfigurationManager {
 
     /**
      * Gets the auth server port from the config file. 
-     * @return the auth server url
+     * @return the auth server port
      */
     public abstract String getAuthServerPort();
+
+    /**
+     * Gets the auth server subdomin from the config file. 
+     * @return the auth server subdomain
+     */
+    public abstract String getAuthServerSubdomain();
+
+    /**
+     * Gets the list of user roles mapped to Admin
+     * @return the list of user roles
+     */
+    public abstract List<String> getAdminUserRoles();
+
+    /**
+     * Gets the list of user roles mapped to Contributor
+     * @return the list of user roles
+     */
+    public abstract List<String> getContributorUserRoles();
+
+    /**
+     * Gets the list of user roles mapped to Commenter
+     * @return the list of user roles
+     */
+    public abstract List<String> getCommenterUserRoles();
 }

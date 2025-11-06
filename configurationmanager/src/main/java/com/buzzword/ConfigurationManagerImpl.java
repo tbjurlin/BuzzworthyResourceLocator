@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -132,5 +134,61 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
     @Override
     public String getAuthServerPort() {
         return propertiesFile.getProperty("authentication.port");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getAuthServerSubdomain() {
+        return propertiesFile.getProperty("authentication.subdomain");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<String> getAdminUserRoles() {
+        List<String> roles = new ArrayList<String>();
+        int idx = 0;
+        String property = propertiesFile.getProperty("roles.admin.0");
+        while (property != null) {
+            roles.add(property);
+            idx++;
+            property = propertiesFile.getProperty("roles.admin." + idx);
+        }
+        return roles;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<String> getContributorUserRoles() {
+        List<String> roles = new ArrayList<String>();
+        int idx = 0;
+        String property = propertiesFile.getProperty("roles.contributor.0");
+        while (property != null) {
+            roles.add(property);
+            idx++;
+            property = propertiesFile.getProperty("roles.contributor." + idx);
+        }
+        return roles;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<String> getCommenterUserRoles() {
+        List<String> roles = new ArrayList<String>();
+        int idx = 0;
+        String property = propertiesFile.getProperty("roles.commenter.0");
+        while (property != null) {
+            roles.add(property);
+            idx++;
+            property = propertiesFile.getProperty("roles.commenter." + idx);
+        }
+        return roles;
     }
 }
