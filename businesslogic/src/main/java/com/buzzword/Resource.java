@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.commons.validator.routines.UrlValidator;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * The Resource class creates a REsource object that holds the title, 
@@ -15,12 +16,12 @@ public class Resource extends Record {
     private String title; 
     private String description; 
     private String url;
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private List<Comment> comments; 
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private List<ReviewFlag> reviewFlags;
-    @JsonIgnore
-    private List<Upvote> upVotes;
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private List<Upvote> upvotes;
 
     private final XssSanitizer resourceSanitizer;
 
@@ -198,26 +199,26 @@ public class Resource extends Record {
 
     /**
      * <p>
-     * Ensures that the upVotes list is not null before setting it.
+     * Ensures that the upvotes list is not null before setting it.
      * </p>
      * 
-     * @param upVotes
+     * @param upvotes
      */
-    private List<Upvote> validateUpvotes(final List<Upvote> upVotes)
+    private List<Upvote> validateUpvotes(final List<Upvote> upvotes)
     {
-        if (upVotes == null) {
+        if (upvotes == null) {
             logger.error("Upvotes must not be null");
             throw new IllegalArgumentException("Upvotes must not be null.");
         }
-        return upVotes;
+        return upvotes;
     }
     public List<Upvote> getUpvotes() {
         logger.debug("returning the upvotes list");
-        return upVotes;
+        return upvotes;
     }
-    public void setUpvotes(List<Upvote> upVotes) {
+    public void setUpvotes(List<Upvote> upvotes) {
         logger.debug("setting the upvotes list");
-        this.upVotes = validateUpvotes(upVotes);
+        this.upvotes = validateUpvotes(upvotes);
     }
 
 }

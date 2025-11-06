@@ -175,16 +175,16 @@ public class ResourceDAOImpl implements ResourceDAO {
         });
 
         upvotes.find().forEach(upvoteDoc -> {
-            Upvote upVote = new Upvote();
-            upVote.setId(upvoteDoc.getInteger("upvoteId"));
-            upVote.setCreatorId(upvoteDoc.getInteger("creatorId"));
-            upVote.setFirstName(upvoteDoc.getString("firstName"));
-            upVote.setLastName(upvoteDoc.getString("lastName"));
-            upVote.setCreationDate(upvoteDoc.getDate("dateCreated"));
+            Upvote upvote = new Upvote();
+            upvote.setId(upvoteDoc.getInteger("upvoteId"));
+            upvote.setCreatorId(upvoteDoc.getInteger("creatorId"));
+            upvote.setFirstName(upvoteDoc.getString("firstName"));
+            upvote.setLastName(upvoteDoc.getString("lastName"));
+            upvote.setCreationDate(upvoteDoc.getDate("dateCreated"));
 
             Resource parent = resourceMap.get(upvoteDoc.getInteger("resourceId"));
             List<Upvote> upvotes = parent.getUpvotes();
-            upvotes.add(upVote);
+            upvotes.add(upvote);
         });
 
         return new ArrayList<Resource>(resourceMap.values());
