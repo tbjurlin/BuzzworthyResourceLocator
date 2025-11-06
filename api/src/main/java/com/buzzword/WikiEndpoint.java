@@ -1,5 +1,7 @@
 package com.buzzword;
 
+import java.io.IOException;
+import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +13,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.validation.Valid;
@@ -25,9 +30,9 @@ import jakarta.validation.Valid;
 @RequestMapping("wiki")
 public class WikiEndpoint {
 
-    String authServerUrl = "";
-    Authenticator auth = null;
+    private String authServerUrl = "";
     private final Logger logger = LoggerFactory.getEventLogger();
+    private DatabaseConnectionPool databaseConnectionPool;
 
     /**
      * Constructor to initialize a new AuthenticatorImpl using the 
@@ -35,18 +40,10 @@ public class WikiEndpoint {
      */
     @PostConstruct
     public void initialize() {
-        auth = new AuthenticatorImpl(authServerUrl);
-    }
-
-    /**
-     * Setter for injecting a custom Authenticator.
-     * 
-     * @param auth An Authenticator object.
-     */
-    public void setAuthenticator(Authenticator auth) {
-        this.auth = auth;
-        if(this.auth == null) {
-            auth = new AuthenticatorImpl(authServerUrl);
+        try{
+            databaseConnectionPool = DatabaseConnectionPool.getInstance();
+        } catch(IOException | IllegalArgumentException e) {
+            throw new IllegalArgumentException("Cannot get instance of database connection pool.");
         }
     }
 
@@ -63,16 +60,25 @@ public class WikiEndpoint {
         logger.info("HTTP GET request (retrieveAllResources) received.");
         Token token = new Token();
         token.setToken(tokenStr);
+        Authenticator auth = new AuthenticatorImpl(authServerUrl);
         Credentials userCredentials = auth.Authenticate(token);
-        /*
-        UserDAO dao = new UserDAOImpl();
-        List<resource> resources = dao.SearchByAll("");
-        Objectmapper mapper = new Objectmapper(); */
-        String returnObj = ""; //mapper.writeValueAsString(resources);
-        logger.info("Returning HTTP response code 200.");
-        return ResponseEntity.ok()
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .body(returnObj);
+        ResourceDAO resourceDAO = new ResourceDAOImpl(databaseConnectionPool.getDatabaseConnection());
+        List<Resource> resources = resourceDAO.listAllResources(userCredentials);
+        if(resources == null) {
+            logger.error("Cannot return a null list of resources.");
+            throw new NullPointerException("Cannot return a null list of resources.");
+        }
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            String returnObj = objectMapper.writeValueAsString(resources);
+        
+            logger.info("Returning HTTP response code 200.");
+            return ResponseEntity.ok()
+                                 .contentType(MediaType.APPLICATION_JSON)
+                                 .body(returnObj);
+        } catch(JsonProcessingException e) {
+            throw new NullPointerException("Unable to parse JSON from list of resources.");
+        }
     }
     
     /**
@@ -85,18 +91,17 @@ public class WikiEndpoint {
      */
     @PostMapping("resource")
     public ResponseEntity<String> addResource(@Valid @RequestHeader("Bearer") String tokenStr, @Valid @RequestBody Resource resource) {
+        logger.info("HTTP POST request (addResource) received.");
         Token token = new Token();
         token.setToken(tokenStr);
+        Authenticator auth = new AuthenticatorImpl(authServerUrl);
         Credentials userCredentials = auth.Authenticate(token);
-        /* Pseudo code:
-         * DAO dbAccess = new DAOImpl(Config.Instance());
-         * String obj = dbAccess.insertResource(userCredentials, resource);
-         */
-
+        ResourceDAO resourceDAO = new ResourceDAOImpl(databaseConnectionPool.getDatabaseConnection());
+        resourceDAO.insertResource(userCredentials, resource);
         logger.info("Returning HTTP response code 201.");
         return ResponseEntity.status(HttpStatus.CREATED)
                              .contentType(MediaType.APPLICATION_JSON)
-                             .body("{\"msg\": \"Add resource\"}");
+                             .body("{\"msg\": \"Successfully added a new resource.\"}");
     }
 
     /**
@@ -109,18 +114,18 @@ public class WikiEndpoint {
      * @return
      */
     @PostMapping("resource/{resourceId}/comment")
-    public ResponseEntity<String> addComment(@Valid @RequestHeader("Bearer") String tokenStr, @Valid @PathVariable Long resourceId, @Valid @RequestBody Comment comment) {
+    public ResponseEntity<String> addComment(@Valid @RequestHeader("Bearer") String tokenStr, @Valid @PathVariable int resourceId, @Valid @RequestBody Comment comment) {
+        logger.info("HTTP POST request (addResource) received.");
         Token token = new Token();
         token.setToken(tokenStr);
+        Authenticator auth = new AuthenticatorImpl(authServerUrl);
         Credentials userCredentials = auth.Authenticate(token);
-        /* Pseudo code:
-         * DAO dbAccess = new DAOImpl(Config.Instance());
-         * String obj = dbAccess.insertComment(userCredentials, resourceId, comment);
-         */
+        CommentDAO commentDAO = new CommentDAOImpl(databaseConnectionPool.getDatabaseConnection());
+        commentDAO.addComment(userCredentials, comment, resourceId);
         logger.info("Returning HTTP response code 201.");
         return ResponseEntity.status(HttpStatus.CREATED)
                              .contentType(MediaType.APPLICATION_JSON)
-                             .body("{\"msg\": \"Add comment to resource " + resourceId + "\"}");
+                             .body("{\"msg\": \"Successfully added comment to resource " + resourceId + ".\"}");
     }
 
     /**
@@ -132,18 +137,18 @@ public class WikiEndpoint {
      * @return
      */
     @PostMapping("resource/{resourceId}/upvote")
-    public ResponseEntity<String> addUpvote(@Valid @RequestHeader("Bearer") String tokenStr, @Valid @PathVariable Long resourceId) {
+    public ResponseEntity<String> addUpvote(@Valid @RequestHeader("Bearer") String tokenStr, @Valid @PathVariable int resourceId) {
+        logger.info("HTTP POST request (addUpvote) received.");
         Token token = new Token();
         token.setToken(tokenStr);
+        Authenticator auth = new AuthenticatorImpl(authServerUrl);
         Credentials userCredentials = auth.Authenticate(token);
-        /* Pseudo code:
-         * DAO dbAccess = new DAOImpl(Config.Instance());
-         * String obj = dbAccess.insertUpvote(userCredentials, resourceId, upvote);
-         */
+        UpvoteDAO upvoteDAO = new UpvoteDAOImpl(databaseConnectionPool.getDatabaseConnection());
+        upvoteDAO.addUpvote(userCredentials, new Upvote(), resourceId);
         logger.info("Returning HTTP response code 201.");
         return ResponseEntity.status(HttpStatus.CREATED)
                              .contentType(MediaType.APPLICATION_JSON)
-                             .body("{\"msg\": \"Add upvote to resource " + resourceId + "\"}");
+                             .body("{\"msg\": \"Successfully added new upvote to resource " + resourceId + ".\"}");
     }
 
     /**
@@ -156,18 +161,18 @@ public class WikiEndpoint {
      * @return
      */
     @PostMapping("resource/{resourceId}/reviewFlag")
-    public ResponseEntity<String> addReviewFlag(@Valid @RequestHeader("Bearer") String tokenStr, @Valid @PathVariable Long resourceId, @Valid @RequestBody ReviewFlag reviewFlag) {
+    public ResponseEntity<String> addReviewFlag(@Valid @RequestHeader("Bearer") String tokenStr, @Valid @PathVariable int resourceId, @Valid @RequestBody ReviewFlag reviewFlag) {
+        logger.info("HTTP POST request (addReviewFlag) received.");
         Token token = new Token();
         token.setToken(tokenStr);
+        Authenticator auth = new AuthenticatorImpl(authServerUrl);
         Credentials userCredentials = auth.Authenticate(token);
-        /* Pseudo code:
-         * DAO dbAccess = new DAOImpl(Config.Instance());
-         * String obj = dbAccess.insertReviewFlag(userCredentials, resourceId, reviewFlag);
-         */
+        FlagDAO flagDAO = new FlagDAOImpl(databaseConnectionPool.getDatabaseConnection());
+        flagDAO.addReviewFlag(userCredentials, reviewFlag, resourceId);
         logger.info("Returning HTTP response code 201.");
         return ResponseEntity.status(HttpStatus.CREATED)
                              .contentType(MediaType.APPLICATION_JSON)
-                             .body("{\"msg\": \"Add review flag to resource " + resourceId + "\"}");
+                             .body("{\"msg\": \"Successfully added new review flag to resource " + resourceId + ".\"}");
     }
 
     /**
@@ -179,18 +184,18 @@ public class WikiEndpoint {
      * @return
      */
     @DeleteMapping("resource/{resourceId}")
-    public ResponseEntity<String> removeResource(@Valid @RequestHeader("Bearer") String tokenStr, @Valid @PathVariable Long resourceId) {
+    public ResponseEntity<String> removeResource(@Valid @RequestHeader("Bearer") String tokenStr, @Valid @PathVariable int resourceId) {
+        logger.info("HTTP DELETE request (removeResource) received.");
         Token token = new Token();
         token.setToken(tokenStr);
+        Authenticator auth = new AuthenticatorImpl(authServerUrl);
         Credentials userCredentials = auth.Authenticate(token);
-        /* Pseudo code:
-         * DAO dbAccess = new DAOImpl(Config.Instance());
-         * String obj = dbAccess.deleteResource(userCredentials, resourceId);
-         */
+        ResourceDAO resourceDAO = new ResourceDAOImpl(databaseConnectionPool.getDatabaseConnection());
+        resourceDAO.removeResource(userCredentials, resourceId);
         logger.info("Returning HTTP response code 200.");
         return ResponseEntity.ok()
                              .contentType(MediaType.APPLICATION_JSON)
-                             .body("{\"msg\": \"Remove resource " + resourceId + "\"}");
+                             .body("{\"msg\": \"Successfully removed resource " + resourceId + ".\"}");
     }
 
     /**
@@ -203,18 +208,18 @@ public class WikiEndpoint {
      * @return
      */
     @DeleteMapping("resource/{resourceId}/comment/{commentId}")
-    public ResponseEntity<String> removeComment(@Valid @RequestHeader("Bearer") String tokenStr, @Valid @PathVariable Long resourceId, @PathVariable Long commentId) {
+    public ResponseEntity<String> removeComment(@Valid @RequestHeader("Bearer") String tokenStr, @Valid @PathVariable int resourceId, @PathVariable int commentId) {
+        logger.info("HTTP DELETE request (removeComment) received.");
         Token token = new Token();
         token.setToken(tokenStr);
+        Authenticator auth = new AuthenticatorImpl(authServerUrl);
         Credentials userCredentials = auth.Authenticate(token);
-        /* Pseudo code:
-         * DAO dbAccess = new DAOImpl(Config.Instance());
-         * String obj = dbAccess.deleteComment(userCredentials, resourceId, commentId);
-         */
+        CommentDAO commentDAO = new CommentDAOImpl(databaseConnectionPool.getDatabaseConnection());
+        commentDAO.removeComment(userCredentials, commentId, resourceId);
         logger.info("Returning HTTP response code 200.");
         return ResponseEntity.ok()
                              .contentType(MediaType.APPLICATION_JSON)
-                             .body("{\"msg\": \"Remove comment " + commentId + " from resource " + resourceId + "\"}");
+                             .body("{\"msg\": \"Successfully removed comment " + commentId + " from resource " + resourceId + ".\"}");
     }
 
     /**
@@ -227,18 +232,18 @@ public class WikiEndpoint {
      * @return
      */
     @DeleteMapping("resource/{resourceId}/upvote/{upvoteId}")
-    public ResponseEntity<String> removeUpvote(@Valid @RequestHeader("Bearer") String tokenStr, @Valid @PathVariable Long resourceId, @PathVariable Long upvoteId) {
+    public ResponseEntity<String> removeUpvote(@Valid @RequestHeader("Bearer") String tokenStr, @Valid @PathVariable int resourceId, @PathVariable int upvoteId) {
+        logger.info("HTTP DELETE request (removeUpvote) received.");
         Token token = new Token();
         token.setToken(tokenStr);
+        Authenticator auth = new AuthenticatorImpl(authServerUrl);
         Credentials userCredentials = auth.Authenticate(token);
-        /* Pseudo code:
-         * DAO dbAccess = new DAOImpl(Config.Instance());
-         * String obj = dbAccess.deleteUpvote(userCredentials, resourceId, upvoteId);
-         */
+        UpvoteDAO upvoteDAO = new UpvoteDAOImpl(databaseConnectionPool.getDatabaseConnection());
+        upvoteDAO.removeUpvote(userCredentials, upvoteId, resourceId);
         logger.info("Returning HTTP response code 200.");
         return ResponseEntity.ok()
                              .contentType(MediaType.APPLICATION_JSON)
-                             .body("{\"msg\": \"Remove upvote " + upvoteId + " from resource " + resourceId + "\"}");
+                             .body("{\"msg\": \"Successfully removed upvote " + upvoteId + " from resource " + resourceId + ".\"}");
     }
 
     /**
@@ -251,17 +256,17 @@ public class WikiEndpoint {
      * @return
      */
     @DeleteMapping("resource/{resourceId}/reviewFlag/{flagId}")
-    public ResponseEntity<String> removeReviewFlag(@Valid @RequestHeader("Bearer") String tokenStr, @Valid @PathVariable Long resourceId, @PathVariable Long flagId) {
+    public ResponseEntity<String> removeReviewFlag(@Valid @RequestHeader("Bearer") String tokenStr, @Valid @PathVariable int resourceId, @PathVariable int flagId) {
+        logger.info("HTTP DELETE request (removeReviewFlag) received.");
         Token token = new Token();
         token.setToken(tokenStr);
+        Authenticator auth = new AuthenticatorImpl(authServerUrl);
         Credentials userCredentials = auth.Authenticate(token);
-        /* Pseudo code:
-         * DAO dbAccess = new DAOImpl(Config.Instance());
-         * String obj = dbAccess.deleteReviewFlag(userCredentials, resourceId, flagId);
-         */
+        FlagDAO flagDAO = new FlagDAOImpl(databaseConnectionPool.getDatabaseConnection());
+        flagDAO.removeReviewFlag(userCredentials, flagId, resourceId);
         logger.info("Returning HTTP response code 200.");
         return ResponseEntity.ok()
                              .contentType(MediaType.APPLICATION_JSON)
-                             .body("{\"msg\": \"Remove review flag " + flagId + " from resource " + resourceId + "\"}");
+                             .body("{\"msg\": \"Successfully removed review flag " + flagId + " from resource " + resourceId + ".\"}");
     }
 }

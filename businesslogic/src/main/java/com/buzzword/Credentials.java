@@ -19,7 +19,7 @@ public class Credentials {
     
     @JsonProperty("id")
     @JsonAlias({"id"})
-    private Integer id;
+    private int id;
     @JsonProperty("fName")
     @JsonAlias({"fName"})
     private Name firstName;
@@ -91,7 +91,7 @@ public class Credentials {
      * <p>
      * @return id
      */
-    public Integer getId() {
+    public int getId() {
         logger.debug("returning the id: " + id);
         return id;
     }
@@ -107,7 +107,7 @@ public class Credentials {
      * @param id the value to set into the id field
      * @throws IllegalArgumentException if the id is invalid
      */
-    public void setId(Integer id) {
+    public void setId(int id) {
         logger.debug("setting the id");
         if (id < 0) {
             logger.error("id must be non-negative");
