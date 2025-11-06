@@ -18,9 +18,19 @@ public class FlagDAOImpl
 
     private final MongoCollection<Document> flags;
     private final Logger logger = LoggerFactory.getEventLogger();
+    private CounterDAO counterDAO;
 
     public FlagDAOImpl(MongoDatabase db) {
         this.flags = db.getCollection("flags");
+        counterDAO = new CounterDAOImpl(db);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setCounterDAO(CounterDAO counterDAO) {
+        this.counterDAO = counterDAO;
     }
 
 
@@ -47,7 +57,7 @@ public class FlagDAOImpl
 
         Document flagDoc = new Document()
             .append("creatorId", user.getId())
-            .append("flagId", flag.getId())
+            .append("flagId", counterDAO.getNextReviewFlagId(resourceId))
             .append("resourceId", resourceId)
             .append("firstName", user.getFirstName())
             .append("lastName", user.getLastName())

@@ -3,10 +3,10 @@ package com.buzzword;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.time.Instant;
@@ -51,6 +51,9 @@ public class ResourceDAOTest {
     @Mock
     MongoCollection<Document> upvoteCollection;
 
+    @Mock
+    CounterDAO mockCounterDAO;
+
     ResourceDAO resourceDAO;
 
     @BeforeEach
@@ -64,6 +67,7 @@ public class ResourceDAOTest {
 
         when(testDatabase.getCollection("resources")).thenReturn(resourceCollection);
         resourceDAO = new ResourceDAOImpl(testDatabase);
+        resourceDAO.setCounterDAO(mockCounterDAO);
     }
 
     @Test
@@ -74,8 +78,9 @@ public class ResourceDAOTest {
         when(mockCredentials.getId()).thenReturn(1);
         when(mockCredentials.getSystemRole()).thenReturn("Contributor");
 
+        when(mockCounterDAO.getNextResourceId()).thenReturn(1);
+
         Resource mockResource = mock(Resource.class);
-        when(mockResource.getId()).thenReturn(1);
         when(mockResource.getCreationDate()).thenReturn(Date.from(Instant.ofEpochSecond(946684800)));
         when(mockResource.getTitle()).thenReturn("Title");
         when(mockResource.getDescription()).thenReturn("Description");
@@ -109,8 +114,9 @@ public class ResourceDAOTest {
         when(mockCredentials.getId()).thenReturn(1);
         when(mockCredentials.getSystemRole()).thenReturn("Admin");
 
+        when(mockCounterDAO.getNextResourceId()).thenReturn(1);
+
         Resource mockResource = mock(Resource.class);
-        when(mockResource.getId()).thenReturn(1);
         when(mockResource.getCreationDate()).thenReturn(Date.from(Instant.ofEpochSecond(946684800)));
         when(mockResource.getTitle()).thenReturn("Title");
         when(mockResource.getDescription()).thenReturn("Description");
@@ -166,8 +172,10 @@ public class ResourceDAOTest {
         ArgumentCaptor<Bson> captor = ArgumentCaptor.forClass(Bson.class);
         verify(resourceCollection).deleteOne(captor.capture());
 
+        verify(mockCounterDAO).removeResourceCounters(1);
+
         Bson capturedFilter = captor.getValue();
-        Bson expectedFilter = Filters.eq("resourceId", 1L);
+        Bson expectedFilter = Filters.eq("resourceId", 1);
         Assertions.assertThat(capturedFilter)
             .usingRecursiveComparison()
             .isEqualTo(expectedFilter);
@@ -198,11 +206,13 @@ public class ResourceDAOTest {
 
         resourceDAO.removeResource(mockCredentials, 1);
 
+        verify(mockCounterDAO).removeResourceCounters(1);
+
         ArgumentCaptor<Bson> captor = ArgumentCaptor.forClass(Bson.class);
         verify(resourceCollection).deleteOne(captor.capture());
 
         Bson capturedFilter = captor.getValue();
-        Bson expectedFilter = Filters.eq("resourceId", 1L);
+        Bson expectedFilter = Filters.eq("resourceId", 1);
         Assertions.assertThat(capturedFilter)
             .usingRecursiveComparison()
             .isEqualTo(expectedFilter);
@@ -232,6 +242,8 @@ public class ResourceDAOTest {
             resourceDAO.removeResource(mockCredentials, 1);
         });
 
+        verifyNoInteractions(mockCounterDAO);
+
         verify(resourceCollection, never()).deleteOne(any(Bson.class));
     }
 
@@ -245,6 +257,8 @@ public class ResourceDAOTest {
         assertThrows(AuthorizationException.class, () -> {
             resourceDAO.removeResource(mockCredentials, 1);
         });
+
+        verifyNoInteractions(mockCounterDAO);
 
         verify(resourceCollection, never()).deleteOne(any(Bson.class));
     }

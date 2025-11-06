@@ -18,9 +18,19 @@ public class UpvoteDAOImpl
 
     private final MongoCollection<Document> upvotes;
     private final Logger logger = LoggerFactory.getEventLogger();
+    private CounterDAO counterDAO;
 
     public UpvoteDAOImpl(MongoDatabase db) {
         this.upvotes = db.getCollection("upvotes");
+        this.counterDAO = new CounterDAOImpl(db);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setCounterDAO(CounterDAO counterDAO) {
+        this.counterDAO = counterDAO;
     }
 
 
@@ -47,7 +57,7 @@ public class UpvoteDAOImpl
 
         Document upvoteDoc = new Document()
             .append("creatorId", user.getId())
-            .append("upvoteId", upvote.getId())
+            .append("upvoteId", counterDAO.getNextUpvoteId(resourceId))
             .append("resourceId", resourceId)
             .append("firstName", user.getFirstName())
             .append("lastName", user.getLastName())

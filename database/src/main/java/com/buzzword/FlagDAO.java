@@ -11,7 +11,12 @@ package com.buzzword;
 public interface FlagDAO {
 
     /**
-     * <p>
+     * Set the counterDAO used to get ids for new records.
+     * @param counterDAO the data access object for record Ids
+     */
+    public void setCounterDAO(CounterDAO counterDAO);
+
+    /**
      * Adds a review flag to the databse for the specific resource for managerial review.
      * 
      * @param user credentials of the user
@@ -20,7 +25,6 @@ public interface FlagDAO {
     void addReviewFlag(Credentials user, ReviewFlag flag, int resourceId);
 
     /**
-     * <p>
      * After a manager has reviewed the resouce, they can remove the review flag from the resource.
      * 
      * @param user credentials of the user

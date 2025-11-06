@@ -2,19 +2,13 @@ package com.buzzword;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import java.util.function.Consumer;
-
 import org.assertj.core.api.Assertions;
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -23,10 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.stubbing.Answer;
-
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
@@ -42,12 +33,16 @@ public class CommentDAOTest {
     @Mock
     MongoCollection<Document> testCollection;
 
+    @Mock
+    CounterDAO mockCounterDAO;
+
     CommentDAO commentDAO;
 
     @BeforeEach
     void setUpDatabase() {
         when(testDatabase.getCollection("comments")).thenReturn(testCollection);
         commentDAO = new CommentDAOImpl(testDatabase);
+        commentDAO.setCounterDAO(mockCounterDAO);
     }
 
     @Test
@@ -58,8 +53,9 @@ public class CommentDAOTest {
         when(mockCredentials.getId()).thenReturn(1);
         when(mockCredentials.getSystemRole()).thenReturn("Contributor");
 
+        when(mockCounterDAO.getNextCommentId(1)).thenReturn(1);
+
         Comment mockComment = mock(Comment.class);
-        when(mockComment.getId()).thenReturn(1);
         when(mockComment.getCreationDate()).thenReturn(Date.from(Instant.ofEpochSecond(946684800)));
         when(mockComment.getContents()).thenReturn("Thanks for the suggestion!");
 
@@ -90,8 +86,9 @@ public class CommentDAOTest {
         when(mockCredentials.getId()).thenReturn(1);
         when(mockCredentials.getSystemRole()).thenReturn("Admin");
 
+        when(mockCounterDAO.getNextCommentId(1)).thenReturn(1);
+
         Comment mockComment = mock(Comment.class);
-        when(mockComment.getId()).thenReturn(1);
         when(mockComment.getCreationDate()).thenReturn(Date.from(Instant.ofEpochSecond(946684800)));
         when(mockComment.getContents()).thenReturn("Thanks for the suggestion!");
 
@@ -122,8 +119,9 @@ public class CommentDAOTest {
         when(mockCredentials.getId()).thenReturn(1);
         when(mockCredentials.getSystemRole()).thenReturn("Commenter");
 
+        when(mockCounterDAO.getNextCommentId(1)).thenReturn(1);
+
         Comment mockComment = mock(Comment.class);
-        when(mockComment.getId()).thenReturn(1);
         when(mockComment.getCreationDate()).thenReturn(Date.from(Instant.ofEpochSecond(946684800)));
         when(mockComment.getContents()).thenReturn("Thanks for the suggestion!");
 
