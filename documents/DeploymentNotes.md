@@ -1,9 +1,31 @@
 # Table of Conents
-- [List of Dependencies](ListofDependenciesusedinthissoftware)
-- [Installing MongoDB Community Edition](InstallingMongoDBCommunityEdition)
-- [Installing MongoDB Shell (Mongosh)](IntallingMongoDBShell(Mongosh))
-- [Logging](LoggingInformation)
+- [Deployment Notes](#deployment-notes)
+- [Starting and connecting to the BRL Database](#starting-and-connecting-to-the-brl-database)
+   * [Database Tables](#database-tables)
+   * [List of Dependencies used in this software](#list-of-dependencies-used-in-this-software)
+   * [Installing MongoDB Community Edition](#installing-mongodb-community-edition)
+   * [Installing MongoDB Shell (Mongosh)](#installing-mongodb-shell-mongosh)
+   * [Logging Information](#logging-information)
+      + [Security Logs](#security-logs)
+      + [Event Logs](#event-logs)
+      + [Database Logs](#database-logs)
 
+## Starting and connecting to the BRL Database
+Start the server by using:
+
+`sudo ./startmongodb.sh`
+
+Open an additional terminal and log onto the MongoDB shell, Mongosh, using admin privileges to montior the database:
+
+`mongosh --username <username>`
+
+You will be prompted for your password. You must be logged in with admin priviledges to allow other users to connect to your database.
+
+
+## Database Tables
+- comments
+- upvotes
+- resources
 
 
 ## List of Dependencies used in this software
@@ -56,5 +78,10 @@ Ensure Mongosh is installed by running the following command in your terminal:
 
 ## Logging Information
 ### Security Logs
+* Located in the root of the project in the log folder. Security logs may be found in "Security.log"
 
 ### Event Logs
+* Located in the root of the project in the log folder. Event logs may be found in "Application.log"
+
+### Database Logs
+* Database logs contianing logged information from MongoDB is found within the logs folder located within the data folder at the root of the project.

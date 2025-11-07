@@ -16,7 +16,7 @@ mongod --bind_ip_all \
     --port "${MONGO_PORT:-27017}" \
     --dbpath "${MONGO_DATA_DIR:-./data/db}" \
     --logpath "${MONGO_LOG_DIR:-./data/logs}/mongodb.log" \
-    --fork
+    -vvvvv
 
 # Check if MongoDB started successfully
 if [ $? -eq 0 ]; then
