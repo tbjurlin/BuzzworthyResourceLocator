@@ -168,6 +168,7 @@ public class ResourceDAOImpl implements ResourceDAO {
             flag.setFirstName(flagDoc.getString("firstName"));
             flag.setLastName(flagDoc.getString("lastName"));
             flag.setCreationDate(flagDoc.getDate("dateCreated"));
+            flag.setContents(flagDoc.getString("contents"));
 
             Resource parent = resourceMap.get(flagDoc.getInteger("resourceId"));
             List<ReviewFlag> flags = parent.getReviewFlags();

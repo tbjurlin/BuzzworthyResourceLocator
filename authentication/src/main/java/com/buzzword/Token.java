@@ -2,6 +2,7 @@ package com.buzzword;
 
 /**
  * Represents a JSON Web Token.
+ * <p>
  * This class provides formatting validation for JWTs prior to sending to
  * the Authentication Server.
  * 
