@@ -190,6 +190,9 @@ public class ResourceDAOTest {
         verify(resourceCollection).deleteOne(captor.capture());
 
         verify(mockCounterDAO).removeResourceCounters(1);
+        verify(commentCollection).deleteMany(Filters.eq("resourceId", 1));
+        verify(upvoteCollection).deleteMany(Filters.eq("resourceId", 1));
+        verify(flagCollection).deleteMany(Filters.eq("resourceId", 1));
 
         Bson capturedFilter = captor.getValue();
         Bson expectedFilter = Filters.eq("resourceId", 1);
@@ -224,6 +227,9 @@ public class ResourceDAOTest {
         resourceDAO.removeResource(mockCredentials, 1);
 
         verify(mockCounterDAO).removeResourceCounters(1);
+        verify(commentCollection).deleteMany(Filters.eq("resourceId", 1));
+        verify(upvoteCollection).deleteMany(Filters.eq("resourceId", 1));
+        verify(flagCollection).deleteMany(Filters.eq("resourceId", 1));
 
         ArgumentCaptor<Bson> captor = ArgumentCaptor.forClass(Bson.class);
         verify(resourceCollection).deleteOne(captor.capture());
@@ -260,6 +266,9 @@ public class ResourceDAOTest {
         });
 
         verifyNoInteractions(mockCounterDAO);
+        verifyNoInteractions(commentCollection);
+        verifyNoInteractions(upvoteCollection);
+        verifyNoInteractions(flagCollection);
 
         verify(resourceCollection, never()).deleteOne(any(Bson.class));
     }
@@ -276,6 +285,9 @@ public class ResourceDAOTest {
         });
 
         verifyNoInteractions(mockCounterDAO);
+        verifyNoInteractions(commentCollection);
+        verifyNoInteractions(upvoteCollection);
+        verifyNoInteractions(flagCollection);
 
         verify(resourceCollection, never()).deleteOne(any(Bson.class));
     }
@@ -385,6 +397,7 @@ public class ResourceDAOTest {
             .append("creatorId", 1)
             .append("firstName", "Foo")
             .append("lastName", "Bar")
+            .append("contents", "bad")
             .append("dateCreated", Date.from(Instant.ofEpochSecond(946684800)));
 
         Document flagDocument2  = new Document()
@@ -393,7 +406,8 @@ public class ResourceDAOTest {
             .append("creatorId", 1)
             .append("firstName", "Foo")
             .append("lastName", "Bar")
-            .append("dateCreated", Date.from(Instant.ofEpochSecond(946684800)));
+            .append("dateCreated", Date.from(Instant.ofEpochSecond(946684800)))
+            .append("contents", "bad");
 
         Document flagDocument3  = new Document()
             .append("flagId", 3)
@@ -401,6 +415,7 @@ public class ResourceDAOTest {
             .append("creatorId", 1)
             .append("firstName", "Foo")
             .append("lastName", "Bar")
+            .append("contents", "bad")
             .append("dateCreated", Date.from(Instant.ofEpochSecond(946684800)));
 
         List<Document> flagResponse = new ArrayList<Document>();
@@ -507,6 +522,7 @@ public class ResourceDAOTest {
         targetFlag1.setCreatorId(1);
         targetFlag1.setFirstName("Foo");
         targetFlag1.setLastName("Bar");
+        targetFlag1.setContents("bad");
         targetFlag1.setCreationDate(Date.from(Instant.ofEpochSecond(946684800)));
 
         ReviewFlag targetFlag2  = new ReviewFlag();
@@ -514,6 +530,7 @@ public class ResourceDAOTest {
         targetFlag2.setCreatorId(1);
         targetFlag2.setFirstName("Foo");
         targetFlag2.setLastName("Bar");
+        targetFlag2.setContents("bad");
         targetFlag2.setCreationDate(Date.from(Instant.ofEpochSecond(946684800)));
 
         r1Flags.add(targetFlag1);
@@ -572,6 +589,7 @@ public class ResourceDAOTest {
         targetFlag3.setCreatorId(1);
         targetFlag3.setFirstName("Foo");
         targetFlag3.setLastName("Bar");
+        targetFlag3.setContents("bad");
         targetFlag3.setCreationDate(Date.from(Instant.ofEpochSecond(946684800)));
 
         r2Flags.add(targetFlag3);

@@ -99,10 +99,14 @@ public class ResourceDAOImpl implements ResourceDAO {
         DeleteResult result = resources.deleteOne(
             Filters.eq("resourceId", id)
         );
+
         
         boolean removed = result.getDeletedCount() > 0;
         if (removed) {
             counterDAO.removeResourceCounters(id);
+            comments.deleteMany(Filters.eq("resourceId", id));
+            upvotes.deleteMany(Filters.eq("resourceId", id));
+            flags.deleteMany(Filters.eq("resourceId", id));
             logger.info(String.format("User %d removed resource %d", user.getId(), id));
         } else {
             logger.warn(String.format("User %d failed to remove resource %d", user.getId(),id));
@@ -148,44 +152,56 @@ public class ResourceDAOImpl implements ResourceDAO {
         });
 
         comments.find().forEach(commentDoc -> {
-            Comment comment = new Comment();
-            comment.setId(commentDoc.getInteger("commentId"));
-            comment.setCreatorId(commentDoc.getInteger("creatorId"));
-            comment.setFirstName(commentDoc.getString("firstName"));
-            comment.setLastName(commentDoc.getString("lastName"));
-            comment.setCreationDate(commentDoc.getDate("dateCreated"));
-            comment.setContents(commentDoc.getString("contents"));
 
             Resource parent = resourceMap.get(commentDoc.getInteger("resourceId"));
-            List<Comment> comments = parent.getComments();
-            comments.add(comment);
+            if (parent != null) {
+                Comment comment = new Comment();
+                comment.setId(commentDoc.getInteger("commentId"));
+                comment.setCreatorId(commentDoc.getInteger("creatorId"));
+                comment.setFirstName(commentDoc.getString("firstName"));
+                comment.setLastName(commentDoc.getString("lastName"));
+                comment.setCreationDate(commentDoc.getDate("dateCreated"));
+                comment.setContents(commentDoc.getString("contents"));
+                List<Comment> comments = parent.getComments();
+                comments.add(comment);
+            } else {
+                logger.warn("Comment in database without a parent post.");
+            }
         });
 
         flags.find().forEach(flagDoc -> {
-            ReviewFlag flag = new ReviewFlag();
-            flag.setId(flagDoc.getInteger("flagId"));
-            flag.setCreatorId(flagDoc.getInteger("creatorId"));
-            flag.setFirstName(flagDoc.getString("firstName"));
-            flag.setLastName(flagDoc.getString("lastName"));
-            flag.setCreationDate(flagDoc.getDate("dateCreated"));
-            flag.setContents(flagDoc.getString("contents"));
-
             Resource parent = resourceMap.get(flagDoc.getInteger("resourceId"));
-            List<ReviewFlag> flags = parent.getReviewFlags();
-            flags.add(flag);
+            if (parent != null) {
+                ReviewFlag flag = new ReviewFlag();
+                flag.setId(flagDoc.getInteger("flagId"));
+                flag.setCreatorId(flagDoc.getInteger("creatorId"));
+                flag.setFirstName(flagDoc.getString("firstName"));
+                flag.setLastName(flagDoc.getString("lastName"));
+                flag.setCreationDate(flagDoc.getDate("dateCreated"));
+                flag.setContents(flagDoc.getString("contents"));
+
+                List<ReviewFlag> flags = parent.getReviewFlags();
+                flags.add(flag);
+            } else {
+                logger.warn("Flag in database without a parent post");
+            }
         });
 
         upvotes.find().forEach(upvoteDoc -> {
-            Upvote upvote = new Upvote();
-            upvote.setId(upvoteDoc.getInteger("upvoteId"));
-            upvote.setCreatorId(upvoteDoc.getInteger("creatorId"));
-            upvote.setFirstName(upvoteDoc.getString("firstName"));
-            upvote.setLastName(upvoteDoc.getString("lastName"));
-            upvote.setCreationDate(upvoteDoc.getDate("dateCreated"));
-
             Resource parent = resourceMap.get(upvoteDoc.getInteger("resourceId"));
-            List<Upvote> upvotes = parent.getUpvotes();
-            upvotes.add(upvote);
+            if (parent != null) {
+                Upvote upvote = new Upvote();
+                upvote.setId(upvoteDoc.getInteger("upvoteId"));
+                upvote.setCreatorId(upvoteDoc.getInteger("creatorId"));
+                upvote.setFirstName(upvoteDoc.getString("firstName"));
+                upvote.setLastName(upvoteDoc.getString("lastName"));
+                upvote.setCreationDate(upvoteDoc.getDate("dateCreated"));
+
+                List<Upvote> upvotes = parent.getUpvotes();
+                upvotes.add(upvote);
+            } else {
+                logger.warn("Upvote in without a parent post");
+            }
         });
 
         return new ArrayList<Resource>(resourceMap.values());
