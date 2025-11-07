@@ -14,7 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 /**
  * Implementation for Authenticator.java.
  * This class facilitates a connection to an authentication server to
- * retrieve user credentials using a Java Web Token (JWT) provided by
+ * retrieve user credentials using a JSON Web Token (JWT) provided by
  * the authentication server for Single Sign-On (SSO).
  * 
  * @author Ben Edens
@@ -44,10 +44,10 @@ public class AuthenticatorImpl implements Authenticator{
     }
 
     /**
-     * Send a Java Web Token (JWT) to an authentication server to be
+     * Send a JSON Web Token (JWT) to an authentication server to be
      * authenticated and return the corresponding user's credentials.
      * 
-     * @param token A Token object containing a user's Java Web Token (JWT) obtained from the authentication server.
+     * @param token A Token object containing a user's JSON Web Token (JWT) obtained from the authentication server.
      * @return A Credentials object storing the user's credentials.
      */
     public Credentials Authenticate(Token token) {
