@@ -57,4 +57,13 @@ public interface ResourceDAO {
      * @return list of all resources
     */
     List<Resource> listAllResources(Credentials user);
+
+    /**
+     * List all resources available in the system, filtered by keywords.
+     * 
+     * @param user credentials of the user
+     * @param keywords list of keywords to filter resources by
+     * @return list of all resources
+    */
+    List<Resource> listResourcesByKeywords(Credentials user, KeywordList keywords);
 }

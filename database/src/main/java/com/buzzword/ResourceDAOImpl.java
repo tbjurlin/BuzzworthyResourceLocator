@@ -248,4 +248,104 @@ public class ResourceDAOImpl implements ResourceDAO {
 
         return new ArrayList<Resource>(resourceMap.values());
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Resource> listResourcesByKeywords(Credentials user, KeywordList keywords) {
+        if (user.getSystemRole() != "Admin" && user.getSystemRole() != "Contributor" && user.getSystemRole() != "Commenter") {
+            logger.error(String.format("User %d with role %s denied permission to retrieve resources: role is not valid.", 
+                user.getId(), user.getSystemRole()));
+            throw new AuthorizationException("User does not have a valid system role.");
+        }
+
+
+        Map<Integer, Resource> resourceMap = new HashMap<Integer, Resource>();
+
+        resources.find().forEach(resDoc -> {
+            Resource resource = convertDocumentToResource(resDoc);
+            resource.setComments(new ArrayList<Comment>());
+            resource.setReviewFlags(new ArrayList<ReviewFlag>());
+            resource.setUpvotes(new ArrayList<Upvote>());
+
+            if(resDoc.getInteger("creatorId") == user.getId()) {
+                resource.setCreatedByCurrentUser(true);
+            }
+
+            resourceMap.put(resource.getId(), resource);
+            System.out.println(resourceMap);
+        });
+
+        comments.find().forEach(commentDoc -> {
+
+            Resource parent = resourceMap.get(commentDoc.getInteger("resourceId"));
+            if (parent != null) {
+                Comment comment = new Comment();
+                comment.setId(commentDoc.getInteger("commentId"));
+                comment.setCreatorId(commentDoc.getInteger("creatorId"));
+                comment.setFirstName(commentDoc.getString("firstName"));
+                comment.setLastName(commentDoc.getString("lastName"));
+                comment.setCreationDate(commentDoc.getDate("dateCreated"));
+                comment.setContents(commentDoc.getString("contents"));
+
+                if(commentDoc.getInteger("creatorId") == user.getId()) {
+                    comment.setCreatedByCurrentUser(true);
+                }
+
+                List<Comment> comments = parent.getComments();
+                comments.add(comment);
+            } else {
+                logger.warn("Comment in database without a parent post.");
+            }
+        });
+
+        flags.find().forEach(flagDoc -> {
+            Resource parent = resourceMap.get(flagDoc.getInteger("resourceId"));
+            if (parent != null) {
+                ReviewFlag flag = new ReviewFlag();
+                flag.setId(flagDoc.getInteger("flagId"));
+                flag.setCreatorId(flagDoc.getInteger("creatorId"));
+                flag.setFirstName(flagDoc.getString("firstName"));
+                flag.setLastName(flagDoc.getString("lastName"));
+                flag.setCreationDate(flagDoc.getDate("dateCreated"));
+                flag.setContents(flagDoc.getString("contents"));
+
+                if(flagDoc.getInteger("creatorId") == user.getId()) {
+                    flag.setCreatedByCurrentUser(true);
+                }
+
+                List<ReviewFlag> flags = parent.getReviewFlags();
+                flags.add(flag);
+            } else {
+                logger.warn("Flag in database without a parent post");
+            }
+        });
+
+        upvotes.find().forEach(upvoteDoc -> {
+            Resource parent = resourceMap.get(upvoteDoc.getInteger("resourceId"));
+            if (parent != null) {
+                Upvote upvote = new Upvote();
+                upvote.setId(upvoteDoc.getInteger("upvoteId"));
+                upvote.setCreatorId(upvoteDoc.getInteger("creatorId"));
+                upvote.setFirstName(upvoteDoc.getString("firstName"));
+                upvote.setLastName(upvoteDoc.getString("lastName"));
+                upvote.setCreationDate(upvoteDoc.getDate("dateCreated"));
+
+                parent.incrementUpvoteCount();
+                if (upvoteDoc.getInteger("creatorId") == user.getId()) {
+                    upvote.setCreatedByCurrentUser(true);
+                    parent.setUpvotedByCurrentUser(true);
+                    parent.setCurrentUserUpvoteId(upvoteDoc.getInteger("upvoteId"));
+                }
+
+                List<Upvote> upvotes = parent.getUpvotes();
+                upvotes.add(upvote);
+            } else {
+                logger.warn("Upvote in database without a parent post");
+            }
+        });
+
+        return new ArrayList<Resource>(resourceMap.values());
+    }
 }
