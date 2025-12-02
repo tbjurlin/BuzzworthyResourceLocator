@@ -236,6 +236,7 @@ public class ResourceDAOImpl implements ResourceDAO {
                 if (upvoteDoc.getInteger("creatorId") == user.getId()) {
                     upvote.setCreatedByCurrentUser(true);
                     parent.setUpvotedByCurrentUser(true);
+                    parent.setCurrentUserUpvoteId(upvoteDoc.getInteger("upvoteId"));
                 }
 
                 List<Upvote> upvotes = parent.getUpvotes();

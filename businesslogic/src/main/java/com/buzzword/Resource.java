@@ -47,6 +47,8 @@ public class Resource extends Record {
     private int upvoteCount;
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private boolean upvotedByCurrentUser;
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private int currentUserUpvoteId;
 
     private final XssSanitizer resourceSanitizer;
 
@@ -285,5 +287,29 @@ public class Resource extends Record {
     }
     public void setUpvotedByCurrentUser(boolean upvotedByCurrentUser) {
         this.upvotedByCurrentUser = upvotedByCurrentUser;
+    }
+
+    /**
+     * <p>
+     * Ensures that the current user upvote ID is not negative before setting it.
+     * </p>
+     * 
+     * @param currentUserUpvoteId
+     */
+    private int validateCurrentUserUpvoteId(final int currentUserUpvoteId)
+    {
+        if (currentUserUpvoteId < -1) {
+            logger.error("Current user upvote ID must not be less than -1");
+            throw new IllegalArgumentException("Current user upvote ID must not be less than -1.");
+        }
+        return currentUserUpvoteId;
+    }
+    public int getCurrentUserUpvoteId() {
+        logger.debug("returning the current user upvote ID");
+        return currentUserUpvoteId;
+    }
+    public void setCurrentUserUpvoteId(int currentUserUpvoteId) {
+        logger.debug("setting the current user upvote ID");
+        this.currentUserUpvoteId = validateCurrentUserUpvoteId(currentUserUpvoteId);
     }
 }
