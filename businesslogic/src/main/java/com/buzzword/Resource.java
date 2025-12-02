@@ -29,8 +29,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * The Resource class creates a REsource object that holds the title, 
- * descripiton and URL of a resource as well as all fields from the Record 
+ * The Resource class creates a Resource object that holds the title, 
+ * description and URL of a resource as well as all fields from the Record 
  * class.
  */
 public class Resource extends Record {
@@ -41,8 +41,12 @@ public class Resource extends Record {
     private List<Comment> comments; 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private List<ReviewFlag> reviewFlags;
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @JsonIgnore
     private List<Upvote> upvotes;
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private int upvoteCount;
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private boolean upvotedByCurrentUser;
 
     private final XssSanitizer resourceSanitizer;
 
@@ -242,4 +246,44 @@ public class Resource extends Record {
         this.upvotes = validateUpvotes(upvotes);
     }
 
+    /**
+     * <p>
+     * Ensures that the upvote count is not negative before setting it.
+     * </p>
+     * 
+     * @param upvoteCount
+     */
+    private int validateUpvoteCount(final int upvoteCount)
+    {
+        if (upvoteCount < 0) {
+            logger.error("Upvote count must not be negative");
+            throw new IllegalArgumentException("Upvote count must not be negative.");
+        }
+        return upvoteCount;
+    }
+    public int getUpvoteCount() {
+        logger.debug("returning the upvote count");
+        return upvoteCount;
+    }
+    public void setUpvoteCount(int upvoteCount) {
+        logger.debug("setting the upvote count");
+        this.upvoteCount = validateUpvoteCount(upvoteCount);
+    }
+    public void incrementUpvoteCount() {
+        this.upvoteCount++;
+    }
+    public void decrementUpvoteCount() {
+        if (this.upvoteCount > 0) {
+            this.upvoteCount--;
+        } else {
+            logger.warn("Attempted to decrement upvote count below zero. Operation ignored.");
+        }
+    }
+
+    public boolean getUpvotedByCurrentUser() {
+        return upvotedByCurrentUser;
+    }
+    public void setUpvotedByCurrentUser(boolean upvotedByCurrentUser) {
+        this.upvotedByCurrentUser = upvotedByCurrentUser;
+    }
 }

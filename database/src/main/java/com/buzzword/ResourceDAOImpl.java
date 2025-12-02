@@ -168,6 +168,11 @@ public class ResourceDAOImpl implements ResourceDAO {
             resource.setComments(new ArrayList<Comment>());
             resource.setReviewFlags(new ArrayList<ReviewFlag>());
             resource.setUpvotes(new ArrayList<Upvote>());
+
+            if(resDoc.getInteger("creatorId") == user.getId()) {
+                resource.setCreatedByCurrentUser(true);
+            }
+
             resourceMap.put(resource.getId(), resource);
             System.out.println(resourceMap);
         });
@@ -183,6 +188,11 @@ public class ResourceDAOImpl implements ResourceDAO {
                 comment.setLastName(commentDoc.getString("lastName"));
                 comment.setCreationDate(commentDoc.getDate("dateCreated"));
                 comment.setContents(commentDoc.getString("contents"));
+
+                if(commentDoc.getInteger("creatorId") == user.getId()) {
+                    comment.setCreatedByCurrentUser(true);
+                }
+
                 List<Comment> comments = parent.getComments();
                 comments.add(comment);
             } else {
@@ -201,6 +211,10 @@ public class ResourceDAOImpl implements ResourceDAO {
                 flag.setCreationDate(flagDoc.getDate("dateCreated"));
                 flag.setContents(flagDoc.getString("contents"));
 
+                if(flagDoc.getInteger("creatorId") == user.getId()) {
+                    flag.setCreatedByCurrentUser(true);
+                }
+
                 List<ReviewFlag> flags = parent.getReviewFlags();
                 flags.add(flag);
             } else {
@@ -218,10 +232,16 @@ public class ResourceDAOImpl implements ResourceDAO {
                 upvote.setLastName(upvoteDoc.getString("lastName"));
                 upvote.setCreationDate(upvoteDoc.getDate("dateCreated"));
 
+                parent.incrementUpvoteCount();
+                if (upvoteDoc.getInteger("creatorId") == user.getId()) {
+                    upvote.setCreatedByCurrentUser(true);
+                    parent.setUpvotedByCurrentUser(true);
+                }
+
                 List<Upvote> upvotes = parent.getUpvotes();
                 upvotes.add(upvote);
             } else {
-                logger.warn("Upvote in without a parent post");
+                logger.warn("Upvote in database without a parent post");
             }
         });
 

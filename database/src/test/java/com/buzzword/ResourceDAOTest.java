@@ -514,6 +514,8 @@ public class ResourceDAOTest {
         targetResource1.setDescription("Description");
         targetResource1.setCreationDate(Date.from(Instant.ofEpochSecond(946684800)));
         targetResource1.setUrl("http://example.com");
+        targetResource1.setUpvotedByCurrentUser(false);
+        targetResource1.setUpvoteCount(1);
 
         List<Comment> r1Comments = new ArrayList<Comment>();
 
@@ -637,6 +639,8 @@ public class ResourceDAOTest {
         targetResource2.setComments(r2Comments);
         targetResource2.setReviewFlags(r2Flags);
         targetResource2.setUpvotes(r2Upvotes);
+        targetResource2.setUpvotedByCurrentUser(false);
+        targetResource2.setUpvoteCount(2);
 
         expected.add(targetResource1);
         expected.add(targetResource2);

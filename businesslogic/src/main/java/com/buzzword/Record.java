@@ -45,6 +45,8 @@ abstract class Record{
     private int creatorId;
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Date creationDate;
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private boolean createdByCurrentUser;
     @JsonIgnore
     private boolean isEdited;
 
@@ -57,6 +59,8 @@ abstract class Record{
         logger.debug("finishing default constructor");
         firstName = new Name();
         lastName = new Name();
+        createdByCurrentUser = false;
+        isEdited = false;
     }
 
     /**
@@ -200,16 +204,28 @@ abstract class Record{
 
     /**
      * Sets the is edited value for the record.
-     * <p>
-     * The business rules are:
-     * <ul>
-     *   <li>the is edited value must...</li>
-     * </ul>
-     * 
      * @param isEdited the value to set into the isEdited field
      */
     public void setIsEdited(boolean isEdited) {
         logger.debug("setting isEdited");
         this.isEdited = isEdited;
+    }
+
+    /**
+     * Returns the createdByCurrentUser value for the Record
+     * @return createdByCurrentUser
+     */
+    public boolean getCreatedByCurrentUser() {
+        logger.debug("returning createdByCurrentUser: " + createdByCurrentUser);
+        return createdByCurrentUser;
+    }
+
+    /**
+     * Sets the createdByCurrentUser value for the Record.
+     * @param createdByCurrentUser the value to set into the createdByCurrentUser field
+     */
+    public void setCreatedByCurrentUser(boolean createdByCurrentUser) {
+        logger.debug("setting createdByCurrentUser");
+        this.createdByCurrentUser = createdByCurrentUser;
     }
 }
