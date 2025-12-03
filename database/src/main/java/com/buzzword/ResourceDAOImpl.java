@@ -27,11 +27,17 @@ import java.util.List;
 import java.util.Map;
 
 import org.bson.Document;
+import org.bson.conversions.Bson;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.IndexOptions;
+import com.mongodb.client.model.Indexes;
+import com.mongodb.client.model.TextSearchOptions;
 import com.mongodb.client.result.DeleteResult;
+
+import jakarta.websocket.Decoder.Text;
 
 public class ResourceDAOImpl implements ResourceDAO {
     private final MongoCollection<Document> resources;
@@ -263,7 +269,31 @@ public class ResourceDAOImpl implements ResourceDAO {
 
         Map<Integer, Resource> resourceMap = new HashMap<Integer, Resource>();
 
-        resources.find().forEach(resDoc -> {
+        // Check for pre-existing text index
+        boolean textIndexExists = false;
+        for(Document index: resources.listIndexes()) {
+            if (index.containsKey("weights") || (index.containsKey("key") && index.get("key", Document.class).containsKey("$**"))) {
+                logger.info("Text index already exists on resources collection.");
+                textIndexExists = true;
+                break;
+            }
+        }
+        // Create text index if it does not already exist
+        if(!textIndexExists)
+        {
+            logger.info("No text index found on resources collection. Creating new text index.");
+            Document weights = new Document()
+                .append("title", 10)
+                .append("description", 5)
+                .append("url", 2);
+            IndexOptions indexOptions = new IndexOptions().weights(weights);
+            resources.createIndex(Indexes.compoundIndex(Indexes.text("title"), Indexes.text("description"), Indexes.text("url")), indexOptions);
+        }
+
+        TextSearchOptions searchOptions = new TextSearchOptions().caseSensitive(false);
+        Bson keywordFilter = Filters.text(keywords.toString(), searchOptions);
+
+        resources.find(keywordFilter).forEach(resDoc -> {
             Resource resource = convertDocumentToResource(resDoc);
             resource.setComments(new ArrayList<Comment>());
             resource.setReviewFlags(new ArrayList<ReviewFlag>());

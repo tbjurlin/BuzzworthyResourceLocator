@@ -110,19 +110,17 @@ public class WikiEndpoint {
      * containing a list of Record objects.
      * 
      * @param tokenStr A string representation of the user's Java Web Token (JWT).
+     * @param keywords A JSON-formatted list of keywords from the HTTP request body.
      * @return A JSON-formatted HTTP response with a 200 response code and message, including a list of resources.
      */
-    @GetMapping("resource-filtered")
+    @PostMapping("resource-filtered")
     public ResponseEntity<String> retrieveResourcesByKeywords(@Valid @RequestHeader("Bearer") String tokenStr, @Valid @RequestBody KeywordList keywords) {
-        logger.info("HTTP GET request (retrieveResourcesByKeywords) received.");
-        System.out.println(keywords.getKeywords().toString());
-        /*
         Token token = new Token();
         token.setToken(tokenStr);
         Authenticator auth = new AuthenticatorImpl(authServerUrl);
         Credentials userCredentials = auth.Authenticate(token);
         ResourceDAO resourceDAO = new ResourceDAOImpl(databaseConnectionPool.getDatabaseConnection());
-        List<Resource> resources = resourceDAO.listAllResources(userCredentials);
+        List<Resource> resources = resourceDAO.listResourcesByKeywords(userCredentials, keywords);
         if(resources == null) {
             logger.error("Cannot return a null list of resources.");
             throw new NullPointerException("Cannot return a null list of resources.");
@@ -137,8 +135,7 @@ public class WikiEndpoint {
                                  .body(returnObj);
         } catch(JsonProcessingException e) {
             throw new NullPointerException("Unable to parse JSON from list of resources.");
-        }*/
-        return ResponseEntity.ok().body(keywords.toString());
+        }
     }
     
     /**

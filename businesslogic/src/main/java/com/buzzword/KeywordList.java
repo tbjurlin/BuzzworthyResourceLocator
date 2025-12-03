@@ -3,49 +3,43 @@ package com.buzzword;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class KeywordList {
-    private List<String> keywords;
+    @JsonIgnore
+    private List<String> keywordList;
     private final int MAX_KEYWORDS = 100;
 
     private final XssSanitizer resourceSanitizer;
     private final Logger logger = LoggerFactory.getEventLogger();
 
     public KeywordList() {
-        this.keywords = new ArrayList<>();
         this.resourceSanitizer = new XssSanitizerImpl();
+        this.keywordList = new ArrayList<>();
     }
 
-    public KeywordList(String keywordStr) {
-        this.keywords = validateKeywordStr(keywordStr);
-        this.resourceSanitizer = new XssSanitizerImpl();
-    }
-
-    private List<String> validateKeywordStr(String keywordStr) {
-        String[] keywordArray = keywordStr.split("\\s+", MAX_KEYWORDS);
-        List<String> sanitizedKeywords = new ArrayList<>();
-        for (String keyword : keywordArray) {
-            sanitizedKeywords.add(resourceSanitizer.sanitizeInput(keyword.trim()));
-        }
-        return sanitizedKeywords;
-    }
-
-    private List<String> validateKeywords(List<String> keywords) {
-        List<String> sanitizedKeywords = new ArrayList<>();
-        for (String keyword : keywords) {
-            sanitizedKeywords.add(resourceSanitizer.sanitizeInput(keyword));
-        }
-        return sanitizedKeywords;
+    public KeywordList(String keywords) {
+        this();
+        setKeywords(keywords);
     }
 
     public List<String> getKeywords() {
-        return keywords;
+        return keywordList;
     }
 
-    public void setKeywords(List<String> keywords) {
-        this.keywords = validateKeywords(keywords);
+    public void setKeywords(String keywords) {
+        String[] splitKeywords = keywords.split(" ", MAX_KEYWORDS);
+        for (String keyword : splitKeywords) {
+            this.keywordList.add(resourceSanitizer.sanitizeInput(keyword.trim().toLowerCase()));
+        }
     }
 
-    public void setKeywordsByString(String keywordStr) {
-        this.keywords = validateKeywordStr(keywordStr);
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for (String keyword : keywordList) {
+            sb.append(keyword).append(" ");
+        }
+        return sb.toString().trim();
     }
 }
