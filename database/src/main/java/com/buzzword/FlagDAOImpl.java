@@ -53,7 +53,7 @@ public class FlagDAOImpl implements FlagDAO {
      */
     @Override
     public void addReviewFlag(Credentials user, ReviewFlag flag, int resourceId) {
-        if (user.getSystemRole() != "Admin" && user.getSystemRole() != "Contributor" && user.getSystemRole() != "Commenter") {
+        if (!user.getSystemRole().equals("Admin") && !user.getSystemRole().equals("Contributor") && !user.getSystemRole().equals("Commenter")) {
             logger.error(String.format("User %d with invalid system role %s prevented from adding a flag", user.getId(), user.getSystemRole()));
             throw new AuthorizationException("User with missing or invalid system role attempted to add a flag.");
         }
@@ -79,7 +79,7 @@ public class FlagDAOImpl implements FlagDAO {
      */
     @Override
     public void editReviewFlag(Credentials user, int flagId, ReviewFlag flag, int resourceId) {
-        if (user.getSystemRole() != "Admin" && user.getSystemRole() != "Contributor" && user.getSystemRole() != "Commenter") {
+        if (!user.getSystemRole().equals("Admin") && !user.getSystemRole().equals("Contributor") && !user.getSystemRole().equals("Commenter")) {
             logger.error(String.format("User %d with invalid system role %s prevented from editing a flag", user.getId(), user.getSystemRole()));
             throw new AuthorizationException("User with missing or invalid system role attempted to edit a flag.");
         }
@@ -116,11 +116,11 @@ public class FlagDAOImpl implements FlagDAO {
      */
     @Override
     public void removeReviewFlag(Credentials user, int flagId, int resourceId) {
-        if (user.getSystemRole() != "Admin" && user.getSystemRole() != "Contributor" && user.getSystemRole() != "Commenter") {
+        if (!user.getSystemRole().equals("Admin") && !user.getSystemRole().equals("Contributor") && !user.getSystemRole().equals("Commenter")) {
             logger.error(String.format("User %d with invalid system role %s prevented from deleting a flag", user.getId(), user.getSystemRole()));
             throw new AuthorizationException("User with missing or invalid system role attempted to delete a flag.");
         }
-        if (user.getSystemRole() != "Admin") {        
+        if (!user.getSystemRole().equals("Admin")) {        
             //An admin may remove the flag, only do find if they're a flagor or contributor.
             Document doc = resources.find(
                 Filters.and(Filters.eq("flagId", flagId), Filters.eq("resourceId", resourceId))).first();

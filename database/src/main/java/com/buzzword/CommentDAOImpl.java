@@ -53,7 +53,7 @@ public class CommentDAOImpl implements CommentDAO {
      */
     @Override
     public void addComment(Credentials user, Comment comment, int resourceId) {
-        if (user.getSystemRole() != "Admin" && user.getSystemRole() != "Contributor" && user.getSystemRole() != "Commenter") {
+        if (!user.getSystemRole().equals("Admin") && !user.getSystemRole().equals("Contributor") && !user.getSystemRole().equals("Commenter")) {
             logger.error(String.format("User %d with invalid system role %s prevented from adding a comment", user.getId(), user.getSystemRole()));
             throw new AuthorizationException("User with missing or invalid system role attempted to add a comment.");
         }
@@ -79,7 +79,7 @@ public class CommentDAOImpl implements CommentDAO {
      */
     @Override
     public void editComment(Credentials user, int commentId, Comment comment, int resourceId) {
-        if (user.getSystemRole() != "Admin" && user.getSystemRole() != "Contributor" && user.getSystemRole() != "Commenter") {
+        if (!user.getSystemRole().equals("Admin") && !user.getSystemRole().equals("Contributor") && !user.getSystemRole().equals("Commenter")) {
             logger.error(String.format("User %d with invalid system role %s prevented from editing a comment", user.getId(), user.getSystemRole()));
             throw new AuthorizationException("User with missing or invalid system role attempted to edit a comment.");
         }
@@ -116,11 +116,11 @@ public class CommentDAOImpl implements CommentDAO {
      */
     @Override
     public void removeComment(Credentials user, int commentId, int resourceId) {
-        if (user.getSystemRole() != "Admin" && user.getSystemRole() != "Contributor" && user.getSystemRole() != "Commenter") {
+        if (!user.getSystemRole().equals("Admin") && !user.getSystemRole().equals("Contributor") && !user.getSystemRole().equals("Commenter")) {
             logger.error(String.format("User %d with invalid system role %s prevented from deleting a comment", user.getId(), user.getSystemRole()));
             throw new AuthorizationException("User with missing or invalid system role attempted to delete a comment.");
         }
-        if (user.getSystemRole() != "Admin") {        
+        if (!user.getSystemRole().equals("Admin")) {        
             //An admin may remove the comment, only do find if they're a commentor or contributor.
             Document doc = resources.find(
                 Filters.and(Filters.eq("commentId", commentId), Filters.eq("resourceId", resourceId))).first();

@@ -60,7 +60,7 @@ public class UpvoteDAOImpl
      */
     @Override
     public void addUpvote(Credentials user, Upvote upvote, int resourceId) {
-        if (user.getSystemRole() != "Admin" && user.getSystemRole() != "Contributor" && user.getSystemRole() != "Commenter") {
+        if (!user.getSystemRole().equals("Admin") && !user.getSystemRole().equals("Contributor") && !user.getSystemRole().equals("Commenter")) {
             logger.error(String.format("User %d with missing or invalid system role %s attempted to add an upvote.", user.getId(), user.getSystemRole()));
             throw new AuthorizationException("System role of user is missing or invalid.");
         }
@@ -96,7 +96,7 @@ public class UpvoteDAOImpl
      */
     @Override
     public void removeUpvote(Credentials user,  int upvoteId, int resourceId) {
-        if (user.getSystemRole() != "Admin" && user.getSystemRole() != "Contributor" && user.getSystemRole() != "Commenter") {
+        if (!user.getSystemRole().equals("Admin") && !user.getSystemRole().equals("Contributor") && !user.getSystemRole().equals("Commenter")) {
             logger.error(String.format("User %d with missing or invalid system role %s prevented from deleting upvote", user.getId(), user.getSystemRole()));
             throw new AuthorizationException("User attempted to delete upvote with invalid or missing system role.");
         }

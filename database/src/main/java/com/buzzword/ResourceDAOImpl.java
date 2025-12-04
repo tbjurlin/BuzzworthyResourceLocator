@@ -70,7 +70,7 @@ public class ResourceDAOImpl implements ResourceDAO {
     @Override
     public void insertResource(Credentials user, Resource resource) {
         // Require an authenticated user to insert resources (simple policy).
-        if (user == null || (user.getSystemRole() != "Admin" && user.getSystemRole() != "Contributor")) {
+        if (user == null || (!user.getSystemRole().equals("Admin") && !user.getSystemRole().equals("Contributor"))) {
             logger.error("Unauthenticated user denied permission to insert resource");
             throw new AuthorizationException("User must be authenticated to insert resources");
         }
@@ -98,7 +98,7 @@ public class ResourceDAOImpl implements ResourceDAO {
     @Override
     public void editResource(Credentials user, int id, Resource resource) {
         // Require an authenticated user to edit resources (simple policy).
-        if (user == null || (user.getSystemRole() != "Admin" && user.getSystemRole() != "Contributor")) {
+        if (user == null || (!user.getSystemRole().equals("Admin") && !user.getSystemRole().equals("Contributor"))) {
             logger.error("Unauthenticated user denied permission to edit resource");
             throw new AuthorizationException("User must be authenticated to edit resources");
         }
@@ -146,7 +146,7 @@ public class ResourceDAOImpl implements ResourceDAO {
      */
     @Override
     public void removeResource(Credentials user, int id) {
-        if (user.getSystemRole() != "Admin" && user.getSystemRole() != "Contributor") {
+        if (!user.getSystemRole().equals("Admin") && !user.getSystemRole().equals("Contributor")) {
             logger.error(String.format("User %d with role %s denied permission to delete resource %d", 
                 user.getId(), user.getSystemRole(), id));
             throw new AuthorizationException("User does not have permission to delete this resource");
@@ -211,7 +211,7 @@ public class ResourceDAOImpl implements ResourceDAO {
      */
     @Override
     public List<Resource> listAllResources(Credentials user) {
-        if (user.getSystemRole() != "Admin" && user.getSystemRole() != "Contributor" && user.getSystemRole() != "Commenter") {
+        if (!user.getSystemRole().equals("Admin") && !user.getSystemRole().equals("Contributor") && !user.getSystemRole().equals("Commenter")) {
             logger.error(String.format("User %d with role %s denied permission to retrieve resources: role is not valid.", 
                 user.getId(), user.getSystemRole()));
             throw new AuthorizationException("User does not have a valid system role.");
@@ -311,7 +311,7 @@ public class ResourceDAOImpl implements ResourceDAO {
      */
     @Override
     public List<Resource> listResourcesByKeywords(Credentials user, KeywordList keywords) {
-        if (user.getSystemRole() != "Admin" && user.getSystemRole() != "Contributor" && user.getSystemRole() != "Commenter") {
+        if (!user.getSystemRole().equals("Admin") && !user.getSystemRole().equals("Contributor") && !user.getSystemRole().equals("Commenter")) {
             logger.error(String.format("User %d with role %s denied permission to retrieve resources: role is not valid.", 
                 user.getId(), user.getSystemRole()));
             throw new AuthorizationException("User does not have a valid system role.");
