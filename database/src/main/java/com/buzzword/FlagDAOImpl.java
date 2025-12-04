@@ -22,10 +22,13 @@ package com.buzzword;
 */
 
 import org.bson.Document;
+import org.bson.conversions.Bson;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Updates;
+import com.mongodb.client.result.UpdateResult;
 
 public class FlagDAOImpl implements FlagDAO {
     private final MongoCollection<Document> resources;
@@ -71,6 +74,43 @@ public class FlagDAOImpl implements FlagDAO {
         logger.info(String.format("User %d added flag %d to resource %d", user.getId(), flag.getId(), flag.getCreatorId()));
     }
     
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void editReviewFlag(Credentials user, int flagId, ReviewFlag flag, int resourceId) {
+        if (user.getSystemRole() != "Admin" && user.getSystemRole() != "Contributor" && user.getSystemRole() != "Commenter") {
+            logger.error(String.format("User %d with invalid system role %s prevented from editing a flag", user.getId(), user.getSystemRole()));
+            throw new AuthorizationException("User with missing or invalid system role attempted to edit a flag.");
+        }
+        // Only the creator of a flag can edit it.
+        Document doc = resources.find(
+            Filters.and(Filters.eq("flagId", flagId), Filters.eq("resourceId", resourceId))).first();
+        if (doc == null) {
+            throw new RecordDoesNotExistException("Failed to find flag for update");
+        }
+
+        // Check if user has permission to edit this flag.
+        // Allow update only if the user is the original creator of the flag.
+        int flagCreatorId = doc.getInteger("creatorId");
+
+        if (flagCreatorId != user.getId()) {
+            logger.error(String.format("User %d has attempted to edit a flag that they did not create.", user.getId()));
+            throw new AuthorizationException("User does not have permission to edit this flag");
+        }
+
+        Bson filter = Filters.and(Filters.eq("flagId", flagId), Filters.eq("resourceId", resourceId));
+        Bson updateFlag = Updates.set("contents", flag.getContents());
+
+        UpdateResult result = resources.updateOne(filter, updateFlag);
+        if(result.getMatchedCount() == 0) {
+            logger.warn(String.format("User %d failed to edit flag %d on resource %d", user.getId(), flagId, resourceId));
+            throw new RecordDoesNotExistException("Failed to find flag for editing");
+        } else {
+            logger.info(String.format("User %d edited flag %d on resource %d", user.getId(), flagId, resourceId));
+        }
+    }
+
     /**
      * {@inheritDoc}
      */

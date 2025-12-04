@@ -46,8 +46,8 @@ abstract class Record{
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Date creationDate;
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private boolean createdByCurrentUser;
-    @JsonIgnore
+    private boolean currentUserCanDelete;
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private boolean isEdited;
 
     private final Logger logger = LoggerFactory.getEventLogger();
@@ -59,7 +59,7 @@ abstract class Record{
         logger.debug("finishing default constructor");
         firstName = new Name();
         lastName = new Name();
-        createdByCurrentUser = false;
+        currentUserCanDelete = false;
         isEdited = false;
     }
 
@@ -212,20 +212,20 @@ abstract class Record{
     }
 
     /**
-     * Returns the createdByCurrentUser value for the Record
-     * @return createdByCurrentUser
+     * Returns the currentUserCanDelete value for the Record
+     * @return currentUserCanDelete
      */
-    public boolean getCreatedByCurrentUser() {
-        logger.debug("returning createdByCurrentUser: " + createdByCurrentUser);
-        return createdByCurrentUser;
+    public boolean getCurrentUserCanDelete() {
+        logger.debug("returning currentUserCanDelete: " + currentUserCanDelete);
+        return currentUserCanDelete;
     }
 
     /**
-     * Sets the createdByCurrentUser value for the Record.
-     * @param createdByCurrentUser the value to set into the createdByCurrentUser field
+     * Sets the currentUserCanDelete value for the Record.
+     * @param currentUserCanDelete the value to set into the currentUserCanDelete field
      */
-    public void setCreatedByCurrentUser(boolean createdByCurrentUser) {
-        logger.debug("setting createdByCurrentUser");
-        this.createdByCurrentUser = createdByCurrentUser;
+    public void setCurrentUserCanDelete(boolean currentUserCanDelete) {
+        logger.debug("setting currentUserCanDelete");
+        this.currentUserCanDelete = currentUserCanDelete;
     }
 }

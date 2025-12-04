@@ -35,7 +35,7 @@ public interface ResourceDAO {
      * A contributor or admin may insert a resource into the database.
      * <p>
      * This resource contains information such as a title, the description, and Url link.
-     * It will also contain the id of the user who uploaded the resource as well as it's date of creation.
+     * It will also contain the id of the user who uploaded the resource as well as its date of creation.
      * 
      * @param user credentials of the user
      * @param resource resource to be inserted
@@ -43,10 +43,22 @@ public interface ResourceDAO {
     void insertResource(Credentials user, Resource resource);
 
     /**
+     * A contributor may update their own resource or an admin may update any resource.
+     * <p>
+     * This resource contains information such as a title, the description, and Url link.
+     * It will also contain the id of the user who uploaded the resource as well as its date of creation.
+     * 
+     * @param user credentials of the user
+     * @param id id of the resource to be edited
+     * @param resource resource containing updated information
+    */
+    void editResource(Credentials user, int id, Resource resource);
+
+    /**
      * A contributor may delete their own resource or an admin may remove any resource.
      * 
      * @param user credentials of the user
-     * @param resource resource to be removed
+     * @param id id of the resource to be removed
     */
     void removeResource(Credentials user, int id);
 

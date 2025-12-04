@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -76,7 +77,7 @@ public class WikiEndpoint {
      * containing a list of Record objects.
      * 
      * @param tokenStr A string representation of the user's Java Web Token (JWT).
-     * @return A JSON-formatted HTTP response with a 200 response code and message, including a list of resources.
+     * @return ResponseEntity containing a JSON array of resources and HTTP status 200.
      */
     @GetMapping("resource")
     public ResponseEntity<String> retrieveAllResources(@Valid @RequestHeader("Bearer") String tokenStr) {
@@ -111,7 +112,7 @@ public class WikiEndpoint {
      * 
      * @param tokenStr A string representation of the user's Java Web Token (JWT).
      * @param keywords A JSON-formatted list of keywords from the HTTP request body.
-     * @return A JSON-formatted HTTP response with a 200 response code and message, including a list of resources.
+     * @return ResponseEntity containing a JSON array of filtered resources and HTTP status 200.
      */
     @PostMapping("resource-filtered")
     public ResponseEntity<String> retrieveResourcesByKeywords(@Valid @RequestHeader("Bearer") String tokenStr, @Valid @RequestBody KeywordList keywords) {
@@ -144,7 +145,7 @@ public class WikiEndpoint {
      * 
      * @param tokenStr A string representation of the user's Java Web Token (JWT).
      * @param resource A JSON-formatted resource record object from the HTTP request body.
-     * @return
+     * @return ResponseEntity containing a success message and HTTP status 201.
      */
     @PostMapping("resource")
     public ResponseEntity<String> addResource(@Valid @RequestHeader("Bearer") String tokenStr, @Valid @RequestBody Resource resource) {
@@ -168,11 +169,11 @@ public class WikiEndpoint {
      * @param tokenStr A string representation of the user's Java Web Token (JWT).
      * @param resourceId The index of the resource record to add the comment to.
      * @param comment A JSON-formatted comment object from the HTTP request body.
-     * @return
+     * @return ResponseEntity containing a success message and HTTP status 201.
      */
     @PostMapping("resource/{resourceId}/comment")
     public ResponseEntity<String> addComment(@Valid @RequestHeader("Bearer") String tokenStr, @Valid @PathVariable int resourceId, @Valid @RequestBody Comment comment) {
-        logger.info("HTTP POST request (addResource) received.");
+        logger.info("HTTP POST request (addComment) received.");
         Token token = new Token();
         token.setToken(tokenStr);
         Authenticator auth = new AuthenticatorImpl(authServerUrl);
@@ -191,7 +192,7 @@ public class WikiEndpoint {
      * 
      * @param tokenStr A string representation of the user's Java Web Token (JWT).
      * @param resourceId The index of the resource record to add the upvote to.
-     * @return
+     * @return ResponseEntity containing a success message and HTTP status 201.
      */
     @PostMapping("resource/{resourceId}/upvote")
     public ResponseEntity<String> addUpvote(@Valid @RequestHeader("Bearer") String tokenStr, @Valid @PathVariable int resourceId) {
@@ -215,7 +216,7 @@ public class WikiEndpoint {
      * @param tokenStr A string representation of the user's Java Web Token (JWT).
      * @param resourceId The index of the resource record to add the review flag to.
      * @param reviewFlag A JSON-formatted review flag object from the HTTP request body.
-     * @return
+     * @return ResponseEntity containing a success message and HTTP status 201.
      */
     @PostMapping("resource/{resourceId}/reviewFlag")
     public ResponseEntity<String> addReviewFlag(@Valid @RequestHeader("Bearer") String tokenStr, @Valid @PathVariable int resourceId, @Valid @RequestBody ReviewFlag reviewFlag) {
@@ -233,12 +234,86 @@ public class WikiEndpoint {
     }
 
     /**
+     * PUT Request.
+     * Edit an existing resource record in the database.
+     * 
+     * @param tokenStr A string representation of the user's Java Web Token (JWT).
+     * @param resourceId The index of the resource record to edit.
+     * @param resource A JSON-formatted resource record object from the HTTP request body.
+     * @return ResponseEntity containing a success message and HTTP status 200.
+     */
+    @PutMapping("resource/{resourceId}")
+    public ResponseEntity<String> editResource(@Valid @RequestHeader("Bearer") String tokenStr, @Valid @PathVariable int resourceId, @Valid @RequestBody Resource resource) {
+        logger.info("HTTP PUT request (editResource) received.");
+        Token token = new Token();
+        token.setToken(tokenStr);
+        Authenticator auth = new AuthenticatorImpl(authServerUrl);
+        Credentials userCredentials = auth.Authenticate(token);
+        ResourceDAO resourceDAO = new ResourceDAOImpl(databaseConnectionPool.getDatabaseConnection());
+        resourceDAO.editResource(userCredentials, resourceId, resource);
+        logger.info("Returning HTTP response code 200.");
+        return ResponseEntity.status(HttpStatus.OK)
+                             .contentType(MediaType.APPLICATION_JSON)
+                             .body("{\"msg\": \"Successfully edited resource " + resourceId + ".\"}");
+    }
+
+    /**
+     * PUT Request.
+     * Edit an existing comment on a specific resource record in the database.
+     * 
+     * @param tokenStr A string representation of the user's Java Web Token (JWT).
+     * @param resourceId The index of the resource record containing the comment to edit.
+     * @param commentId The index of the comment to edit.
+     * @param comment A JSON-formatted comment object from the HTTP request body.
+     * @return ResponseEntity containing a success message and HTTP status 200.
+     */
+    @PutMapping("resource/{resourceId}/comment/{commentId}")
+    public ResponseEntity<String> editComment(@Valid @RequestHeader("Bearer") String tokenStr, @Valid @PathVariable int resourceId, @Valid @PathVariable int commentId, @Valid @RequestBody Comment comment) {
+        logger.info("HTTP PUT request (editComment) received.");
+        Token token = new Token();
+        token.setToken(tokenStr);
+        Authenticator auth = new AuthenticatorImpl(authServerUrl);
+        Credentials userCredentials = auth.Authenticate(token);
+        CommentDAO commentDAO = new CommentDAOImpl(databaseConnectionPool.getDatabaseConnection());
+        commentDAO.editComment(userCredentials, commentId, comment, resourceId);
+        logger.info("Returning HTTP response code 200.");
+        return ResponseEntity.status(HttpStatus.OK)
+                             .contentType(MediaType.APPLICATION_JSON)
+                             .body("{\"msg\": \"Successfully edited comment " + commentId + " on resource " + resourceId + ".\"}");
+    }
+
+    /**
+     * PUT Request.
+     * Edit an existing review flag on a specific resource record in the database.
+     * 
+     * @param tokenStr A string representation of the user's Java Web Token (JWT).
+     * @param resourceId The index of the resource record containing the review flag to edit.
+     * @param flagId The index of the review flag to edit.
+     * @param reviewFlag A JSON-formatted review flag object from the HTTP request body.
+     * @return ResponseEntity containing a success message and HTTP status 200.
+     */
+    @PutMapping("resource/{resourceId}/reviewFlag/{flagId}")
+    public ResponseEntity<String> updateReviewFlag(@Valid @RequestHeader("Bearer") String tokenStr, @Valid @PathVariable int resourceId, @Valid @PathVariable int flagId, @Valid @RequestBody ReviewFlag reviewFlag) {
+        logger.info("HTTP PUT request (updateReviewFlag) received.");
+        Token token = new Token();
+        token.setToken(tokenStr);
+        Authenticator auth = new AuthenticatorImpl(authServerUrl);
+        Credentials userCredentials = auth.Authenticate(token);
+        FlagDAO flagDAO = new FlagDAOImpl(databaseConnectionPool.getDatabaseConnection());
+        flagDAO.editReviewFlag(userCredentials, flagId, reviewFlag, resourceId);
+        logger.info("Returning HTTP response code 200.");
+        return ResponseEntity.status(HttpStatus.OK)
+                             .contentType(MediaType.APPLICATION_JSON)
+                             .body("{\"msg\": \"Successfully edited review flag " + flagId + " on resource " + resourceId + ".\"}");
+    }
+
+    /**
      * DELETE Request. 
      * Remove a specific resource record from the database.
      * 
      * @param tokenStr A string representation of the user's Java Web Token (JWT).
      * @param resourceId The index of the resource record to be deleted.
-     * @return
+     * @return ResponseEntity containing a success message and HTTP status 200.
      */
     @DeleteMapping("resource/{resourceId}")
     public ResponseEntity<String> removeResource(@Valid @RequestHeader("Bearer") String tokenStr, @Valid @PathVariable int resourceId) {
@@ -262,7 +337,7 @@ public class WikiEndpoint {
      * @param tokenStr A string representation of the user's Java Web Token (JWT).
      * @param resourceId The index of the resource record containing the comment to be deleted.
      * @param commentId The index of the comment to be deleted.
-     * @return
+     * @return ResponseEntity containing a success message and HTTP status 200.
      */
     @DeleteMapping("resource/{resourceId}/comment/{commentId}")
     public ResponseEntity<String> removeComment(@Valid @RequestHeader("Bearer") String tokenStr, @Valid @PathVariable int resourceId, @PathVariable int commentId) {
@@ -286,7 +361,7 @@ public class WikiEndpoint {
      * @param tokenStr A string representation of the user's Java Web Token (JWT).
      * @param resourceId The index of the resource record containing the upvote to be deleted.
      * @param upvoteId The index of the upvote to be deleted.
-     * @return
+     * @return ResponseEntity containing a success message and HTTP status 200.
      */
     @DeleteMapping("resource/{resourceId}/upvote/{upvoteId}")
     public ResponseEntity<String> removeUpvote(@Valid @RequestHeader("Bearer") String tokenStr, @Valid @PathVariable int resourceId, @PathVariable int upvoteId) {
@@ -310,7 +385,7 @@ public class WikiEndpoint {
      * @param tokenStr A string representation of the user's Java Web Token (JWT).
      * @param resourceId The index of the resource record containing the review flag to be deleted.
      * @param flagId The index of the review flag to be deleted.
-     * @return
+     * @return ResponseEntity containing a success message and HTTP status 200.
      */
     @DeleteMapping("resource/{resourceId}/reviewFlag/{flagId}")
     public ResponseEntity<String> removeReviewFlag(@Valid @RequestHeader("Bearer") String tokenStr, @Valid @PathVariable int resourceId, @PathVariable int flagId) {

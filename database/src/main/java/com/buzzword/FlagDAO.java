@@ -45,6 +45,15 @@ public interface FlagDAO {
     void addReviewFlag(Credentials user, ReviewFlag flag, int resourceId);
 
     /**
+     * Edits a review flag in the database for the specific resource for managerial review.
+     * 
+     * @param user credentials of the user
+     * @param flagId id of the review flag to be edited
+     * @param resource resource containing updated information
+    */
+    void editReviewFlag(Credentials user, int flagId, ReviewFlag flag, int resourceId);
+
+    /**
      * After a manager has reviewed the resouce, they can remove the review flag from the resource.
      * 
      * @param user credentials of the user

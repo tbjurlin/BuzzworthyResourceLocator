@@ -22,10 +22,13 @@ package com.buzzword;
 */
 
 import org.bson.Document;
+import org.bson.conversions.Bson;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Updates;
+import com.mongodb.client.result.UpdateResult;
 
 public class CommentDAOImpl implements CommentDAO {
     private final MongoCollection<Document> resources;
@@ -71,6 +74,43 @@ public class CommentDAOImpl implements CommentDAO {
         logger.info(String.format("User %d added comment %d to resource %d", user.getId(), comment.getId(), comment.getCreatorId()));
     }
     
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void editComment(Credentials user, int commentId, Comment comment, int resourceId) {
+        if (user.getSystemRole() != "Admin" && user.getSystemRole() != "Contributor" && user.getSystemRole() != "Commenter") {
+            logger.error(String.format("User %d with invalid system role %s prevented from editing a comment", user.getId(), user.getSystemRole()));
+            throw new AuthorizationException("User with missing or invalid system role attempted to edit a comment.");
+        }
+        // Only the creator of a comment can edit it.
+        Document doc = resources.find(
+            Filters.and(Filters.eq("commentId", commentId), Filters.eq("resourceId", resourceId))).first();
+        if (doc == null) {
+            throw new RecordDoesNotExistException("Failed to find comment to update");
+        }
+
+        // Check if user has permission to delete this comment.
+        // Allow deletion only if the user is an Admin or the original creator of the comment.
+        int commentCreatorId = doc.getInteger("creatorId");
+
+        if (commentCreatorId != user.getId()) {
+            logger.error(String.format("User %d has attempted to edit a comment that they did not create.", user.getId()));
+            throw new AuthorizationException("User does not have permission to edit this comment");
+        }
+
+        Bson filter = Filters.and(Filters.eq("commentId", commentId), Filters.eq("resourceId", resourceId));
+        Bson updateComment = Updates.set("contents", comment.getContents());
+
+        UpdateResult result = resources.updateOne(filter, updateComment);
+        if(result.getMatchedCount() == 0) {
+            logger.warn(String.format("User %d failed to edit comment %d on resource %d", user.getId(), commentId, resourceId));
+            throw new RecordDoesNotExistException("Failed to find comment for editing");
+        } else {
+            logger.info(String.format("User %d edited comment %d on resource %d", user.getId(), commentId, resourceId));
+        }
+    }
+
     /**
      * {@inheritDoc}
      */
