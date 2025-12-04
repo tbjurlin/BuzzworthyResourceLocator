@@ -24,8 +24,21 @@ package com.buzzword;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+/**
+ * Main application class for the Buzzworthy Resource Locator (BRL).
+ * <p>
+ * This class serves as the entry point for the Spring Boot application,
+ * initializing and running the REST API server.
+ * 
+ * @author Ben Edens
+ * @version 1.0
+ */
 @SpringBootApplication
 public class App {
+	/**
+	 * Main method that starts the Spring Boot application.
+	 * @param args command line arguments
+	 */
 	public static void main(String[] args) {
 		SpringApplication.run(App.class, args);
 	}

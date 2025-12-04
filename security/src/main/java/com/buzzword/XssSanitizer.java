@@ -24,7 +24,7 @@ package com.buzzword;
 import org.jsoup.safety.Safelist;
 
 /**
- * This is the utility interface to sanitize String against xss attacks.
+ * This is the utility interface to sanitize strings against XSS attacks.
  * 
  * @author Janniebeth Melendez
  * @version 1.0
@@ -32,36 +32,33 @@ import org.jsoup.safety.Safelist;
 public interface XssSanitizer {
 
     /**
-	 * Returns the current rules.
-	 * <p>
-	 * @return the current rules
-	 */
-	Safelist getRules();
+     * Returns the current rules.
+     * @return the current rules
+     */
+    Safelist getRules();
 
     /**
-	 * Loads a new rules.
-	 * <p>
-	 * @param rules the rules definition to load
-	 */
-	void setRules(Safelist rules);
+     * Loads new rules.
+     * @param rules the rules definition to load
+     */
+    void setRules(Safelist rules);
 
     /**
-     * Scan Routine
+     * Scans and sanitizes the input string.
      * 
-     * @param input string that we are scanning
+     * @param input the string to be scanned and sanitized
      * @return the clean/sanitized string
      */
     String sanitizeInput(String input);
 
-
     /**
-     * Encode Routine
+     * Encodes and sanitizes the output.
      * <p>
-     * Sanitizes the ouput as a way to avoid unsafe HTML, as well as remove
+     * Sanitizes the output as a way to avoid unsafe HTML, as well as remove
      * whitespace to ensure safe and clean content is displayed.
      * 
-     * @param input
-     * @return
+     * @param input the string to be sanitized for output
+     * @return the sanitized output string
      */
     String sanitizeOutput(String input);
 

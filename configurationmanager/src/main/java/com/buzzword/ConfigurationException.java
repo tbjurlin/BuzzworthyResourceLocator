@@ -21,15 +21,33 @@ package com.buzzword;
  * For more information, please refer to: https://unlicense.org/
 */
 
+/**
+ * Exception thrown when there is an error in the application configuration.
+ * <p>
+ * This runtime exception is thrown when configuration files are missing, malformed,
+ * or contain invalid values.
+ */
 public class ConfigurationException extends RuntimeException {
+    /**
+     * Constructs a new ConfigurationException with no detail message.
+     */
     public ConfigurationException() {
         super();
     }
 
+    /**
+     * Constructs a new ConfigurationException with the specified detail message.
+     * @param message the detail message
+     */
     public ConfigurationException(String message) {
         super(message);
     }
 
+    /**
+     * Constructs a new ConfigurationException with the specified detail message and cause.
+     * @param message the detail message
+     * @param cause the cause of the exception
+     */
     public ConfigurationException(String message, Throwable cause) {
         super(message, cause);
     }

@@ -48,6 +48,14 @@ public class ResourceDAOImpl implements ResourceDAO {
     private final Logger logger = LoggerFactory.getEventLogger();
     private CounterDAO counterDAO;
 
+    /**
+     * Constructs a ResourceDAOImpl with the specified MongoDB database.
+     * <p>
+     * Initializes the collections for resources, comments, flags, and upvotes,
+     * and creates a counter DAO for managing record IDs.
+     * 
+     * @param db the MongoDB database to use for data access
+     */
     public ResourceDAOImpl(MongoDatabase db) {
         this.resources = db.getCollection("resources");
         this.comments = db.getCollection("comments");
@@ -192,6 +200,15 @@ public class ResourceDAOImpl implements ResourceDAO {
         }
     }
 
+    /**
+     * Converts a MongoDB Document to a Resource object.
+     * <p>
+     * Extracts resource data from the document and populates a Resource instance.
+     * 
+     * @param doc the MongoDB document to convert
+     * @return a Resource object populated with data from the document
+     * @throws IllegalArgumentException if the document is null
+     */
     private Resource convertDocumentToResource(Document doc) {
         if(doc == null) {
             logger.error("Attempted to convert null Document to Resource");

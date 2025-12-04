@@ -39,16 +39,18 @@ public interface UpvoteDAO {
     /**
      * Adds an upvote to the database for the specific resource by the user.
      * 
-     * @param user credentials of the user
-     * @param resource resource to be upvoted
-    */
+     * @param user the credentials of the user adding the upvote
+     * @param upvote the upvote to be added
+     * @param resourceId the ID of the resource to be upvoted
+     */
     void addUpvote(Credentials user, Upvote upvote, int resourceId);
     
     /**
-     * instead of downvoting, a user can remove their upvote from a previously upvoted resource within the database.
+     * Instead of downvoting, a user can remove their upvote from a previously upvoted resource within the database.
      * 
-     * @param user credentials of the user
-     * @param resource resource to have upvote removed
-    */
+     * @param user the credentials of the user removing the upvote
+     * @param commentId the ID of the comment containing the upvote
+     * @param resourceId the ID of the resource to have the upvote removed
+     */
     void removeUpvote(Credentials user, int commentId, int resourceId);
 }

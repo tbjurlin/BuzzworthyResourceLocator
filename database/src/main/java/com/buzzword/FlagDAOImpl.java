@@ -35,6 +35,13 @@ public class FlagDAOImpl implements FlagDAO {
     private final Logger logger = LoggerFactory.getEventLogger();
     private CounterDAO counterDAO;
 
+    /**
+     * Constructs a FlagDAOImpl with the specified MongoDB database.
+     * <p>
+     * Initializes the flags collection and creates a counter DAO for managing flag IDs.
+     * 
+     * @param db the MongoDB database to use for data access
+     */
     public FlagDAOImpl(MongoDatabase db) {
         this.resources = db.getCollection("flags");
         counterDAO = new CounterDAOImpl(db);

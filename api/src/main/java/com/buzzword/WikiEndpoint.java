@@ -96,7 +96,7 @@ public class WikiEndpoint {
         Token token = new Token();
         token.setToken(tokenStr);
         Authenticator auth = new AuthenticatorImpl(authServerUrl);
-        Credentials userCredentials = auth.Authenticate(token);
+        Credentials userCredentials = auth.authenticate(token);
         ResourceDAO resourceDAO = new ResourceDAOImpl(databaseConnectionPool.getDatabaseConnection());
         List<Resource> resources = resourceDAO.listAllResources(userCredentials);
         if(resources == null) {
@@ -130,7 +130,7 @@ public class WikiEndpoint {
         Token token = new Token();
         token.setToken(tokenStr);
         Authenticator auth = new AuthenticatorImpl(authServerUrl);
-        Credentials userCredentials = auth.Authenticate(token);
+        Credentials userCredentials = auth.authenticate(token);
         ResourceDAO resourceDAO = new ResourceDAOImpl(databaseConnectionPool.getDatabaseConnection());
         List<Resource> resources = resourceDAO.listResourcesByKeywords(userCredentials, keywords);
         if(resources == null) {
@@ -164,7 +164,7 @@ public class WikiEndpoint {
         Token token = new Token();
         token.setToken(tokenStr);
         Authenticator auth = new AuthenticatorImpl(authServerUrl);
-        Credentials userCredentials = auth.Authenticate(token);
+        Credentials userCredentials = auth.authenticate(token);
         ResourceDAO resourceDAO = new ResourceDAOImpl(databaseConnectionPool.getDatabaseConnection());
         resourceDAO.insertResource(userCredentials, resource);
         logger.info("Returning HTTP response code 201.");
@@ -188,7 +188,7 @@ public class WikiEndpoint {
         Token token = new Token();
         token.setToken(tokenStr);
         Authenticator auth = new AuthenticatorImpl(authServerUrl);
-        Credentials userCredentials = auth.Authenticate(token);
+        Credentials userCredentials = auth.authenticate(token);
         CommentDAO commentDAO = new CommentDAOImpl(databaseConnectionPool.getDatabaseConnection());
         commentDAO.addComment(userCredentials, comment, resourceId);
         logger.info("Returning HTTP response code 201.");
@@ -211,7 +211,7 @@ public class WikiEndpoint {
         Token token = new Token();
         token.setToken(tokenStr);
         Authenticator auth = new AuthenticatorImpl(authServerUrl);
-        Credentials userCredentials = auth.Authenticate(token);
+        Credentials userCredentials = auth.authenticate(token);
         UpvoteDAO upvoteDAO = new UpvoteDAOImpl(databaseConnectionPool.getDatabaseConnection());
         upvoteDAO.addUpvote(userCredentials, new Upvote(), resourceId);
         logger.info("Returning HTTP response code 201.");
@@ -235,7 +235,7 @@ public class WikiEndpoint {
         Token token = new Token();
         token.setToken(tokenStr);
         Authenticator auth = new AuthenticatorImpl(authServerUrl);
-        Credentials userCredentials = auth.Authenticate(token);
+        Credentials userCredentials = auth.authenticate(token);
         FlagDAO flagDAO = new FlagDAOImpl(databaseConnectionPool.getDatabaseConnection());
         flagDAO.addReviewFlag(userCredentials, reviewFlag, resourceId);
         logger.info("Returning HTTP response code 201.");
@@ -259,7 +259,7 @@ public class WikiEndpoint {
         Token token = new Token();
         token.setToken(tokenStr);
         Authenticator auth = new AuthenticatorImpl(authServerUrl);
-        Credentials userCredentials = auth.Authenticate(token);
+        Credentials userCredentials = auth.authenticate(token);
         ResourceDAO resourceDAO = new ResourceDAOImpl(databaseConnectionPool.getDatabaseConnection());
         resourceDAO.editResource(userCredentials, resourceId, resource);
         logger.info("Returning HTTP response code 200.");
@@ -284,7 +284,7 @@ public class WikiEndpoint {
         Token token = new Token();
         token.setToken(tokenStr);
         Authenticator auth = new AuthenticatorImpl(authServerUrl);
-        Credentials userCredentials = auth.Authenticate(token);
+        Credentials userCredentials = auth.authenticate(token);
         CommentDAO commentDAO = new CommentDAOImpl(databaseConnectionPool.getDatabaseConnection());
         commentDAO.editComment(userCredentials, commentId, comment, resourceId);
         logger.info("Returning HTTP response code 200.");
@@ -309,7 +309,7 @@ public class WikiEndpoint {
         Token token = new Token();
         token.setToken(tokenStr);
         Authenticator auth = new AuthenticatorImpl(authServerUrl);
-        Credentials userCredentials = auth.Authenticate(token);
+        Credentials userCredentials = auth.authenticate(token);
         FlagDAO flagDAO = new FlagDAOImpl(databaseConnectionPool.getDatabaseConnection());
         flagDAO.editReviewFlag(userCredentials, flagId, reviewFlag, resourceId);
         logger.info("Returning HTTP response code 200.");
@@ -332,7 +332,7 @@ public class WikiEndpoint {
         Token token = new Token();
         token.setToken(tokenStr);
         Authenticator auth = new AuthenticatorImpl(authServerUrl);
-        Credentials userCredentials = auth.Authenticate(token);
+        Credentials userCredentials = auth.authenticate(token);
         ResourceDAO resourceDAO = new ResourceDAOImpl(databaseConnectionPool.getDatabaseConnection());
         resourceDAO.removeResource(userCredentials, resourceId);
         logger.info("Returning HTTP response code 200.");
@@ -356,7 +356,7 @@ public class WikiEndpoint {
         Token token = new Token();
         token.setToken(tokenStr);
         Authenticator auth = new AuthenticatorImpl(authServerUrl);
-        Credentials userCredentials = auth.Authenticate(token);
+        Credentials userCredentials = auth.authenticate(token);
         CommentDAO commentDAO = new CommentDAOImpl(databaseConnectionPool.getDatabaseConnection());
         commentDAO.removeComment(userCredentials, commentId, resourceId);
         logger.info("Returning HTTP response code 200.");
@@ -380,7 +380,7 @@ public class WikiEndpoint {
         Token token = new Token();
         token.setToken(tokenStr);
         Authenticator auth = new AuthenticatorImpl(authServerUrl);
-        Credentials userCredentials = auth.Authenticate(token);
+        Credentials userCredentials = auth.authenticate(token);
         UpvoteDAO upvoteDAO = new UpvoteDAOImpl(databaseConnectionPool.getDatabaseConnection());
         upvoteDAO.removeUpvote(userCredentials, upvoteId, resourceId);
         logger.info("Returning HTTP response code 200.");
@@ -404,7 +404,7 @@ public class WikiEndpoint {
         Token token = new Token();
         token.setToken(tokenStr);
         Authenticator auth = new AuthenticatorImpl(authServerUrl);
-        Credentials userCredentials = auth.Authenticate(token);
+        Credentials userCredentials = auth.authenticate(token);
         FlagDAO flagDAO = new FlagDAOImpl(databaseConnectionPool.getDatabaseConnection());
         flagDAO.removeReviewFlag(userCredentials, flagId, resourceId);
         logger.info("Returning HTTP response code 200.");

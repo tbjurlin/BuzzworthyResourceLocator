@@ -218,6 +218,12 @@ public class EndpointExceptionHandler {
                              .body("{\"errorMsg\": \"Resource not found. Check that the request matches one of the REST operations outlined in the user documentation.\"}");
     }
 
+    /**
+     * Exception handler for when no handler is found for the request.
+     * 
+     * @param e A NoHandlerFoundException.
+     * @return  A JSON-formatted HTTP response with a 404 error code and message.
+     */
     @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<String> handlesNoHandlerFoundException(NoHandlerFoundException e) {
         logger.error("Returning HTTP response code 404: Resource not found. Check that the request matches one of the REST operations outlined in the user documentation.");

@@ -41,6 +41,13 @@ public class UpvoteDAOImpl
     private final Logger logger = LoggerFactory.getEventLogger();
     private CounterDAO counterDAO;
 
+    /**
+     * Constructs an UpvoteDAOImpl with the specified MongoDB database.
+     * <p>
+     * Initializes the upvotes collection and creates a counter DAO for managing upvote IDs.
+     * 
+     * @param db the MongoDB database to use for data access
+     */
     public UpvoteDAOImpl(MongoDatabase db) {
         this.upvotes = db.getCollection("upvotes");
         this.counterDAO = new CounterDAOImpl(db);

@@ -41,8 +41,8 @@ public class LoggerFactory {
     private static Logger eventLogger;    
 
     /**
-     * Provides singleton access to the securiy logger.
-     * @return The logger instance for security.
+     * Provides singleton access to the security logger.
+     * @return the logger instance for security
      */
     public static Logger getSecurityLogger() {
         if (securityLogger == null) {
@@ -53,7 +53,7 @@ public class LoggerFactory {
 
     /**
      * Provides singleton access to the event logger.
-     * @return The logger instance for application events.
+     * @return the logger instance for application events
      */
     public static Logger getEventLogger() {
         if (eventLogger == null) {

@@ -35,6 +35,13 @@ public class CommentDAOImpl implements CommentDAO {
     private final Logger logger = LoggerFactory.getEventLogger();
     private CounterDAO counterDAO;
 
+    /**
+     * Constructs a CommentDAOImpl with the specified MongoDB database.
+     * <p>
+     * Initializes the comments collection and creates a counter DAO for managing comment IDs.
+     * 
+     * @param db the MongoDB database to use for data access
+     */
     public CommentDAOImpl(MongoDatabase db) {
         this.resources = db.getCollection("comments");
         counterDAO = new CounterDAOImpl(db);

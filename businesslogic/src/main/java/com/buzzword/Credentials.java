@@ -63,7 +63,9 @@ public class Credentials {
 
     private final Logger logger = LoggerFactory.getSecurityLogger();
 
-    /* Constructor */
+    /**
+     * Constructs a new Credentials object with default values.
+     */
     public Credentials() {
         mySanitizer = new XssSanitizerImpl();
         logger.debug("finishing the default constructor");
@@ -72,35 +74,31 @@ public class Credentials {
 
     /**
      * Returns the first name.
-     * <p>
-     * @return
+     * @return the first name
      */
     public String getFirstName() {
         return firstName.getName();
     }
 
     /**
-     * Sets the first name
-     * <p>
-     * @param name
+     * Sets the first name.
+     * @param name the first name to set
      */
     public void setFirstName(String name) {
         firstName.setName(name);
     }
 
     /**
-     * Returns the last name
-     * <p>
-     * @return lastName
+     * Returns the last name.
+     * @return the last name
      */
     public String getLastName() {
         return lastName.getName();
     }
 
     /**
-     * Sets the last name
-     * <p>
-     * @param name
+     * Sets the last name.
+     * @param name the last name to set
      */
     public void setLastName(String name) {
         lastName.setName(name);
@@ -108,9 +106,8 @@ public class Credentials {
 
 
     /**
-     * Returns the id for the Credentials
-     * <p>
-     * @return id
+     * Returns the id for the Credentials.
+     * @return the id
      */
     public int getId() {
         logger.debug("returning the id: " + id);
@@ -118,7 +115,7 @@ public class Credentials {
     }
 
     /**
-     * Sets the id for the Credentials
+     * Sets the id for the Credentials.
      * <p>
      * The business rules are:
      * <ul>
@@ -138,10 +135,8 @@ public class Credentials {
     }
 
     /**
-     * Returns the title of the Credentials
-     * <p>
-     * 
-     * @return title
+     * Returns the title of the Credentials.
+     * @return the title
      */
     public String getTitle() {
         logger.debug("returning the title: " + title);
@@ -149,23 +144,23 @@ public class Credentials {
     }
 
     /**
-     * Sets the title of the Credentials
+     * Sets the title of the Credentials.
      * <p>
      * The business rules are:
      * <ul>
      *   <li>the name must have a max length of 64 chars</li>
      *   <li>XSS strings within the title will be removed</li>
      * </ul>
-     * @param title
+     * @param title the title to set
      * @throws IllegalArgumentException if the title is invalid
      */
     public void setTitle(String title) {
         logger.debug("setting the title");
-        final int maxLenth = 64;
+        final int maxLength = 64;
 
         String sanitizedTitle = mySanitizer.sanitizeInput(title);
 
-        if (sanitizedTitle.length() > maxLenth ) {
+        if (sanitizedTitle.length() > maxLength) {
             logger.error("name must not exceed 64 characters");
             throw new IllegalArgumentException("name must not exceed 64 characters");
         }
@@ -174,9 +169,8 @@ public class Credentials {
     }
 
     /**
-     * Returns the department of the Credentials
-     * <p>
-     * @return department
+     * Returns the department of the Credentials.
+     * @return the department
      */
     public String getDepartment() {
         logger.debug("returning the department: " + department);
@@ -184,23 +178,23 @@ public class Credentials {
     }
 
     /**
-     * Sets the department of the Credentials
+     * Sets the department of the Credentials.
      * <p>
      * The business rules are:
      * <ul>
      *   <li>the department must have a max length of 64 chars</li>
      *   <li>XSS strings within the department will be removed</li>
      * </ul>
-     * @param department
+     * @param department the department to set
      * @throws IllegalArgumentException if the department is invalid
      */
     public void setDepartment(String department) {
         logger.debug("setting the department");
-        final int maxLenth = 64;
+        final int maxLength = 64;
 
         String sanitizedDepartment = mySanitizer.sanitizeInput(department);
 
-        if (sanitizedDepartment.length() > maxLenth ) {
+        if (sanitizedDepartment.length() > maxLength) {
             logger.error("name must not exceed 64 characters");
             throw new IllegalArgumentException("name must not exceed 64 characters");
         }
@@ -209,9 +203,8 @@ public class Credentials {
     }
 
     /**
-     * Returns the location of the Credentials
-     * <p>
-     * @return location
+     * Returns the location of the Credentials.
+     * @return the location
      */
     public String getLocation() {
         logger.debug("returning the location: " + location);
@@ -219,23 +212,23 @@ public class Credentials {
     }
 
     /**
-     * Sets the location of the Credentials
+     * Sets the location of the Credentials.
      * <p>
      * The business rules are:
      * <ul>
-     *   <li>the location must max length of 64 chars</li>
+     *   <li>the location must have a max length of 64 chars</li>
      *   <li>XSS strings within the location will be removed</li>
      * </ul>
-     * @param location
+     * @param location the location to set
      * @throws IllegalArgumentException if the location is invalid
      */
     public void setLocation(String location) {
         logger.debug("setting the location");
-        final int maxLenth = 64;
+        final int maxLength = 64;
 
         String sanitizedLocation = mySanitizer.sanitizeInput(location);
 
-        if (sanitizedLocation.length() > maxLenth ) {
+        if (sanitizedLocation.length() > maxLength) {
             logger.error("name must not exceed 64 characters");
             throw new IllegalArgumentException("name must not exceed 64 characters");
         }
@@ -243,9 +236,8 @@ public class Credentials {
     }
     
     /** 
-     * Returns the system role of the user
-     * <p>
-     * @return systemRole
+     * Returns the system role of the user.
+     * @return the system role
      */
     public String getSystemRole() {
         RoleConfiguration config = new RoleConfigurationImpl(ConfigurationManagerImpl.getInstance());

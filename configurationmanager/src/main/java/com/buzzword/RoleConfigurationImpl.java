@@ -38,7 +38,7 @@ public class RoleConfigurationImpl implements RoleConfiguration {
 
     /**
      * Constructs a role configuration using the configuration manager.
-     * @param manager
+     * @param manager the configuration manager containing role information
      */
     public RoleConfigurationImpl(ConfigurationManager manager) {
         createRoleMap(

@@ -22,7 +22,12 @@ package com.buzzword;
 */
 
 /**
- * Upvote Class
+ * The Upvote class represents an upvote record extending the Record class.
+ * <p>
+ * An upvote is a user action indicating approval or support for a resource.
+ * 
+ * @author Dennis Shelby
+ * @version 1.0
  */
 public class Upvote extends Record {
     

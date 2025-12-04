@@ -21,15 +21,34 @@ package com.buzzword;
  * For more information, please refer to: https://unlicense.org/
 */
 
+/**
+ * Exception thrown when a user attempts an operation they are not authorized to perform.
+ * <p>
+ * This runtime exception is thrown when authorization checks fail, such as when a user
+ * attempts to modify or delete content they don't own or access resources they don't have
+ * permission to view.
+ */
 public class AuthorizationException extends RuntimeException {
+    /**
+     * Constructs a new AuthorizationException with no detail message.
+     */
     public AuthorizationException() {
         super();
     }
 
+    /**
+     * Constructs a new AuthorizationException with the specified detail message.
+     * @param message the detail message
+     */
     public AuthorizationException(String message) {
         super(message);
     }
 
+    /**
+     * Constructs a new AuthorizationException with the specified detail message and cause.
+     * @param message the detail message
+     * @param cause the cause of the exception
+     */
     public AuthorizationException(String message, Throwable cause) {
         super(message, cause);
     }

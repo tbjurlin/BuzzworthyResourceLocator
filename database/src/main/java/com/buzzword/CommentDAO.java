@@ -30,30 +30,30 @@ public interface CommentDAO {
     public void setCounterDAO(CounterDAO counterDAO);
 
     /**
-     * <p>
      * Allows a user to add a comment to a specific resource.
      * 
-     * @param user credentials of the user
-     * @param comment comment to be added
-    */
+     * @param user the credentials of the user adding the comment
+     * @param comment the comment to be added
+     * @param resourceId the ID of the resource to add the comment to
+     */
     void addComment(Credentials user, Comment comment, int resourceId);
 
     /**
-     * <p>
      * Allows a user to edit a comment on a specific resource.
      * 
-     * @param user credentials of the user
-     * @param commentId id of the comment to be edited
-     * @param comment comment containing updated information
-    */
+     * @param user the credentials of the user editing the comment
+     * @param commentId the ID of the comment to be edited
+     * @param comment the comment containing updated information
+     * @param resourceId the ID of the resource containing the comment
+     */
     void editComment(Credentials user, int commentId, Comment comment, int resourceId);
     
     /**
-     * <p>
-     * A user may delete their own comment or an admin may remove any comments.
+     * A user may delete their own comment or an admin may remove any comment.
      * 
-     * @param user credentials of the user
-     * @param comment comment to be removed
-    */
+     * @param user the credentials of the user removing the comment
+     * @param commentId the ID of the comment to be removed
+     * @param resourceId the ID of the resource containing the comment
+     */
     void removeComment(Credentials user, int commentId, int resourceId);
 }

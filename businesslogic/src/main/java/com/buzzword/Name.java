@@ -35,11 +35,18 @@ public class Name {
 
     private final Logger logger = LoggerFactory.getEventLogger();
 
-
+    /**
+     * Constructs a new Name object with default values.
+     */
     public Name() {
         mySanitizer = new XssSanitizerImpl();
     }
 
+    /**
+     * Constructs a new Name object with the specified name string.
+     * 
+     * @param nameString the initial name value
+     */
     public Name(String nameString) {
         mySanitizer = new XssSanitizerImpl();
         this.nameString = nameString;
@@ -53,40 +60,39 @@ public class Name {
      * <ul>
      *   <li>the name must <strong>not</strong> be null</li>
      *   <li>the name must <strong>not</strong> be empty</li>
-     *   <li>the name must max length of 64 chars</li>
+     *   <li>the name must have a max length of 64 chars</li>
      *   <li>XSS strings within the first name will be removed</li>
      * </ul>
      *
-     * @param name is a generic name
+     * @param name a generic name
      * @throws IllegalArgumentException if the name is invalid
      */
     public void setName(String name) {
         logger.debug("setting the name");
-        final int maxLenth = 64;
+        final int maxLength = 64;
 
         if (name == null) {
             logger.error("name must not be null.");
             throw new IllegalArgumentException("name must not be null.");
         }
 
-        String santizedName = mySanitizer.sanitizeInput(name);
+        String sanitizedName = mySanitizer.sanitizeInput(name);
 
-        if (santizedName.isEmpty()) {
+        if (sanitizedName.isEmpty()) {
             logger.error("name must not be empty.");
             throw new IllegalArgumentException("name must not be empty.");
         }
-        if (santizedName.length() > maxLenth ) {
+        if (sanitizedName.length() > maxLength) {
             logger.error("name must not exceed 64 characters");
             throw new IllegalArgumentException("name must not exceed 64 characters");
         }
         
-        this.nameString = santizedName;
+        this.nameString = sanitizedName;
     }
 
     /**
      * Returns the name.
-     * <p>
-     * @return nameString
+     * @return the name string
      */
     public String getName() {
         logger.debug("returning the name: " + nameString);

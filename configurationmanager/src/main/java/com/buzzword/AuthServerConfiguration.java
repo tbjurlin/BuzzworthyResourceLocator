@@ -24,7 +24,7 @@ package com.buzzword;
 /**
  * The authentication server configuration information.
  * <p>
- * Retreives information from the configuration files and constructs an auth server connection string.
+ * Retrieves information from the configuration files and constructs an auth server connection string.
  * @author Ted Bjurlin
  */
 public interface AuthServerConfiguration {

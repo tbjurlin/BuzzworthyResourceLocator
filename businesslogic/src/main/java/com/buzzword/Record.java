@@ -21,7 +21,6 @@ package com.buzzword;
  * For more information, please refer to: https://unlicense.org/
 */
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Date;
@@ -52,7 +51,12 @@ abstract class Record{
 
     private final Logger logger = LoggerFactory.getEventLogger();
 
-    /* Constructor */
+    /**
+     * Constructs a new Record object with default values.
+     * <p>
+     * Initializes the creation date to the current date, sets isEdited to false,
+     * and initializes the first and last name objects.
+     */
     public Record() {
         this.creationDate = new Date();
         this.isEdited = false;
@@ -94,43 +98,39 @@ abstract class Record{
 
     /**
      * Returns the first name.
-     * <p>
-     * @return
+     * @return the first name
      */
     public String getFirstName() {
         return firstName.getName();
     }
 
     /**
-     * Sets the first name
-     * <p>
-     * @param name
+     * Sets the first name.
+     * @param name the first name to set
      */
     public void setFirstName(String name) {
         firstName.setName(name);
     }
 
     /**
-     * Returns the last name
-     * <p>
-     * @return lastName
+     * Returns the last name.
+     * @return the last name
      */
     public String getLastName() {
         return lastName.getName();
     }
 
     /**
-     * Sets the last name
-     * <p>
-     * @param name
+     * Sets the last name.
+     * @param name the last name to set
      */
     public void setLastName(String name) {
         lastName.setName(name);
     }
 
     /**
-     * Returns the creatorId for the Record
-     * @return creatorId
+     * Returns the creatorId for the Record.
+     * @return the creator ID
      */
     public int getCreatorId() {
         logger.debug("returning the id: " + id);
@@ -159,8 +159,8 @@ abstract class Record{
     }
 
     /**
-     * Returns the creationDate value for the Record
-     * @return creationDate
+     * Returns the creationDate value for the Record.
+     * @return the creation date
      */
     public Date getCreationDate() {
         logger.debug("returns the creationDate: " + creationDate);
@@ -194,8 +194,8 @@ abstract class Record{
     }
 
     /**
-     * Returns the isEdited value for the Record
-     * @return isEdited
+     * Returns the isEdited value for the Record.
+     * @return true if the record has been edited, false otherwise
      */
     public Boolean getIsEdited() {
         logger.debug("returning isEdited: " + isEdited);
@@ -212,8 +212,8 @@ abstract class Record{
     }
 
     /**
-     * Returns the currentUserCanDelete value for the Record
-     * @return currentUserCanDelete
+     * Returns the currentUserCanDelete value for the Record.
+     * @return true if the current user can delete this record, false otherwise
      */
     public boolean getCurrentUserCanDelete() {
         logger.debug("returning currentUserCanDelete: " + currentUserCanDelete);
