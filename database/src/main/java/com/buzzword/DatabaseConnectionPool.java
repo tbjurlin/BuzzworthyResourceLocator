@@ -92,5 +92,15 @@ public class DatabaseConnectionPool {
         logger.info(String.format("Acquired database %s", config.getDatabaseName()));
         return db;
     }
-    
+
+    /**
+     * Closes the MongoDB client and releases all connections.
+     * Should be called on application shutdown.
+     */
+    public void close() {
+        if (client != null) {
+            client.close();
+            logger.info("MongoDB client closed and connections released.");
+        }
+    }
 }

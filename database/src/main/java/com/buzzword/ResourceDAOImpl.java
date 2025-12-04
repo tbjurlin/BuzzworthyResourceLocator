@@ -102,7 +102,7 @@ public class ResourceDAOImpl implements ResourceDAO {
             logger.error("Unauthenticated user denied permission to edit resource");
             throw new AuthorizationException("User must be authenticated to edit resources");
         }
-        if (user.getSystemRole() == "Contributor") {
+        if (user.getSystemRole().equals("Contributor")) {
             // First, find the resource to check ownership
             Document doc = resources.find(
                 Filters.eq("resourceId", id)).first();
@@ -151,7 +151,7 @@ public class ResourceDAOImpl implements ResourceDAO {
                 user.getId(), user.getSystemRole(), id));
             throw new AuthorizationException("User does not have permission to delete this resource");
         }
-        if (user.getSystemRole() == "Contributor") {
+        if (user.getSystemRole().equals("Contributor")) {
             // First, find the resource to check ownership
             Document doc = resources.find(
                 Filters.eq("resourceId", id)).first();
@@ -173,7 +173,7 @@ public class ResourceDAOImpl implements ResourceDAO {
             }
         }
 
-                // Delete the resource document
+        // Delete the resource document
         DeleteResult result = resources.deleteOne(
             Filters.eq("resourceId", id)
         );
@@ -193,8 +193,11 @@ public class ResourceDAOImpl implements ResourceDAO {
     }
 
     private Resource convertDocumentToResource(Document doc) {
+        if(doc == null) {
+            logger.error("Attempted to convert null Document to Resource");
+            throw new IllegalArgumentException("Document cannot be null");
+        }
         Resource resource = new Resource();
-        System.out.println(doc);
         resource.setId(doc.getInteger("resourceId"));
         resource.setTitle(doc.getString("title"));
         resource.setDescription(doc.getString("description"));
@@ -226,12 +229,11 @@ public class ResourceDAOImpl implements ResourceDAO {
             resource.setReviewFlags(new ArrayList<ReviewFlag>());
             resource.setUpvotes(new ArrayList<Upvote>());
 
-            if(user.getSystemRole() == "Admin" || resDoc.getInteger("creatorId") == user.getId()) {
+            if(user.getSystemRole().equals("Admin") || resDoc.getInteger("creatorId") == user.getId()) {
                 resource.setCurrentUserCanDelete(true);
             }
 
             resourceMap.put(resource.getId(), resource);
-            System.out.println(resourceMap);
         });
 
         comments.find().forEach(commentDoc -> {
@@ -246,7 +248,7 @@ public class ResourceDAOImpl implements ResourceDAO {
                 comment.setCreationDate(commentDoc.getDate("dateCreated"));
                 comment.setContents(commentDoc.getString("contents"));
 
-                if(user.getSystemRole() == "Admin" || commentDoc.getInteger("creatorId") == user.getId()) {
+                if(user.getSystemRole().equals("Admin") || commentDoc.getInteger("creatorId") == user.getId()) {
                     comment.setCurrentUserCanDelete(true);
                 }
 
@@ -268,7 +270,7 @@ public class ResourceDAOImpl implements ResourceDAO {
                 flag.setCreationDate(flagDoc.getDate("dateCreated"));
                 flag.setContents(flagDoc.getString("contents"));
 
-                if(user.getSystemRole() == "Admin" || flagDoc.getInteger("creatorId") == user.getId()) {
+                if(user.getSystemRole().equals("Admin") || flagDoc.getInteger("creatorId") == user.getId()) {
                     flag.setCurrentUserCanDelete(true);
                 }
 
@@ -351,15 +353,16 @@ public class ResourceDAOImpl implements ResourceDAO {
             resource.setReviewFlags(new ArrayList<ReviewFlag>());
             resource.setUpvotes(new ArrayList<Upvote>());
 
-            if(user.getSystemRole() == "Admin" || resDoc.getInteger("creatorId") == user.getId()) {
+            if(user.getSystemRole().equals("Admin") || resDoc.getInteger("creatorId") == user.getId()) {
                 resource.setCurrentUserCanDelete(true);
             }
 
             resourceMap.put(resource.getId(), resource);
-            System.out.println(resourceMap);
         });
 
-        comments.find().forEach(commentDoc -> {
+        Bson resourceIdFilter = Filters.in("resourceId", resourceMap.keySet());
+
+        comments.find(resourceIdFilter).forEach(commentDoc -> {
 
             Resource parent = resourceMap.get(commentDoc.getInteger("resourceId"));
             if (parent != null) {
@@ -371,7 +374,7 @@ public class ResourceDAOImpl implements ResourceDAO {
                 comment.setCreationDate(commentDoc.getDate("dateCreated"));
                 comment.setContents(commentDoc.getString("contents"));
 
-                if(user.getSystemRole() == "Admin" || commentDoc.getInteger("creatorId") == user.getId()) {
+                if(user.getSystemRole().equals("Admin") || commentDoc.getInteger("creatorId") == user.getId()) {
                     comment.setCurrentUserCanDelete(true);
                 }
 
@@ -382,7 +385,7 @@ public class ResourceDAOImpl implements ResourceDAO {
             }
         });
 
-        flags.find().forEach(flagDoc -> {
+        flags.find(resourceIdFilter).forEach(flagDoc -> {
             Resource parent = resourceMap.get(flagDoc.getInteger("resourceId"));
             if (parent != null) {
                 ReviewFlag flag = new ReviewFlag();
@@ -393,7 +396,7 @@ public class ResourceDAOImpl implements ResourceDAO {
                 flag.setCreationDate(flagDoc.getDate("dateCreated"));
                 flag.setContents(flagDoc.getString("contents"));
 
-                if(user.getSystemRole() == "Admin" || flagDoc.getInteger("creatorId") == user.getId()) {
+                if(user.getSystemRole().equals("Admin") || flagDoc.getInteger("creatorId") == user.getId()) {
                     flag.setCurrentUserCanDelete(true);
                 }
 

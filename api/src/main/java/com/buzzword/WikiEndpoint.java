@@ -40,6 +40,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import jakarta.validation.Valid;
 
 /**
@@ -68,6 +69,16 @@ public class WikiEndpoint {
             databaseConnectionPool = DatabaseConnectionPool.getInstance();
         } catch(IOException | IllegalArgumentException e) {
             throw new IllegalArgumentException("Cannot get instance of database connection pool.");
+        }
+    }
+
+    /**
+     * Cleans up resources before the application is shut down.
+     */
+    @PreDestroy
+    public void cleanup() {
+        if (databaseConnectionPool != null) {
+            databaseConnectionPool.close();
         }
     }
 
