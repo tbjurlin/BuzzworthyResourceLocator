@@ -11,6 +11,13 @@
         <hr>
         <h2>User documentation available @ http://localhost:8080/BRL/api/</h2>
         <hr>
+        <h2>GET http://localhost:8080/BRL/api/wiki/verification</h2>
+        <h3>Purpose — Verify user credentials and retrieve authenticated user information.</h3>
+        <h3>Request header — "Bearer: abcdefg...tuvwxyz" where this string is an SSO token.</h3>
+        <h3>Request body — Empty.</h3>
+        <h3>Return body — {"firstName": "First", "lastName": "Last"}</h3>
+        <h3>Return code — 200 (successfully verified), 400 (misformatted request), 401 (unable to authenticate user), 405 (method not allowed for current endpoint), 500 (internal server error)</h3>
+        <hr>
         <h2>GET http://localhost:8080/BRL/api/wiki/resource</h2>
         <h3>Purpose — Retrieve all resource records from the database.</h3>
         <h3>Request header — "Bearer: abcdefg...tuvwxyz" where this string is an SSO token.</h3>

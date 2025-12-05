@@ -86,6 +86,28 @@ public class WikiEndpoint {
 
     /**
      * GET Request.
+     * Verify user credentials using the provided Java Web Token (JWT).
+     * 
+     * @param tokenStr A string representation of the user's Java Web Token (JWT).
+     * @return ResponseEntity containing a success message and HTTP status 200.
+     */
+    @GetMapping("verification")
+    public ResponseEntity<String> verifyCredentials(@Valid @RequestHeader("Bearer") String tokenStr) {
+        logger.info("HTTP GET request (verifyCredentials) received.");
+        Token token = new Token();
+        token.setToken(tokenStr);
+        Authenticator auth = new AuthenticatorImpl(authServerUrl);
+        Credentials userCredentials = auth.authenticate(token);
+        logger.info("Returning HTTP response code 200.");
+        return ResponseEntity.ok()
+                             .contentType(MediaType.APPLICATION_JSON)
+                             .body(String.format("{\"firstName\": \"%s\", \"lastName\": \"%s\"}", 
+                                     userCredentials.getFirstName(),
+                                     userCredentials.getLastName()));
+    }
+
+    /**
+     * GET Request.
      * Retrieve a single resource record from the database as a JSON object
      * containing a Record object.
      * 
