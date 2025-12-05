@@ -1,26 +1,5 @@
 package com.buzzword;
 
-/*
- * This is free and unencumbered software released into the public domain.
- * Anyone is free to copy, modify, publish, use, compile, sell, or distribute this software,
- * either in source code form or as a compiled binary, for any purpose, commercial or
- * non-commercial, and by any means.
- *
- * In jurisdictions that recognize copyright laws, the author or authors of this
- * software dedicate any and all copyright interest in the software to the public domain.
- * We make this dedication for the benefit of the public at large and to the detriment of
- * our heirs and successors. We intend this dedication to be an overt act of relinquishment in
- * perpetuity of all present and future rights to this software under copyright law.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
- * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
- * PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES
- * OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- * For more information, please refer to: https://unlicense.org/
-*/
-
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -73,9 +52,10 @@ public class CommentDAOTest {
         when(mockCredentials.getId()).thenReturn(1);
         when(mockCredentials.getSystemRole()).thenReturn("Admin");
 
-        DeleteResult mockResult = mock(DeleteResult.class);
-        when(mockResult.getDeletedCount()).thenReturn(0L);
-        when(testCollection.deleteOne(any(Bson.class))).thenReturn(mockResult);
+        @SuppressWarnings("unchecked")
+        FindIterable<Document> mockIterable = (FindIterable<Document>) mock(FindIterable.class);
+        when(mockIterable.first()).thenReturn(null);
+        when(testCollection.find(any(Bson.class))).thenReturn(mockIterable);
 
         assertThrows(RecordDoesNotExistException.class, () -> {
             commentDAO.removeComment(mockCredentials, 1, 1);
@@ -203,6 +183,18 @@ public class CommentDAOTest {
         when(mockCredentials.getId()).thenReturn(1);
         when(mockCredentials.getSystemRole()).thenReturn("Admin");
 
+        @SuppressWarnings("unchecked")
+        FindIterable<Document> mockIterable = (FindIterable<Document>) mock(FindIterable.class);
+        Document targetDocument = new Document()
+            .append("commentId", 1)
+            .append("resourceId", 1)
+            .append("creatorId", 2)
+            .append("firstName", "Foo")
+            .append("lastName", "Bar")
+            .append("dateCreated", Date.from(Instant.ofEpochSecond(946684800)))
+            .append("contents", "Thanks for the suggestion!");
+        when(mockIterable.first()).thenReturn(targetDocument);
+        when(testCollection.find(any(Bson.class))).thenReturn(mockIterable);
         DeleteResult mockResult = mock(DeleteResult.class);
         when(mockResult.getDeletedCount()).thenReturn(1L);
         when(testCollection.deleteOne(any(Bson.class))).thenReturn(mockResult);
@@ -351,5 +343,332 @@ public class CommentDAOTest {
         });
 
         verify(testCollection, never()).deleteOne(any(Bson.class));
+    }
+
+    // ============ Edit Comment Tests ============
+
+    @Test
+    void adminMayEditComment() {
+        Credentials mockCredentials = mock(Credentials.class);
+        when(mockCredentials.getId()).thenReturn(1);
+        when(mockCredentials.getSystemRole()).thenReturn("Admin");
+
+        Comment mockComment = mock(Comment.class);
+        when(mockComment.getContents()).thenReturn("Updated content");
+
+        @SuppressWarnings("unchecked")
+        FindIterable<Document> mockIterable = (FindIterable<Document>) mock(FindIterable.class);
+        Document targetDocument = new Document()
+            .append("commentId", 1)
+            .append("resourceId", 1)
+            .append("creatorId", 1)
+            .append("firstName", "Foo")
+            .append("lastName", "Bar")
+            .append("dateCreated", Date.from(Instant.ofEpochSecond(946684800)))
+            .append("contents", "Original content");
+        when(mockIterable.first()).thenReturn(targetDocument);
+        when(testCollection.find(any(Bson.class))).thenReturn(mockIterable);
+
+        com.mongodb.client.result.UpdateResult mockResult = mock(com.mongodb.client.result.UpdateResult.class);
+        when(mockResult.getMatchedCount()).thenReturn(1L);
+        when(testCollection.updateOne(any(Bson.class), any(Bson.class))).thenReturn(mockResult);
+
+        commentDAO.editComment(mockCredentials, 1, mockComment, 1);
+
+        verify(testCollection).updateOne(any(Bson.class), any(Bson.class));
+    }
+
+    @Test
+    void contributorMayEditOwnComment() {
+        Credentials mockCredentials = mock(Credentials.class);
+        when(mockCredentials.getId()).thenReturn(1);
+        when(mockCredentials.getSystemRole()).thenReturn("Contributor");
+
+        Comment mockComment = mock(Comment.class);
+        when(mockComment.getContents()).thenReturn("Updated content");
+
+        @SuppressWarnings("unchecked")
+        FindIterable<Document> mockIterable = (FindIterable<Document>) mock(FindIterable.class);
+        Document targetDocument = new Document()
+            .append("commentId", 1)
+            .append("resourceId", 1)
+            .append("creatorId", 1)
+            .append("firstName", "Foo")
+            .append("lastName", "Bar")
+            .append("dateCreated", Date.from(Instant.ofEpochSecond(946684800)))
+            .append("contents", "Original content");
+        when(mockIterable.first()).thenReturn(targetDocument);
+        when(testCollection.find(any(Bson.class))).thenReturn(mockIterable);
+
+        com.mongodb.client.result.UpdateResult mockResult = mock(com.mongodb.client.result.UpdateResult.class);
+        when(mockResult.getMatchedCount()).thenReturn(1L);
+        when(testCollection.updateOne(any(Bson.class), any(Bson.class))).thenReturn(mockResult);
+
+        commentDAO.editComment(mockCredentials, 1, mockComment, 1);
+
+        verify(testCollection).updateOne(any(Bson.class), any(Bson.class));
+    }
+
+    @Test
+    void contributorMayNotEditOthersComment() {
+        Credentials mockCredentials = mock(Credentials.class);
+        when(mockCredentials.getId()).thenReturn(1);
+        when(mockCredentials.getSystemRole()).thenReturn("Contributor");
+
+        Comment mockComment = mock(Comment.class);
+
+        @SuppressWarnings("unchecked")
+        FindIterable<Document> mockIterable = (FindIterable<Document>) mock(FindIterable.class);
+        Document targetDocument = new Document()
+            .append("commentId", 1)
+            .append("resourceId", 1)
+            .append("creatorId", 2)
+            .append("firstName", "Foo")
+            .append("lastName", "Bar")
+            .append("dateCreated", Date.from(Instant.ofEpochSecond(946684800)))
+            .append("contents", "Original content");
+        when(mockIterable.first()).thenReturn(targetDocument);
+        when(testCollection.find(any(Bson.class))).thenReturn(mockIterable);
+
+        assertThrows(AuthorizationException.class, () -> {
+            commentDAO.editComment(mockCredentials, 1, mockComment, 1);
+        });
+
+        verify(testCollection, never()).updateOne(any(Bson.class), any(Bson.class));
+    }
+
+    @Test
+    void commenterMayEditOwnComment() {
+        Credentials mockCredentials = mock(Credentials.class);
+        when(mockCredentials.getId()).thenReturn(1);
+        when(mockCredentials.getSystemRole()).thenReturn("Commenter");
+
+        Comment mockComment = mock(Comment.class);
+        when(mockComment.getContents()).thenReturn("Updated content");
+
+        @SuppressWarnings("unchecked")
+        FindIterable<Document> mockIterable = (FindIterable<Document>) mock(FindIterable.class);
+        Document targetDocument = new Document()
+            .append("commentId", 1)
+            .append("resourceId", 1)
+            .append("creatorId", 1)
+            .append("firstName", "Foo")
+            .append("lastName", "Bar")
+            .append("dateCreated", Date.from(Instant.ofEpochSecond(946684800)))
+            .append("contents", "Original content");
+        when(mockIterable.first()).thenReturn(targetDocument);
+        when(testCollection.find(any(Bson.class))).thenReturn(mockIterable);
+
+        com.mongodb.client.result.UpdateResult mockResult = mock(com.mongodb.client.result.UpdateResult.class);
+        when(mockResult.getMatchedCount()).thenReturn(1L);
+        when(testCollection.updateOne(any(Bson.class), any(Bson.class))).thenReturn(mockResult);
+
+        commentDAO.editComment(mockCredentials, 1, mockComment, 1);
+
+        verify(testCollection).updateOne(any(Bson.class), any(Bson.class));
+    }
+
+    @Test
+    void commenterMayNotEditOthersComment() {
+        Credentials mockCredentials = mock(Credentials.class);
+        when(mockCredentials.getId()).thenReturn(1);
+        when(mockCredentials.getSystemRole()).thenReturn("Commenter");
+
+        Comment mockComment = mock(Comment.class);
+
+        @SuppressWarnings("unchecked")
+        FindIterable<Document> mockIterable = (FindIterable<Document>) mock(FindIterable.class);
+        Document targetDocument = new Document()
+            .append("commentId", 1)
+            .append("resourceId", 1)
+            .append("creatorId", 2)
+            .append("firstName", "Foo")
+            .append("lastName", "Bar")
+            .append("dateCreated", Date.from(Instant.ofEpochSecond(946684800)))
+            .append("contents", "Original content");
+        when(mockIterable.first()).thenReturn(targetDocument);
+        when(testCollection.find(any(Bson.class))).thenReturn(mockIterable);
+
+        assertThrows(AuthorizationException.class, () -> {
+            commentDAO.editComment(mockCredentials, 1, mockComment, 1);
+        });
+
+        verify(testCollection, never()).updateOne(any(Bson.class), any(Bson.class));
+    }
+
+    @Test
+    void cannotEditNonexistentComment() {
+        Credentials mockCredentials = mock(Credentials.class);
+        when(mockCredentials.getId()).thenReturn(1);
+        when(mockCredentials.getSystemRole()).thenReturn("Admin");
+
+        Comment mockComment = mock(Comment.class);
+
+        @SuppressWarnings("unchecked")
+        FindIterable<Document> mockIterable = (FindIterable<Document>) mock(FindIterable.class);
+        when(mockIterable.first()).thenReturn(null);
+        when(testCollection.find(any(Bson.class))).thenReturn(mockIterable);
+
+        assertThrows(RecordDoesNotExistException.class, () -> {
+            commentDAO.editComment(mockCredentials, 1, mockComment, 1);
+        });
+
+        verify(testCollection, never()).updateOne(any(Bson.class), any(Bson.class));
+    }
+
+    @Test
+    void cannotEditCommentWhenUpdateFails() {
+        Credentials mockCredentials = mock(Credentials.class);
+        when(mockCredentials.getId()).thenReturn(1);
+        when(mockCredentials.getSystemRole()).thenReturn("Admin");
+
+        Comment mockComment = mock(Comment.class);
+        when(mockComment.getContents()).thenReturn("Updated content");
+
+        @SuppressWarnings("unchecked")
+        FindIterable<Document> mockIterable = (FindIterable<Document>) mock(FindIterable.class);
+        Document targetDocument = new Document()
+            .append("commentId", 1)
+            .append("resourceId", 1)
+            .append("creatorId", 1)
+            .append("firstName", "Foo")
+            .append("lastName", "Bar")
+            .append("dateCreated", Date.from(Instant.ofEpochSecond(946684800)))
+            .append("contents", "Original content");
+        when(mockIterable.first()).thenReturn(targetDocument);
+        when(testCollection.find(any(Bson.class))).thenReturn(mockIterable);
+
+        com.mongodb.client.result.UpdateResult mockResult = mock(com.mongodb.client.result.UpdateResult.class);
+        when(mockResult.getMatchedCount()).thenReturn(0L);
+        when(testCollection.updateOne(any(Bson.class), any(Bson.class))).thenReturn(mockResult);
+
+        assertThrows(RecordDoesNotExistException.class, () -> {
+            commentDAO.editComment(mockCredentials, 1, mockComment, 1);
+        });
+    }
+
+    @Test
+    void invalidRoleMayNotEditComment() {
+        Credentials mockCredentials = mock(Credentials.class);
+        when(mockCredentials.getSystemRole()).thenReturn("Some Invalid Role");
+
+        Comment mockComment = mock(Comment.class);
+
+        assertThrows(AuthorizationException.class, () -> {
+            commentDAO.editComment(mockCredentials, 1, mockComment, 1);
+        });
+
+        verify(testCollection, never()).updateOne(any(Bson.class), any(Bson.class));
+    }
+
+    // ============ Null Parameter Tests ============
+
+    @Test
+    void addCommentThrowsOnNullUser() {
+        Comment mockComment = mock(Comment.class);
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            commentDAO.addComment(null, mockComment, 1);
+        });
+
+        verify(testCollection, never()).insertOne(any());
+    }
+
+    @Test
+    void addCommentThrowsOnNullComment() {
+        Credentials mockCredentials = mock(Credentials.class);
+        when(mockCredentials.getSystemRole()).thenReturn("Admin");
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            commentDAO.addComment(mockCredentials, null, 1);
+        });
+
+        verify(testCollection, never()).insertOne(any());
+    }
+
+    @Test
+    void addCommentThrowsOnNullRole() {
+        Credentials mockCredentials = mock(Credentials.class);
+        when(mockCredentials.getSystemRole()).thenReturn(null);
+
+        Comment mockComment = mock(Comment.class);
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            commentDAO.addComment(mockCredentials, mockComment, 1);
+        });
+
+        verify(testCollection, never()).insertOne(any());
+    }
+
+    @Test
+    void editCommentThrowsOnNullUser() {
+        Comment mockComment = mock(Comment.class);
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            commentDAO.editComment(null, 1, mockComment, 1);
+        });
+
+        verify(testCollection, never()).updateOne(any(Bson.class), any(Bson.class));
+    }
+
+    @Test
+    void editCommentThrowsOnNullComment() {
+        Credentials mockCredentials = mock(Credentials.class);
+        when(mockCredentials.getSystemRole()).thenReturn("Admin");
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            commentDAO.editComment(mockCredentials, 1, null, 1);
+        });
+
+        verify(testCollection, never()).updateOne(any(Bson.class), any(Bson.class));
+    }
+
+    @Test
+    void editCommentThrowsOnNullRole() {
+        Credentials mockCredentials = mock(Credentials.class);
+        when(mockCredentials.getSystemRole()).thenReturn(null);
+
+        Comment mockComment = mock(Comment.class);
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            commentDAO.editComment(mockCredentials, 1, mockComment, 1);
+        });
+
+        verify(testCollection, never()).updateOne(any(Bson.class), any(Bson.class));
+    }
+
+    @Test
+    void removeCommentThrowsOnNullUser() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            commentDAO.removeComment(null, 1, 1);
+        });
+
+        verify(testCollection, never()).deleteOne(any(Bson.class));
+    }
+
+    @Test
+    void removeCommentThrowsOnNullRole() {
+        Credentials mockCredentials = mock(Credentials.class);
+        when(mockCredentials.getSystemRole()).thenReturn(null);
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            commentDAO.removeComment(mockCredentials, 1, 1);
+        });
+
+        verify(testCollection, never()).deleteOne(any(Bson.class));
+    }
+
+    @Test
+    void setCounterDAOThrowsOnNull() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            commentDAO.setCounterDAO(null);
+        });
+    }
+
+    @Test
+    void constructorThrowsOnNullDatabase() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            new CommentDAOImpl(null);
+        });
     }
 }

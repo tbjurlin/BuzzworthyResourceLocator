@@ -1,25 +1,108 @@
 package com.buzzword;
 
-/*
- * This is free and unencumbered software released into the public domain.
- * Anyone is free to copy, modify, publish, use, compile, sell, or distribute this software,
- * either in source code form or as a compiled binary, for any purpose, commercial or
- * non-commercial, and by any means.
- *
- * In jurisdictions that recognize copyright laws, the author or authors of this
- * software dedicate any and all copyright interest in the software to the public domain.
- * We make this dedication for the benefit of the public at large and to the detriment of
- * our heirs and successors. We intend this dedication to be an overt act of relinquishment in
- * perpetuity of all present and future rights to this software under copyright law.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
- * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
- * PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES
- * OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- * For more information, please refer to: https://unlicense.org/
-*/
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
-public class LoggerImplTest {  
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+public class LoggerImplTest {
+
+    private Logger logger;
+
+    @BeforeEach
+    public void setUp() {
+        logger = new LoggerImpl("TestLogger");
+    }
+
+    @Test
+    public void testLoggerConstruction() {
+        assertNotNull(logger, "Logger should be constructed successfully");
+    }
+
+    @Test
+    public void testTraceLogging() {
+        assertDoesNotThrow(() -> logger.trace("Trace message"), "Trace logging should not throw exception");
+    }
+
+    @Test
+    public void testDebugLogging() {
+        assertDoesNotThrow(() -> logger.debug("Debug message"), "Debug logging should not throw exception");
+    }
+
+    @Test
+    public void testInfoLogging() {
+        assertDoesNotThrow(() -> logger.info("Info message"), "Info logging should not throw exception");
+    }
+
+    @Test
+    public void testWarnLogging() {
+        assertDoesNotThrow(() -> logger.warn("Warning message"), "Warn logging should not throw exception");
+    }
+
+    @Test
+    public void testErrorLogging() {
+        assertDoesNotThrow(() -> logger.error("Error message"), "Error logging should not throw exception");
+    }
+
+    @Test
+    public void testTraceWithNull() {
+        assertDoesNotThrow(() -> logger.trace(null), "Trace logging with null should not throw exception");
+    }
+
+    @Test
+    public void testDebugWithNull() {
+        assertDoesNotThrow(() -> logger.debug(null), "Debug logging with null should not throw exception");
+    }
+
+    @Test
+    public void testInfoWithNull() {
+        assertDoesNotThrow(() -> logger.info(null), "Info logging with null should not throw exception");
+    }
+
+    @Test
+    public void testWarnWithNull() {
+        assertDoesNotThrow(() -> logger.warn(null), "Warn logging with null should not throw exception");
+    }
+
+    @Test
+    public void testErrorWithNull() {
+        assertDoesNotThrow(() -> logger.error(null), "Error logging with null should not throw exception");
+    }
+
+    @Test
+    public void testTraceWithEmptyString() {
+        assertDoesNotThrow(() -> logger.trace(""), "Trace logging with empty string should not throw exception");
+    }
+
+    @Test
+    public void testDebugWithEmptyString() {
+        assertDoesNotThrow(() -> logger.debug(""), "Debug logging with empty string should not throw exception");
+    }
+
+    @Test
+    public void testInfoWithEmptyString() {
+        assertDoesNotThrow(() -> logger.info(""), "Info logging with empty string should not throw exception");
+    }
+
+    @Test
+    public void testWarnWithEmptyString() {
+        assertDoesNotThrow(() -> logger.warn(""), "Warn logging with empty string should not throw exception");
+    }
+
+    @Test
+    public void testErrorWithEmptyString() {
+        assertDoesNotThrow(() -> logger.error(""), "Error logging with empty string should not throw exception");
+    }
+
+    @Test
+    public void testMultipleLogMessages() {
+        assertDoesNotThrow(() -> {
+            logger.trace("First trace");
+            logger.debug("First debug");
+            logger.info("First info");
+            logger.warn("First warn");
+            logger.error("First error");
+        }, "Multiple log messages should not throw exception");
+    }
 }

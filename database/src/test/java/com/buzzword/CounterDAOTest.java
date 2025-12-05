@@ -1,26 +1,5 @@
 package com.buzzword;
 
-/*
- * This is free and unencumbered software released into the public domain.
- * Anyone is free to copy, modify, publish, use, compile, sell, or distribute this software,
- * either in source code form or as a compiled binary, for any purpose, commercial or
- * non-commercial, and by any means.
- *
- * In jurisdictions that recognize copyright laws, the author or authors of this
- * software dedicate any and all copyright interest in the software to the public domain.
- * We make this dedication for the benefit of the public at large and to the detriment of
- * our heirs and successors. We intend this dedication to be an overt act of relinquishment in
- * perpetuity of all present and future rights to this software under copyright law.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
- * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
- * PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES
- * OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- * For more information, please refer to: https://unlicense.org/
-*/
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -163,5 +142,77 @@ public class CounterDAOTest {
             .thenReturn(null);
 
         assertThrows(RecordDoesNotExistException.class, () -> counterDAO.getNextReviewFlagId(0));
+    }
+
+    @Test
+    void removeResourceCountersDeletesCounters() {
+        counterDAO.removeResourceCounters(5);
+
+        ArgumentCaptor<Bson> argCaptor = ArgumentCaptor.forClass(Bson.class);
+        verify(testCollection, times(1)).deleteOne(argCaptor.capture());
+    }
+
+    @Test
+    void multipleResourceIdsAreSequential() {
+        when(testCollection.findOneAndUpdate(any(Bson.class), any(Bson.class), any(FindOneAndUpdateOptions.class)))
+            .thenReturn(new Document("_id", "resourceIdCounter").append("count", 1))
+            .thenReturn(new Document("_id", "resourceIdCounter").append("count", 2))
+            .thenReturn(new Document("_id", "resourceIdCounter").append("count", 3));
+
+        int id1 = counterDAO.getNextResourceId();
+        int id2 = counterDAO.getNextResourceId();
+        int id3 = counterDAO.getNextResourceId();
+
+        assertEquals(1, id1);
+        assertEquals(2, id2);
+        assertEquals(3, id3);
+    }
+
+    @Test
+    void multipleCommentIdsAreSequential() {
+        when(testCollection.findOneAndUpdate(any(Bson.class), any(Bson.class), any(FindOneAndUpdateOptions.class)))
+            .thenReturn(new Document("_id", 0).append("commentCount", 0).append("upvoteCount", 0).append("flagCount", 0))
+            .thenReturn(new Document("_id", 0).append("commentCount", 1).append("upvoteCount", 0).append("flagCount", 0))
+            .thenReturn(new Document("_id", 0).append("commentCount", 2).append("upvoteCount", 0).append("flagCount", 0));
+
+        int id1 = counterDAO.getNextCommentId(0);
+        int id2 = counterDAO.getNextCommentId(0);
+        int id3 = counterDAO.getNextCommentId(0);
+
+        assertEquals(0, id1);
+        assertEquals(1, id2);
+        assertEquals(2, id3);
+    }
+
+    @Test
+    void multipleUpvoteIdsAreSequential() {
+        when(testCollection.findOneAndUpdate(any(Bson.class), any(Bson.class), any(FindOneAndUpdateOptions.class)))
+            .thenReturn(new Document("_id", 0).append("commentCount", 0).append("upvoteCount", 0).append("flagCount", 0))
+            .thenReturn(new Document("_id", 0).append("commentCount", 0).append("upvoteCount", 1).append("flagCount", 0))
+            .thenReturn(new Document("_id", 0).append("commentCount", 0).append("upvoteCount", 2).append("flagCount", 0));
+
+        int id1 = counterDAO.getNextUpvoteId(0);
+        int id2 = counterDAO.getNextUpvoteId(0);
+        int id3 = counterDAO.getNextUpvoteId(0);
+
+        assertEquals(0, id1);
+        assertEquals(1, id2);
+        assertEquals(2, id3);
+    }
+
+    @Test
+    void multipleFlagIdsAreSequential() {
+        when(testCollection.findOneAndUpdate(any(Bson.class), any(Bson.class), any(FindOneAndUpdateOptions.class)))
+            .thenReturn(new Document("_id", 0).append("commentCount", 0).append("upvoteCount", 0).append("flagCount", 0))
+            .thenReturn(new Document("_id", 0).append("commentCount", 0).append("upvoteCount", 0).append("flagCount", 1))
+            .thenReturn(new Document("_id", 0).append("commentCount", 0).append("upvoteCount", 0).append("flagCount", 2));
+
+        int id1 = counterDAO.getNextReviewFlagId(0);
+        int id2 = counterDAO.getNextReviewFlagId(0);
+        int id3 = counterDAO.getNextReviewFlagId(0);
+
+        assertEquals(0, id1);
+        assertEquals(1, id2);
+        assertEquals(2, id3);
     }
 }
