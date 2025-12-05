@@ -96,7 +96,8 @@ public class FlagDAOImpl implements FlagDAO {
             .append("firstName", user.getFirstName())
             .append("lastName", user.getLastName())
             .append("contents", flag.getContents())
-            .append("dateCreated", flag.getCreationDate());
+            .append("dateCreated", flag.getCreationDate())
+            .append("isEdited", flag.getIsEdited());
 
         // Insert the flag document into the collection
         flags.insertOne(flagDoc);

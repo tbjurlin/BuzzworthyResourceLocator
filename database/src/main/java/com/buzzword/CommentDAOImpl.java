@@ -96,7 +96,8 @@ public class CommentDAOImpl implements CommentDAO {
             .append("firstName", user.getFirstName())
             .append("lastName", user.getLastName())
             .append("contents", comment.getContents())
-            .append("dateCreated", comment.getCreationDate());  // Set current timestamp
+            .append("dateCreated", comment.getCreationDate())
+            .append("isEdited", comment.getIsEdited());
 
         // Push the comment into the resource's comments array
         comments.insertOne(commentDoc);

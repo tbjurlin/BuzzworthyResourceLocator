@@ -261,6 +261,7 @@ public class ResourceDAOImpl implements ResourceDAO {
         resource.setCreationDate(doc.getDate("dateCreated"));
         resource.setFirstName(doc.getString("firstName"));
         resource.setLastName(doc.getString("lastName"));
+        resource.setIsEdited(doc.getBoolean("isEdited", false));
         return resource;
     }
 
