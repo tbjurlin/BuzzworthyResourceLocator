@@ -147,7 +147,7 @@ public class FlagDAOImpl implements FlagDAO {
                         Filters.eq("resourceId", resourceId));
         Bson updateFlag = Updates.combine(
                             Updates.set("contents", flag.getContents()),
-                            Updates.set("isUpdated", true));
+                            Updates.set("isEdited", true));
 
         // Update the flag document
         UpdateResult result = flags.updateOne(filter, updateFlag);

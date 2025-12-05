@@ -115,7 +115,7 @@ public class ResourceDAOImpl implements ResourceDAO {
             .append("firstName", user.getFirstName())
             .append("lastName", user.getLastName())
             .append("dateCreated", resource.getCreationDate())
-            .append("isUpdated", resource.getIsEdited());
+            .append("isEdited", resource.getIsEdited());
 
         // Push the resource into the resources collection
         resources.insertOne(resourceDoc);
@@ -170,7 +170,7 @@ public class ResourceDAOImpl implements ResourceDAO {
             Updates.set("title", resource.getTitle()),
             Updates.set("description", resource.getDescription()),
             Updates.set("url", resource.getUrl()),
-            Updates.set("isUpdated", true)
+            Updates.set("isEdited", true)
         );
         UpdateResult result = resources.updateOne(filter, updateResource);
 

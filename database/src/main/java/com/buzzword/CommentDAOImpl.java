@@ -147,7 +147,7 @@ public class CommentDAOImpl implements CommentDAO {
                         Filters.eq("resourceId", resourceId));
         Bson updateComment = Updates.combine(
                                 Updates.set("contents", comment.getContents()),
-                                Updates.set("isUpdated", true));
+                                Updates.set("isEdited", true));
 
         UpdateResult result = comments.updateOne(filter, updateComment);
         if(result.getMatchedCount() == 0) {
