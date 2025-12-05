@@ -90,6 +90,7 @@ public class CommentDAOTest {
             .append("commentId", 1)
             .append("firstName", "Foo")
             .append("lastName", "Bar")
+            .append("isEdited", false)
             .append("dateCreated", Date.from(Instant.ofEpochSecond(946684800)))
             .append("contents", "Thanks for the suggestion!");
         Assertions.assertThat(capturedDoc)
@@ -123,6 +124,7 @@ public class CommentDAOTest {
             .append("firstName", "Foo")
             .append("creatorId", 1)
             .append("lastName", "Bar")
+            .append("isEdited", false)
             .append("dateCreated", Date.from(Instant.ofEpochSecond(946684800)))
             .append("contents", "Thanks for the suggestion!");
         Assertions.assertThat(capturedDoc)
@@ -156,6 +158,7 @@ public class CommentDAOTest {
             .append("firstName", "Foo")
             .append("creatorId", 1)
             .append("lastName", "Bar")
+            .append("isEdited", false)
             .append("dateCreated", Date.from(Instant.ofEpochSecond(946684800)))
             .append("contents", "Thanks for the suggestion!");
         Assertions.assertThat(capturedDoc)
@@ -191,6 +194,7 @@ public class CommentDAOTest {
             .append("creatorId", 2)
             .append("firstName", "Foo")
             .append("lastName", "Bar")
+            .append("isEdited", false)
             .append("dateCreated", Date.from(Instant.ofEpochSecond(946684800)))
             .append("contents", "Thanks for the suggestion!");
         when(mockIterable.first()).thenReturn(targetDocument);
