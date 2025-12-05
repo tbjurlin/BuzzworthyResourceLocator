@@ -278,6 +278,21 @@ public class ResourceDAOImpl implements ResourceDAO {
      * {@inheritDoc}
      */
     @Override
+    public Resource getResourceById(Credentials user, int id) {
+        Bson findById = Filters.eq("resourceId", id);
+        return listResources(user, findById, new Document())
+                .stream()
+                .findFirst()
+                .orElseThrow(() -> {
+                    logger.error(String.format("Resource %d not found for retrieval by user %d.", id, user.getId()));
+                    return new RecordDoesNotExistException("Resource not found.");
+                });
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public List<Resource> listResourcesByKeywords(Credentials user, KeywordList keywords) {
         // Check for null or empty keywords
         if(keywords == null || keywords.getKeywords().isEmpty()) {

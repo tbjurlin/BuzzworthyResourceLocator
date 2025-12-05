@@ -84,6 +84,41 @@ public class WikiEndpoint {
 
     /**
      * GET Request.
+     * Retrieve a single resource record from the database as a JSON object
+     * containing a Record object.
+     * 
+     * @param tokenStr A string representation of the user's Java Web Token (JWT).
+     * @param resourceId The index of the resource record to retrieve.
+     * @return ResponseEntity containing a JSON array of resources and HTTP status 200.
+     */
+    @GetMapping("resource/{resourceId}")
+    public ResponseEntity<String> retrieveResourceById(@Valid @RequestHeader("Bearer") String tokenStr, @PathVariable("resourceId") int resourceId) {
+        logger.info("HTTP GET request (retrieveAllResources) received.");
+        Token token = new Token();
+        token.setToken(tokenStr);
+        Authenticator auth = new AuthenticatorImpl(authServerUrl);
+        Credentials userCredentials = auth.authenticate(token);
+        ResourceDAO resourceDAO = new ResourceDAOImpl(databaseConnectionPool.getDatabaseConnection());
+        Resource resource = resourceDAO.getResourceById(userCredentials, resourceId);
+        if(resource == null) {
+            logger.error("Cannot return a null resource.");
+            throw new NullPointerException("Cannot return a null resource.");
+        }
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            String returnObj = objectMapper.writeValueAsString(resource);
+        
+            logger.info("Returning HTTP response code 200.");
+            return ResponseEntity.ok()
+                                 .contentType(MediaType.APPLICATION_JSON)
+                                 .body(returnObj);
+        } catch(JsonProcessingException e) {
+            throw new NullPointerException("Unable to parse JSON from list of resources.");
+        }
+    }
+
+    /**
+     * GET Request.
      * Retrieve all resource records from the database as a JSON object
      * containing a list of Record objects.
      * 
