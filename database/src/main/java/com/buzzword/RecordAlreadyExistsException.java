@@ -21,15 +21,33 @@ package com.buzzword;
  * For more information, please refer to: https://unlicense.org/
 */
 
+/**
+ * Exception thrown when attempting to create a record that already exists.
+ * <p>
+ * This runtime exception is thrown when database operations attempt to insert a duplicate
+ * record with a unique identifier that already exists in the database.
+ */
 public class RecordAlreadyExistsException extends RuntimeException {
+    /**
+     * Constructs a new RecordAlreadyExistsException with no detail message.
+     */
     public RecordAlreadyExistsException() {
         super();
     }
 
+    /**
+     * Constructs a new RecordAlreadyExistsException with the specified detail message.
+     * @param message the detail message
+     */
     public RecordAlreadyExistsException(String message) {
         super(message);
     }
 
+    /**
+     * Constructs a new RecordAlreadyExistsException with the specified detail message and cause.
+     * @param message the detail message
+     * @param cause the cause of the exception
+     */
     public RecordAlreadyExistsException(String message, Throwable cause) {
         super(message, cause);
     }

@@ -107,7 +107,7 @@ public class AuthenticatorTest {
             
             auth = new AuthenticatorImpl(mockAuthServerURL);
 
-            assertNotEquals(auth.Authenticate(testToken), null);
+            assertNotEquals(auth.authenticate(testToken), null);
         }
 
         @Test
@@ -124,7 +124,7 @@ public class AuthenticatorTest {
             auth = new AuthenticatorImpl(mockAuthServerURL);
 
             AuthenticationException e = assertThrows(AuthenticationException.class, 
-                      () -> auth.Authenticate(testToken));
+                      () -> auth.authenticate(testToken));
 
             System.out.println(e.getMessage());
         }
@@ -144,7 +144,7 @@ public class AuthenticatorTest {
             auth = new AuthenticatorImpl(mockAuthServerURL);
 
             AuthenticationException e = assertThrows(AuthenticationException.class, 
-                      () -> auth.Authenticate(null));
+                      () -> auth.authenticate(null));
 
             System.out.println(e.getMessage());
         }
@@ -163,7 +163,7 @@ public class AuthenticatorTest {
             auth = new AuthenticatorImpl(mockAuthServerURL);
 
             AuthenticationException e = assertThrows(AuthenticationException.class, 
-                      () -> auth.Authenticate(testToken));
+                      () -> auth.authenticate(testToken));
 
             System.out.println(e.getMessage());
         }

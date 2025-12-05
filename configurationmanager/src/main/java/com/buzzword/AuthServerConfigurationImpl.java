@@ -38,11 +38,12 @@ public class AuthServerConfigurationImpl implements AuthServerConfiguration {
     private XssSanitizer sanitizer = new XssSanitizerImpl();
 
     /**
-     * Constructs a AuthServerConfiguration using ConfigurationManager
+     * Constructs an AuthServerConfiguration using ConfigurationManager.
      * <p>
-     * Constructs a auth server configuration, reading configuration information from the
+     * Constructs an auth server configuration, reading configuration information from the
      * configuration manager. 
-     * @throws ConfigurationException If a field in the config file is invalid or missing.
+     * @param manager the configuration manager containing auth server information
+     * @throws ConfigurationException if a field in the config file is invalid or missing
      */
     public AuthServerConfigurationImpl(ConfigurationManager manager) {
         
@@ -54,10 +55,11 @@ public class AuthServerConfigurationImpl implements AuthServerConfiguration {
     }
 
     /**
-     * Create an auth server connection string.
-     * @param host the host URL of the auth server.
-     * @param port the port the auth server is hosted on.
-     * @throws ConfigurationException if any of the fields are invalid.
+     * Creates an auth server connection string.
+     * @param host the host URL of the auth server
+     * @param port the port the auth server is hosted on
+     * @param subdomain the subdomain path of the auth server
+     * @throws ConfigurationException if any of the fields are invalid
      */
     private void createAuthServerConnectionString(String host, String port, String subdomain) {
 

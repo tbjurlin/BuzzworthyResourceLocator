@@ -33,11 +33,11 @@ package com.buzzword;
 public interface Authenticator {
 
     /**
-     * Send a JSON Web Token (JWT) to an authentication server to be
-     * authenticated and return the corresponding user's credentials.
+     * Sends a JSON Web Token (JWT) to an authentication server to be
+     * authenticated and returns the corresponding user's credentials.
      * 
-     * @param token A Token object containing a user's JSON Web Token (JWT) obtained from the authentication server.
-     * @return A Credentials object storing the user's credentials.
+     * @param token a Token object containing a user's JSON Web Token (JWT) obtained from the authentication server
+     * @return a Credentials object storing the user's credentials
      */
-    Credentials Authenticate(Token token);
+    Credentials authenticate(Token token);
 }

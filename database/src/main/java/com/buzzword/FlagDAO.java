@@ -37,19 +37,31 @@ public interface FlagDAO {
     public void setCounterDAO(CounterDAO counterDAO);
 
     /**
-     * Adds a review flag to the databse for the specific resource for managerial review.
+     * Adds a review flag to the database for the specific resource for managerial review.
      * 
-     * @param user credentials of the user
-     * @param resource resource to be flagged for review
-    */
+     * @param user the credentials of the user adding the flag
+     * @param flag the review flag to be added
+     * @param resourceId the ID of the resource to be flagged for review
+     */
     void addReviewFlag(Credentials user, ReviewFlag flag, int resourceId);
 
     /**
-     * After a manager has reviewed the resouce, they can remove the review flag from the resource.
+     * Edits a review flag in the database for the specific resource for managerial review.
      * 
-     * @param user credentials of the user
-     * @param resource resource to have review flag removed
-    */
+     * @param user the credentials of the user editing the flag
+     * @param flagId the ID of the review flag to be edited
+     * @param flag the review flag containing updated information
+     * @param resourceId the ID of the resource containing the flag
+     */
+    void editReviewFlag(Credentials user, int flagId, ReviewFlag flag, int resourceId);
+
+    /**
+     * After a manager has reviewed the resource, they can remove the review flag from the resource.
+     * 
+     * @param user the credentials of the user removing the flag
+     * @param flagId the ID of the flag to be removed
+     * @param resourceId the ID of the resource to have the review flag removed
+     */
     void removeReviewFlag(Credentials user, int flagId, int resourceId);
 
 }

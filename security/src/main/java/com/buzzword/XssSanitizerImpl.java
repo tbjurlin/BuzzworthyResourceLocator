@@ -26,7 +26,7 @@ import org.jsoup.safety.Safelist;
 import org.apache.commons.text.StringEscapeUtils;
 
 /**
- *This is the utility class to sanitize String against XSS attacks.
+ * This is the utility class to sanitize strings against XSS attacks.
  * 
  * @author Janniebeth Melendez
  * @version 1.0
@@ -38,6 +38,12 @@ public class XssSanitizerImpl
 
     private Safelist rules = null;
 
+    /**
+     * Constructs a new XssSanitizerImpl with default rules.
+     * <p>
+     * Initializes the sanitizer with Safelist.none() as the default rule set,
+     * which removes all HTML tags.
+     */
     public XssSanitizerImpl()
     {
         logger.debug("Starting constructor");
@@ -47,21 +53,21 @@ public class XssSanitizerImpl
     }
 
     /**
-     *{@inheritDoc}
-	 */
-	@Override
-	public Safelist getRules()
-	{
-		logger.debug("Returnung the current rules: " + rules.toString());
-		return rules;
-	}
+     * {@inheritDoc}
+     */
+    @Override
+    public Safelist getRules()
+    {
+        logger.debug("Returning the current rules: " + rules.toString());
+        return rules;
+    }
 
     /**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void setRules(final Safelist rulesIn)
-	{
+     * {@inheritDoc}
+     */
+    @Override
+    public void setRules(final Safelist rulesIn)
+    {
 		logger.debug("Setting the rules");
 		if (rulesIn == null)
 		{
@@ -94,6 +100,7 @@ public class XssSanitizerImpl
     /**
      * {@inheritDoc}
      */
+    @Override
     public String sanitizeOutput(final String input)
     {
         logger.debug("Sanitizing output");

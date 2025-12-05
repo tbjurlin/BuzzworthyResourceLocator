@@ -21,15 +21,34 @@ package com.buzzword;
  * For more information, please refer to: https://unlicense.org/
 */
 
+/**
+ * Exception thrown when attempting to access or modify a record that does not exist.
+ * <p>
+ * This runtime exception is thrown when database operations fail to find the requested
+ * record, such as when trying to update, delete, or retrieve a non-existent resource,
+ * comment, or other database entity.
+ */
 public class RecordDoesNotExistException extends RuntimeException {
+    /**
+     * Constructs a new RecordDoesNotExistException with no detail message.
+     */
     public RecordDoesNotExistException() {
         super();
     }
 
+    /**
+     * Constructs a new RecordDoesNotExistException with the specified detail message.
+     * @param message the detail message
+     */
     public RecordDoesNotExistException(String message) {
         super(message);
     }
 
+    /**
+     * Constructs a new RecordDoesNotExistException with the specified detail message and cause.
+     * @param message the detail message
+     * @param cause the cause of the exception
+     */
     public RecordDoesNotExistException(String message, Throwable cause) {
         super(message, cause);
     }

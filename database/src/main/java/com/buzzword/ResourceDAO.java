@@ -34,27 +34,48 @@ public interface ResourceDAO {
     /**
      * A contributor or admin may insert a resource into the database.
      * <p>
-     * This resource contains information such as a title, the description, and Url link.
-     * It will also contain the id of the user who uploaded the resource as well as it's date of creation.
+     * This resource contains information such as a title, the description, and URL link.
+     * It will also contain the ID of the user who uploaded the resource as well as its date of creation.
      * 
-     * @param user credentials of the user
-     * @param resource resource to be inserted
-    */
+     * @param user the credentials of the user inserting the resource
+     * @param resource the resource to be inserted
+     */
     void insertResource(Credentials user, Resource resource);
+
+    /**
+     * A contributor may update their own resource or an admin may update any resource.
+     * <p>
+     * This resource contains information such as a title, the description, and URL link.
+     * It will also contain the ID of the user who uploaded the resource as well as its date of creation.
+     * 
+     * @param user the credentials of the user editing the resource
+     * @param id the ID of the resource to be edited
+     * @param resource the resource containing updated information
+     */
+    void editResource(Credentials user, int id, Resource resource);
 
     /**
      * A contributor may delete their own resource or an admin may remove any resource.
      * 
-     * @param user credentials of the user
-     * @param resource resource to be removed
-    */
+     * @param user the credentials of the user removing the resource
+     * @param id the ID of the resource to be removed
+     */
     void removeResource(Credentials user, int id);
 
     /**
-     * List all resources available in the system.
+     * Lists all resources available in the system.
      * 
-     * @param user credentials of the user
+     * @param user the credentials of the user requesting the list
      * @return list of all resources
-    */
+     */
     List<Resource> listAllResources(Credentials user);
+
+    /**
+     * Lists all resources available in the system, filtered by keywords.
+     * 
+     * @param user the credentials of the user requesting the list
+     * @param keywords the list of keywords to filter resources by
+     * @return list of filtered resources
+     */
+    List<Resource> listResourcesByKeywords(Credentials user, KeywordList keywords);
 }

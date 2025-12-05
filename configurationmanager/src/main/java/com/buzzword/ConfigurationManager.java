@@ -80,7 +80,7 @@ public interface ConfigurationManager {
     public abstract String getAuthServerPort();
 
     /**
-     * Gets the auth server subdomin from the config file. 
+     * Gets the auth server subdomain from the config file. 
      * @return the auth server subdomain
      */
     public abstract String getAuthServerSubdomain();

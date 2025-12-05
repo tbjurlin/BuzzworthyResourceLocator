@@ -34,6 +34,13 @@ public class CounterDAOImpl implements CounterDAO {
 
     private MongoCollection<Document> counterCollection;
 
+    /**
+     * Constructs a CounterDAOImpl with the specified MongoDB database.
+     * <p>
+     * Initializes the counters collection for managing record IDs.
+     * 
+     * @param db the MongoDB database to use for data access
+     */
     public CounterDAOImpl(MongoDatabase db) {
         counterCollection = db.getCollection("counters");
     }

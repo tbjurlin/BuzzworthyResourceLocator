@@ -47,40 +47,43 @@ public class Token {
      */
     private String token;
 
+    /**
+     * Constructs a new Token object with default values.
+     */
     public Token() {}
 
     /**
-     * Getter for the token.
+     * Gets the token.
      * 
-     * @return validated JWT token.
+     * @return the validated JWT token
      */
     public String getToken() {
         return token;
     }
 
     /**
-     * Setter for the token.
+     * Sets the token.
      * <p>
-     * Sanitizes token and validates according to the following rules:
+     * Sanitizes the token and validates according to the following rules:
      * The token must be between 250 and 400 characters.
-     * <p>
-     * @param token The token to be sanitized and validated.
-     * @throws IllegalArgumentException when validation fails.
+     * 
+     * @param token the token to be sanitized and validated
+     * @throws IllegalArgumentException when validation fails
      */
     public void setToken(String token) throws IllegalArgumentException {
 
         if (token == null) {
-            logger.error("No authentication token recieved.");
-            throw new IllegalArgumentException("No authentication token recieved.");
+            logger.error("No authentication token received.");
+            throw new IllegalArgumentException("No authentication token received.");
         }
 
         String safeToken = sanitizer.sanitizeInput(token);
 
         if (safeToken.length() < 250) {
-            logger.error("Authentication token recieved is too short.");
+            logger.error("Authentication token received is too short.");
             throw new IllegalArgumentException("JWT token is too short.");
         } else if (safeToken.length() > 400) {
-            logger.error("Authentication token recieved is too long.");
+            logger.error("Authentication token received is too long.");
             throw new IllegalArgumentException("JWT token is too long.");
         }
 

@@ -46,10 +46,10 @@ public class DatabaseConnectionPool {
     private MongoClient client;
 
     /**
-     * Gets an a reference to the database connection pool.
-     * @return a refernece to the database connection pool singleton instance
-     * @throws IllegalArgumentException
-     * @throws IOException
+     * Gets a reference to the database connection pool.
+     * @return a reference to the database connection pool singleton instance
+     * @throws IllegalArgumentException if a configuration field is invalid
+     * @throws IOException if the configuration file does not exist
      */
     public static DatabaseConnectionPool getInstance() throws IllegalArgumentException, IOException {
         if (instance == null) {
@@ -59,9 +59,9 @@ public class DatabaseConnectionPool {
     }
 
     /**
-     * Constructs a mongo database client using settings contained in the configuration file.
-     * @throws IllegalArgumentException when config field is invalid.
-     * @throws IOException when config file does not exist.
+     * Constructs a Mongo database client using settings contained in the configuration file.
+     * @throws IllegalArgumentException when a config field is invalid
+     * @throws IOException when the config file does not exist
      */
     private DatabaseConnectionPool() throws IllegalArgumentException, IOException {
 
@@ -92,5 +92,15 @@ public class DatabaseConnectionPool {
         logger.info(String.format("Acquired database %s", config.getDatabaseName()));
         return db;
     }
-    
+
+    /**
+     * Closes the MongoDB client and releases all connections.
+     * Should be called on application shutdown.
+     */
+    public void close() {
+        if (client != null) {
+            client.close();
+            logger.info("MongoDB client closed and connections released.");
+        }
+    }
 }

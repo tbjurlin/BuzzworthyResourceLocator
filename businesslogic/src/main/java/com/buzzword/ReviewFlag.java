@@ -22,7 +22,12 @@ package com.buzzword;
 */
 
 /**
- * ReviewFlag class
+ * The ReviewFlag class represents a flag for content review extending the Comment class.
+ * <p>
+ * A review flag is used to mark content that requires administrative review or attention.
+ * 
+ * @author Dennis Shelby
+ * @version 1.0
  */
 public class ReviewFlag extends Comment{
     

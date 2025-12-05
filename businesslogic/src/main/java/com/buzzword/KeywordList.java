@@ -1,0 +1,102 @@
+package com.buzzword;
+
+/*
+ * This is free and unencumbered software released into the public domain.
+ * Anyone is free to copy, modify, publish, use, compile, sell, or distribute this software,
+ * either in source code form or as a compiled binary, for any purpose, commercial or
+ * non-commercial, and by any means.
+ *
+ * In jurisdictions that recognize copyright laws, the author or authors of this
+ * software dedicate any and all copyright interest in the software to the public domain.
+ * We make this dedication for the benefit of the public at large and to the detriment of
+ * our heirs and successors. We intend this dedication to be an overt act of relinquishment in
+ * perpetuity of all present and future rights to this software under copyright law.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+ * PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES
+ * OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * For more information, please refer to: https://unlicense.org/
+*/
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+/**
+ * The KeywordList class manages a list of sanitized keywords for searching and tagging.
+ * <p>
+ * Keywords are automatically sanitized, trimmed, and converted to lowercase.
+ * 
+ * @author Ben Edens
+ * @version 1.0
+ */
+public class KeywordList {
+    @JsonIgnore
+    private List<String> keywordList;
+    private final int MAX_KEYWORDS = 100;
+
+    private final XssSanitizer resourceSanitizer;
+    private final Logger logger = LoggerFactory.getEventLogger();
+
+    /**
+     * Constructs a new KeywordList with an empty list of keywords.
+     */
+    public KeywordList() {
+        this.resourceSanitizer = new XssSanitizerImpl();
+        this.keywordList = new ArrayList<>();
+    }
+
+    /**
+     * Constructs a new KeywordList and populates it with the provided keywords.
+     * <p>
+     * Keywords are parsed from a space-separated string.
+     * 
+     * @param keywords a space-separated string of keywords
+     */
+    public KeywordList(String keywords) {
+        this();
+        setKeywords(keywords);
+    }
+
+    /**
+     * Gets the list of keywords.
+     * 
+     * @return the list of keywords
+     */
+    public List<String> getKeywords() {
+        return keywordList;
+    }
+
+    /**
+     * Sets the keywords from a space-separated string.
+     * <p>
+     * Each keyword is sanitized, trimmed, and converted to lowercase before being added.
+     * A maximum of 100 keywords are allowed.
+     * 
+     * @param keywords a space-separated string of keywords
+     */
+    public void setKeywords(String keywords) {
+        String[] splitKeywords = keywords.split(" ", MAX_KEYWORDS);
+        for (String keyword : splitKeywords) {
+            this.keywordList.add(resourceSanitizer.sanitizeInput(keyword.trim().toLowerCase()));
+        }
+    }
+
+    /**
+     * Returns a string representation of all keywords separated by spaces.
+     * 
+     * @return a space-separated string of keywords
+     */
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for (String keyword : keywordList) {
+            sb.append(keyword).append(" ");
+        }
+        return sb.toString().trim();
+    }
+}

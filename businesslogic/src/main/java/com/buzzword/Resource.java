@@ -29,9 +29,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * The Resource class creates a REsource object that holds the title, 
- * descripiton and URL of a resource as well as all fields from the Record 
+ * The Resource class creates a Resource object that holds the title, 
+ * description and URL of a resource as well as all fields from the Record 
  * class.
+ * 
+ * @author Dennis Shelby
+ * @version 1.0
  */
 public class Resource extends Record {
     private String title; 
@@ -41,14 +44,22 @@ public class Resource extends Record {
     private List<Comment> comments; 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private List<ReviewFlag> reviewFlags;
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @JsonIgnore
     private List<Upvote> upvotes;
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private int upvoteCount;
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private boolean upvotedByCurrentUser;
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private int currentUserUpvoteId;
 
     private final XssSanitizer resourceSanitizer;
 
     private final Logger logger = LoggerFactory.getEventLogger();
 
-    /* Constructor */
+    /**
+     * Constructs a new Resource object with default values.
+     */
     public Resource() {
         super(); // Call the parent constructor (i.e. Record)
         resourceSanitizer = new XssSanitizerImpl(); // Initialize the sanitizer
@@ -56,11 +67,10 @@ public class Resource extends Record {
 
 
     /**
-     * <p>
-     * Will validate and sanitize the Title for the resource before accepting and setting it. 
-     * The Title must not be null, empty, or exceed 64 characters, and should be at least 1 character.
-     * </p>
+     * Validates and sanitizes the title for the resource before accepting and setting it. 
+     * The title must not be null, empty, or exceed 64 characters, and should be at least 1 character.
      * 
+     * @param title the title to validate
      * @return sanitized and validated title string    
      */
     private String validateTitle(final String title) {
@@ -89,10 +99,24 @@ public class Resource extends Record {
         
         return sanitizedTitle;
     }
+
+    /**
+     * Gets the title of the resource.
+     * 
+     * @return the resource title
+     */
     public String getTitle() {
         logger.debug("returning the title: " + title);
         return title;
     }
+
+    /**
+     * Sets the title of the resource.
+     * <p>
+     * The title will be validated and sanitized before being set.
+     * 
+     * @param title the resource title to set
+     */
     public void setTitle(String title) {
         logger.debug("setting the title");
         this.title = validateTitle(title);
@@ -100,14 +124,13 @@ public class Resource extends Record {
 
 
     /** 
-     *<p>
-     Will validate and sanitize the Url for the resource before accepting and setting it.
-     *This includes checking that the URL is well-formed and uses either the HTTP or HTTPS protocol. 
-     As well as making sure it is not null or empty.
-     * </p> 
+     * Validates and sanitizes the URL for the resource before accepting and setting it.
+     * This includes checking that the URL is well-formed and uses either the HTTP or HTTPS protocol,
+     * as well as making sure it is not null or empty.
      * 
+     * @param url the URL to validate
      * @return sanitized and validated URL string
-    */
+     */
     private String validateUrl(final String url) {
         if (url == null) {
             logger.error("URL must not be null");
@@ -129,10 +152,24 @@ public class Resource extends Record {
         }
         return sanitizedUrl;
     }
+
+    /**
+     * Gets the URL of the resource.
+     * 
+     * @return the resource URL
+     */
     public String getUrl() {
         logger.debug("returning the url: " + url);
         return url;
     }
+
+    /**
+     * Sets the URL of the resource.
+     * <p>
+     * The URL will be validated and sanitized before being set.
+     * 
+     * @param url the resource URL to set
+     */
     public void setUrl(String url) {
         logger.debug("setting the url");
         this.url = validateUrl(url);
@@ -140,10 +177,9 @@ public class Resource extends Record {
 
 
     /**
-     * <p>
-     * Will validate and sanitize the Description for the resource before accepting and setting it.
-     * </p>
+     * Validates and sanitizes the description for the resource before accepting and setting it.
      * 
+     * @param description the description to validate
      * @return sanitized and validated description string
      */
     private String validateDescription(final String description) {
@@ -161,10 +197,24 @@ public class Resource extends Record {
 
         return sanitizedDescription;
     }
+
+    /**
+     * Gets the description of the resource.
+     * 
+     * @return the resource description
+     */
     public String getDescription() {
         logger.debug("returning the description");
         return description;
     }
+
+    /**
+     * Sets the description of the resource.
+     * <p>
+     * The description will be validated and sanitized before being set.
+     * 
+     * @param description the resource description to set
+     */
     public void setDescription(String description) {
         logger.debug("setting the description");
         this.description = validateDescription(description);
@@ -172,12 +222,10 @@ public class Resource extends Record {
 
 
     /**
-     * <p>
      * Ensures that the comments list is not null before setting it.
-     * </p>
      * 
-     * @param comments
-     * @return
+     * @param comments the list of comments to validate
+     * @return the validated comments list
      */
     private List<Comment> validateComments(final List<Comment> comments) {
         if (comments == null) {
@@ -185,22 +233,35 @@ public class Resource extends Record {
             throw new IllegalArgumentException("Comments must not be null.");
         }
         return comments;
-    } 
+    }
+
+    /**
+     * Gets the list of comments associated with this resource.
+     * 
+     * @return the list of comments
+     */
     public List<Comment> getComments() {
         logger.debug("returning the comment list");
         return comments;
     }
+
+    /**
+     * Sets the list of comments for this resource.
+     * <p>
+     * The comments list will be validated before being set.
+     * 
+     * @param comments the list of comments to set
+     */
     public void setComments(List<Comment> comments) {
         logger.debug("setting the comment list");
         this.comments = validateComments(comments);
     }
 
     /**
-     * <p>
      * Ensures that the reviewFlags list is not null before setting it.
-     * </p>
      * 
-     * @param reviewFlags
+     * @param reviewFlags the list of review flags to validate
+     * @return the validated review flags list
      */
     private List<ReviewFlag> validateReviewFlags(final List<ReviewFlag> reviewFlags) {
         if (reviewFlags == null) {
@@ -209,21 +270,34 @@ public class Resource extends Record {
         }
         return reviewFlags;
     }
+
+    /**
+     * Gets the list of review flags associated with this resource.
+     * 
+     * @return the list of review flags
+     */
     public List<ReviewFlag> getReviewFlags() {
         logger.debug("returning the review flags list");
         return reviewFlags;
     }
+
+    /**
+     * Sets the list of review flags for this resource.
+     * <p>
+     * The review flags list will be validated before being set.
+     * 
+     * @param reviewFlags the list of review flags to set
+     */
     public void setReviewFlags(List<ReviewFlag> reviewFlags) {
         logger.debug("setting the review flags list");
         this.reviewFlags = validateReviewFlags(reviewFlags);
     }
 
     /**
-     * <p>
      * Ensures that the upvotes list is not null before setting it.
-     * </p>
      * 
-     * @param upvotes
+     * @param upvotes the list of upvotes to validate
+     * @return the validated upvotes list
      */
     private List<Upvote> validateUpvotes(final List<Upvote> upvotes)
     {
@@ -233,13 +307,138 @@ public class Resource extends Record {
         }
         return upvotes;
     }
+
+    /**
+     * Gets the list of upvotes associated with this resource.
+     * 
+     * @return the list of upvotes
+     */
     public List<Upvote> getUpvotes() {
         logger.debug("returning the upvotes list");
         return upvotes;
     }
+
+    /**
+     * Sets the list of upvotes for this resource.
+     * <p>
+     * The upvotes list will be validated before being set.
+     * 
+     * @param upvotes the list of upvotes to set
+     */
     public void setUpvotes(List<Upvote> upvotes) {
         logger.debug("setting the upvotes list");
         this.upvotes = validateUpvotes(upvotes);
     }
 
+    /**
+     * Ensures that the upvote count is not negative before setting it.
+     * 
+     * @param upvoteCount the upvote count to validate
+     * @return the validated upvote count
+     */
+    private int validateUpvoteCount(final int upvoteCount)
+    {
+        if (upvoteCount < 0) {
+            logger.error("Upvote count must not be negative");
+            throw new IllegalArgumentException("Upvote count must not be negative.");
+        }
+        return upvoteCount;
+    }
+
+    /**
+     * Gets the total count of upvotes for this resource.
+     * 
+     * @return the upvote count
+     */
+    public int getUpvoteCount() {
+        logger.debug("returning the upvote count");
+        return upvoteCount;
+    }
+
+    /**
+     * Sets the upvote count for this resource.
+     * <p>
+     * The upvote count will be validated before being set.
+     * 
+     * @param upvoteCount the upvote count to set
+     */
+    public void setUpvoteCount(int upvoteCount) {
+        logger.debug("setting the upvote count");
+        this.upvoteCount = validateUpvoteCount(upvoteCount);
+    }
+
+    /**
+     * Increments the upvote count by one.
+     */
+    public void incrementUpvoteCount() {
+        this.upvoteCount++;
+    }
+
+    /**
+     * Decrements the upvote count by one.
+     * <p>
+     * If the upvote count is already zero, the operation is ignored and a warning is logged.
+     */
+    public void decrementUpvoteCount() {
+        if (this.upvoteCount > 0) {
+            this.upvoteCount--;
+        } else {
+            logger.warn("Attempted to decrement upvote count below zero. Operation ignored.");
+        }
+    }
+
+    /**
+     * Checks if the current user has upvoted this resource.
+     * 
+     * @return true if the current user upvoted this resource, false otherwise
+     */
+    public boolean getUpvotedByCurrentUser() {
+        return upvotedByCurrentUser;
+    }
+
+    /**
+     * Sets whether the current user has upvoted this resource.
+     * 
+     * @param upvotedByCurrentUser true if the current user upvoted, false otherwise
+     */
+    public void setUpvotedByCurrentUser(boolean upvotedByCurrentUser) {
+        this.upvotedByCurrentUser = upvotedByCurrentUser;
+    }
+
+    /**
+     * Ensures that the current user upvote ID is not negative before setting it.
+     * 
+     * @param currentUserUpvoteId the current user upvote ID to validate
+     * @return the validated current user upvote ID
+     */
+    private int validateCurrentUserUpvoteId(final int currentUserUpvoteId)
+    {
+        if (currentUserUpvoteId < -1) {
+            logger.error("Current user upvote ID must not be less than -1");
+            throw new IllegalArgumentException("Current user upvote ID must not be less than -1.");
+        }
+        return currentUserUpvoteId;
+    }
+
+    /**
+     * Gets the ID of the upvote created by the current user for this resource.
+     * 
+     * @return the current user's upvote ID, or -1 if not upvoted
+     */
+    public int getCurrentUserUpvoteId() {
+        logger.debug("returning the current user upvote ID");
+        return currentUserUpvoteId;
+    }
+
+    /**
+     * Sets the ID of the upvote created by the current user for this resource.
+     * <p>
+     * The ID will be validated before being set.
+     * 
+     * @param currentUserUpvoteId the current user's upvote ID to set
+     */
+    public void setCurrentUserUpvoteId(int currentUserUpvoteId) {
+        logger.debug("setting the current user upvote ID");
+        this.currentUserUpvoteId = validateCurrentUserUpvoteId(currentUserUpvoteId);
+    }
 }

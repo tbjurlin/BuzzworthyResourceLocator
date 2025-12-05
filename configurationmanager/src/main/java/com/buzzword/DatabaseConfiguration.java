@@ -24,7 +24,7 @@ package com.buzzword;
 /**
  * The database configuration information.
  * <p>
- * Retreives information from the configuration files and constructs a database connection string.
+ * Retrieves information from the configuration files and constructs a database connection string.
  * @author Ted Bjurlin
  */
 public interface DatabaseConfiguration {

@@ -44,11 +44,12 @@ public class DatabaseConfigurationImpl implements DatabaseConfiguration {
     private XssSanitizer sanitizer = new XssSanitizerImpl();
 
     /**
-     * Constructs a DatabaseConfiguration using ConfigurationManager
+     * Constructs a DatabaseConfiguration using ConfigurationManager.
      * <p>
      * Constructs a database configuration, reading configuration information from the
      * configuration manager. 
-     * @throws ConfigurationException If a field in the config file is invalid or missing.
+     * @param manager the configuration manager containing database configuration
+     * @throws ConfigurationException if a field in the config file is invalid or missing
      */
     public DatabaseConfigurationImpl(ConfigurationManager manager) {
         
@@ -67,7 +68,7 @@ public class DatabaseConfigurationImpl implements DatabaseConfiguration {
     }
 
     /**
-     * Create a database connection string.
+     * Creates a database connection string.
      * <p>
      * Creates a standard URL encoded database connection string for a standalone, self-hosted MongoDB database. Business rules:
      * <ul>
@@ -77,11 +78,11 @@ public class DatabaseConfigurationImpl implements DatabaseConfiguration {
      * <li> Port must be an integer number between 1 and 65535. </li>
      * <li> Password must be URL encoded using UTF-8. </li>
      * </ul>
-     * @param userName the name of the database user.
-     * @param password the password of the database user.
-     * @param host the host URL of the database.
-     * @param port the port the databse is hosted on.
-     * @throws ConfigurationException if any of the fields are invalid.
+     * @param userName the name of the database user
+     * @param password the password of the database user
+     * @param host the host URL of the database
+     * @param port the port the database is hosted on
+     * @throws ConfigurationException if any of the fields are invalid
      */
     private void createDatabaseConnectionString(String userName, String password, String host, String port) {
 
@@ -209,8 +210,8 @@ public class DatabaseConfigurationImpl implements DatabaseConfiguration {
     }
 
     /**
-     * Setter for the database name.
-     * @param databaseName the name of the database.
+     * Sets the database name.
+     * @param databaseName the name of the database
      */
     private void setDatabaseName(String databaseName) {
         if (databaseName == null) {

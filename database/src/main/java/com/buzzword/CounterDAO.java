@@ -30,8 +30,8 @@ package com.buzzword;
 public interface CounterDAO {
     
     /**
-     * Removes the id tracking document for the target resource
-     * @param resourceId
+     * Removes the ID tracking document for the target resource.
+     * @param resourceId the ID of the resource whose counters should be removed
      */
     public void removeResourceCounters(int resourceId);
 
@@ -43,21 +43,21 @@ public interface CounterDAO {
 
     /**
      * Gets the next available comment ID for the given resource.
-     * @param resourceId
+     * @param resourceId the ID of the resource
      * @return an available comment ID
      */
     public int getNextCommentId(int resourceId);
 
     /**
      * Gets the next available flag ID for the given resource.
-     * @param resourceId
+     * @param resourceId the ID of the resource
      * @return an available flag ID
      */
     public int getNextReviewFlagId(int resourceId);
 
     /**
      * Gets the next available upvote ID for the given resource.
-     * @param resourceId
+     * @param resourceId the ID of the resource
      * @return an available upvote ID
      */
     public int getNextUpvoteId(int resourceId);

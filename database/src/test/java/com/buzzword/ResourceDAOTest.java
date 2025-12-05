@@ -1,26 +1,5 @@
 package com.buzzword;
 
-/*
- * This is free and unencumbered software released into the public domain.
- * Anyone is free to copy, modify, publish, use, compile, sell, or distribute this software,
- * either in source code form or as a compiled binary, for any purpose, commercial or
- * non-commercial, and by any means.
- *
- * In jurisdictions that recognize copyright laws, the author or authors of this
- * software dedicate any and all copyright interest in the software to the public domain.
- * We make this dedication for the benefit of the public at large and to the detriment of
- * our heirs and successors. We intend this dedication to be an overt act of relinquishment in
- * perpetuity of all present and future rights to this software under copyright law.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
- * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
- * PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES
- * OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- * For more information, please refer to: https://unlicense.org/
-*/
-
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
@@ -97,9 +76,10 @@ public class ResourceDAOTest {
         when(mockCredentials.getId()).thenReturn(1);
         when(mockCredentials.getSystemRole()).thenReturn("Admin");
 
-        DeleteResult mockResult = mock(DeleteResult.class);
-        when(mockResult.getDeletedCount()).thenReturn(0L);
-        when(resourceCollection.deleteOne(any(Bson.class))).thenReturn(mockResult);
+        @SuppressWarnings("unchecked")
+        FindIterable<Document> mockIterable = (FindIterable<Document>) mock(FindIterable.class);
+        when(mockIterable.first()).thenReturn(null);
+        when(resourceCollection.find(any(Bson.class))).thenReturn(mockIterable);
 
         assertThrows(RecordDoesNotExistException.class, () -> {
             resourceDAO.removeResource(mockCredentials, 1);
@@ -135,6 +115,7 @@ public class ResourceDAOTest {
             .append("resourceId", 1)
             .append("firstName", "Foo")
             .append("lastName", "Bar")
+            .append("isEdited", false)
             .append("title", "Title")
             .append("description", "Description")
             .append("dateCreated", Date.from(Instant.ofEpochSecond(946684800)))
@@ -171,6 +152,7 @@ public class ResourceDAOTest {
             .append("firstName", "Foo")
             .append("creatorId", 1)
             .append("lastName", "Bar")
+            .append("isEdited", false)
             .append("title", "Title")
             .append("description", "Description")
             .append("dateCreated", Date.from(Instant.ofEpochSecond(946684800)))
@@ -201,6 +183,19 @@ public class ResourceDAOTest {
         when(mockCredentials.getId()).thenReturn(1);
         when(mockCredentials.getSystemRole()).thenReturn("Admin");
 
+        @SuppressWarnings("unchecked")
+        FindIterable<Document> mockIterable = (FindIterable<Document>) mock(FindIterable.class);
+        Document targetDocument = new Document()
+            .append("resourceId", 1)
+            .append("creatorId", 2)
+            .append("firstName", "Foo")
+            .append("lastName", "Bar")
+            .append("title", "Title")
+            .append("description", "Description")
+            .append("dateCreated", Date.from(Instant.ofEpochSecond(946684800)))
+            .append("url", "http://example.com");
+        when(mockIterable.first()).thenReturn(targetDocument);
+        when(resourceCollection.find(any(Bson.class))).thenReturn(mockIterable);
         DeleteResult mockResult = mock(DeleteResult.class);
         when(mockResult.getDeletedCount()).thenReturn(1L);
         when(resourceCollection.deleteOne(any(Bson.class))).thenReturn(mockResult);
@@ -316,6 +311,7 @@ public class ResourceDAOTest {
     @Test
     void testListsAllResources() {
         Credentials mockCredentials = mock(Credentials.class);
+        when(mockCredentials.getId()).thenReturn(1);
         when(mockCredentials.getSystemRole()).thenReturn("Commenter");
 
         Document resourceDocument1  = new Document()
@@ -345,7 +341,8 @@ public class ResourceDAOTest {
 
         @SuppressWarnings("unchecked")
         FindIterable<Document> resourceFindIterable = (FindIterable<Document>) mock(FindIterable.class);
-        when(resourceCollection.find()).thenReturn(resourceFindIterable);
+        when(resourceCollection.find(any(Bson.class))).thenReturn(resourceFindIterable);
+        when(resourceFindIterable.sort(any(Document.class))).thenReturn(resourceFindIterable);
         doAnswer(new Answer<Void>() {
             public Void answer(InvocationOnMock invocation) {
                 Object[] args = invocation.getArguments();
@@ -401,7 +398,7 @@ public class ResourceDAOTest {
 
         @SuppressWarnings("unchecked")
         FindIterable<Document> commentFindIterable = (FindIterable<Document>) mock(FindIterable.class);
-        when(commentCollection.find()).thenReturn(commentFindIterable);
+        when(commentCollection.find(any(Bson.class))).thenReturn(commentFindIterable);
         doAnswer(new Answer<Void>() {
             public Void answer(InvocationOnMock invocation) {
                 Object[] args = invocation.getArguments();
@@ -447,7 +444,7 @@ public class ResourceDAOTest {
 
         @SuppressWarnings("unchecked")
         FindIterable<Document> flagFindIterable = (FindIterable<Document>) mock(FindIterable.class);
-        when(flagCollection.find()).thenReturn(flagFindIterable);
+        when(flagCollection.find(any(Bson.class))).thenReturn(flagFindIterable);
         doAnswer(new Answer<Void>() {
             public Void answer(InvocationOnMock invocation) {
                 Object[] args = invocation.getArguments();
@@ -490,7 +487,7 @@ public class ResourceDAOTest {
 
         @SuppressWarnings("unchecked")
         FindIterable<Document> upvoteFindIterable = (FindIterable<Document>) mock(FindIterable.class);
-        when(upvoteCollection.find()).thenReturn(upvoteFindIterable);
+        when(upvoteCollection.find(any(Bson.class))).thenReturn(upvoteFindIterable);
         doAnswer(new Answer<Void>() {
             public Void answer(InvocationOnMock invocation) {
                 Object[] args = invocation.getArguments();
@@ -514,6 +511,8 @@ public class ResourceDAOTest {
         targetResource1.setDescription("Description");
         targetResource1.setCreationDate(Date.from(Instant.ofEpochSecond(946684800)));
         targetResource1.setUrl("http://example.com");
+        targetResource1.setUpvotedByCurrentUser(false);
+        targetResource1.setUpvoteCount(1);
 
         List<Comment> r1Comments = new ArrayList<Comment>();
 
@@ -524,6 +523,8 @@ public class ResourceDAOTest {
         targetComment1.setLastName("Bar");
         targetComment1.setCreationDate(Date.from(Instant.ofEpochSecond(946684800)));
         targetComment1.setContents("What a comment");
+        targetComment1.setCurrentUserCanDelete(true);
+        targetComment1.setCurrentUserCanEdit(true);
 
         Comment targetComment2  = new Comment();
         targetComment2.setId(2);
@@ -532,6 +533,8 @@ public class ResourceDAOTest {
         targetComment2.setLastName("Bar");
         targetComment2.setCreationDate(Date.from(Instant.ofEpochSecond(946684800)));
         targetComment2.setContents("What a comment.");
+        targetComment2.setCurrentUserCanDelete(true);
+        targetComment2.setCurrentUserCanEdit(true);
 
         r1Comments.add(targetComment1);
         r1Comments.add(targetComment2);
@@ -545,6 +548,8 @@ public class ResourceDAOTest {
         targetFlag1.setLastName("Bar");
         targetFlag1.setContents("bad");
         targetFlag1.setCreationDate(Date.from(Instant.ofEpochSecond(946684800)));
+        targetFlag1.setCurrentUserCanDelete(true);
+        targetFlag1.setCurrentUserCanEdit(true);
 
         ReviewFlag targetFlag2  = new ReviewFlag();
         targetFlag2.setId(2);
@@ -553,6 +558,15 @@ public class ResourceDAOTest {
         targetFlag2.setLastName("Bar");
         targetFlag2.setContents("bad");
         targetFlag2.setCreationDate(Date.from(Instant.ofEpochSecond(946684800)));
+        targetFlag2.setCurrentUserCanDelete(true);
+        targetFlag2.setCurrentUserCanEdit(true);
+        targetFlag2.setCreatorId(1);
+        targetFlag2.setFirstName("Foo");
+        targetFlag2.setLastName("Bar");
+        targetFlag2.setContents("bad");
+        targetFlag2.setCreationDate(Date.from(Instant.ofEpochSecond(946684800)));
+        targetFlag2.setCurrentUserCanDelete(true);
+        targetFlag2.setCurrentUserCanEdit(true);
 
         r1Flags.add(targetFlag1);
         r1Flags.add(targetFlag2);
@@ -565,12 +579,17 @@ public class ResourceDAOTest {
         targetUpvote1.setFirstName("Foo");
         targetUpvote1.setLastName("Bar");
         targetUpvote1.setCreationDate(Date.from(Instant.ofEpochSecond(946684800)));
+        targetUpvote1.setCurrentUserCanDelete(true);
 
         r1Upvotes.add(targetUpvote1);
 
         targetResource1.setComments(r1Comments);
         targetResource1.setReviewFlags(r1Flags);
         targetResource1.setUpvotes(r1Upvotes);
+        targetResource1.setCurrentUserCanDelete(true);
+        targetResource1.setCurrentUserCanEdit(true);
+        targetResource1.setUpvotedByCurrentUser(true);
+        targetResource1.setCurrentUserUpvoteId(1);
 
         Resource targetResource2  = new Resource();
         targetResource2.setId(2);
@@ -591,6 +610,8 @@ public class ResourceDAOTest {
         targetComment3.setLastName("Bar");
         targetComment3.setCreationDate(Date.from(Instant.ofEpochSecond(946684800)));
         targetComment3.setContents("What a comment?");
+        targetComment3.setCurrentUserCanDelete(true);
+        targetComment3.setCurrentUserCanEdit(true);
 
         Comment targetComment4  = new Comment();
         targetComment4.setId(4);
@@ -599,6 +620,8 @@ public class ResourceDAOTest {
         targetComment4.setLastName("Bar");
         targetComment4.setCreationDate(Date.from(Instant.ofEpochSecond(946684800)));
         targetComment4.setContents("What a comment!");
+        targetComment4.setCurrentUserCanDelete(true);
+        targetComment4.setCurrentUserCanEdit(true);
 
         r2Comments.add(targetComment3);
         r2Comments.add(targetComment4);
@@ -612,6 +635,8 @@ public class ResourceDAOTest {
         targetFlag3.setLastName("Bar");
         targetFlag3.setContents("bad");
         targetFlag3.setCreationDate(Date.from(Instant.ofEpochSecond(946684800)));
+        targetFlag3.setCurrentUserCanDelete(true);
+        targetFlag3.setCurrentUserCanEdit(true);
 
         r2Flags.add(targetFlag3);
 
@@ -623,6 +648,7 @@ public class ResourceDAOTest {
         targetUpvote2.setFirstName("Foo");
         targetUpvote2.setLastName("Bar");
         targetUpvote2.setCreationDate(Date.from(Instant.ofEpochSecond(946684800)));
+        targetUpvote2.setCurrentUserCanDelete(true);
 
         Upvote targetUpvote3  = new Upvote();
         targetUpvote3.setId(3);
@@ -630,6 +656,7 @@ public class ResourceDAOTest {
         targetUpvote3.setFirstName("Foo");
         targetUpvote3.setLastName("Bar");
         targetUpvote3.setCreationDate(Date.from(Instant.ofEpochSecond(946684800)));
+        targetUpvote3.setCurrentUserCanDelete(true);
 
         r2Upvotes.add(targetUpvote2);
         r2Upvotes.add(targetUpvote3);
@@ -637,6 +664,11 @@ public class ResourceDAOTest {
         targetResource2.setComments(r2Comments);
         targetResource2.setReviewFlags(r2Flags);
         targetResource2.setUpvotes(r2Upvotes);
+        targetResource2.setUpvotedByCurrentUser(true);
+        targetResource2.setUpvoteCount(2);
+        targetResource2.setCurrentUserCanDelete(true);
+        targetResource2.setCurrentUserCanEdit(true);
+        targetResource2.setCurrentUserUpvoteId(3);
 
         expected.add(targetResource1);
         expected.add(targetResource2);
@@ -654,6 +686,316 @@ public class ResourceDAOTest {
 
         assertThrows(AuthorizationException.class, () -> {
             resourceDAO.listAllResources(mockCredentials);
+        });
+    }
+
+    // ============ Edit Resource Tests ============
+
+    @Test
+    void adminMayEditResource() {
+        Credentials mockCredentials = mock(Credentials.class);
+        when(mockCredentials.getId()).thenReturn(1);
+        when(mockCredentials.getSystemRole()).thenReturn("Admin");
+
+        Resource mockResource = mock(Resource.class);
+        when(mockResource.getTitle()).thenReturn("Updated Title");
+        when(mockResource.getDescription()).thenReturn("Updated Description");
+        when(mockResource.getUrl()).thenReturn("http://updated.com");
+
+        @SuppressWarnings("unchecked")
+        FindIterable<Document> mockIterable = (FindIterable<Document>) mock(FindIterable.class);
+        Document targetDocument = new Document()
+            .append("resourceId", 1)
+            .append("creatorId", 2)
+            .append("firstName", "Foo")
+            .append("lastName", "Bar")
+            .append("title", "Title")
+            .append("description", "Description")
+            .append("dateCreated", Date.from(Instant.ofEpochSecond(946684800)))
+            .append("url", "http://example.com");
+        when(mockIterable.first()).thenReturn(targetDocument);
+        when(resourceCollection.find(any(Bson.class))).thenReturn(mockIterable);
+
+        com.mongodb.client.result.UpdateResult mockResult = mock(com.mongodb.client.result.UpdateResult.class);
+        when(mockResult.getMatchedCount()).thenReturn(1L);
+        when(resourceCollection.updateOne(any(Bson.class), any(Bson.class))).thenReturn(mockResult);
+
+        resourceDAO.editResource(mockCredentials, 1, mockResource);
+
+        verify(resourceCollection).updateOne(any(Bson.class), any(Bson.class));
+    }
+
+    @Test
+    void contributorMayEditOwnResource() {
+        Credentials mockCredentials = mock(Credentials.class);
+        when(mockCredentials.getId()).thenReturn(1);
+        when(mockCredentials.getSystemRole()).thenReturn("Contributor");
+
+        Resource mockResource = mock(Resource.class);
+        when(mockResource.getTitle()).thenReturn("Updated Title");
+        when(mockResource.getDescription()).thenReturn("Updated Description");
+        when(mockResource.getUrl()).thenReturn("http://updated.com");
+
+        @SuppressWarnings("unchecked")
+        FindIterable<Document> mockIterable = (FindIterable<Document>) mock(FindIterable.class);
+        Document targetDocument = new Document()
+            .append("resourceId", 1)
+            .append("creatorId", 1)
+            .append("firstName", "Foo")
+            .append("lastName", "Bar")
+            .append("title", "Title")
+            .append("description", "Description")
+            .append("dateCreated", Date.from(Instant.ofEpochSecond(946684800)))
+            .append("url", "http://example.com");
+        when(mockIterable.first()).thenReturn(targetDocument);
+        when(resourceCollection.find(any(Bson.class))).thenReturn(mockIterable);
+
+        com.mongodb.client.result.UpdateResult mockResult = mock(com.mongodb.client.result.UpdateResult.class);
+        when(mockResult.getMatchedCount()).thenReturn(1L);
+        when(resourceCollection.updateOne(any(Bson.class), any(Bson.class))).thenReturn(mockResult);
+
+        resourceDAO.editResource(mockCredentials, 1, mockResource);
+
+        verify(resourceCollection).updateOne(any(Bson.class), any(Bson.class));
+    }
+
+    @Test
+    void contributorMayNotEditOthersResource() {
+        Credentials mockCredentials = mock(Credentials.class);
+        when(mockCredentials.getId()).thenReturn(1);
+        when(mockCredentials.getSystemRole()).thenReturn("Contributor");
+
+        Resource mockResource = mock(Resource.class);
+
+        @SuppressWarnings("unchecked")
+        FindIterable<Document> mockIterable = (FindIterable<Document>) mock(FindIterable.class);
+        Document targetDocument = new Document()
+            .append("resourceId", 1)
+            .append("creatorId", 2)
+            .append("firstName", "Foo")
+            .append("lastName", "Bar")
+            .append("title", "Title")
+            .append("description", "Description")
+            .append("dateCreated", Date.from(Instant.ofEpochSecond(946684800)))
+            .append("url", "http://example.com");
+        when(mockIterable.first()).thenReturn(targetDocument);
+        when(resourceCollection.find(any(Bson.class))).thenReturn(mockIterable);
+
+        assertThrows(AuthorizationException.class, () -> {
+            resourceDAO.editResource(mockCredentials, 1, mockResource);
+        });
+
+        verify(resourceCollection, never()).updateOne(any(Bson.class), any(Bson.class));
+    }
+
+    @Test
+    void commenterMayNotEditResource() {
+        Credentials mockCredentials = mock(Credentials.class);
+        when(mockCredentials.getId()).thenReturn(1);
+        when(mockCredentials.getSystemRole()).thenReturn("Commenter");
+
+        Resource mockResource = mock(Resource.class);
+
+        assertThrows(AuthorizationException.class, () -> {
+            resourceDAO.editResource(mockCredentials, 1, mockResource);
+        });
+
+        verify(resourceCollection, never()).updateOne(any(Bson.class), any(Bson.class));
+    }
+
+    @Test
+    void cannotEditNonexistentResource() {
+        Credentials mockCredentials = mock(Credentials.class);
+        when(mockCredentials.getId()).thenReturn(1);
+        when(mockCredentials.getSystemRole()).thenReturn("Admin");
+
+        Resource mockResource = mock(Resource.class);
+
+        @SuppressWarnings("unchecked")
+        FindIterable<Document> mockIterable = (FindIterable<Document>) mock(FindIterable.class);
+        when(mockIterable.first()).thenReturn(null);
+        when(resourceCollection.find(any(Bson.class))).thenReturn(mockIterable);
+
+        assertThrows(RecordDoesNotExistException.class, () -> {
+            resourceDAO.editResource(mockCredentials, 1, mockResource);
+        });
+
+        verify(resourceCollection, never()).updateOne(any(Bson.class), any(Bson.class));
+    }
+
+    @Test
+    void cannotEditResourceWhenUpdateFails() {
+        Credentials mockCredentials = mock(Credentials.class);
+        when(mockCredentials.getId()).thenReturn(1);
+        when(mockCredentials.getSystemRole()).thenReturn("Admin");
+
+        Resource mockResource = mock(Resource.class);
+        when(mockResource.getTitle()).thenReturn("Updated Title");
+        when(mockResource.getDescription()).thenReturn("Updated Description");
+        when(mockResource.getUrl()).thenReturn("http://updated.com");
+
+        @SuppressWarnings("unchecked")
+        FindIterable<Document> mockIterable = (FindIterable<Document>) mock(FindIterable.class);
+        Document targetDocument = new Document()
+            .append("resourceId", 1)
+            .append("creatorId", 1)
+            .append("firstName", "Foo")
+            .append("lastName", "Bar")
+            .append("title", "Title")
+            .append("description", "Description")
+            .append("dateCreated", Date.from(Instant.ofEpochSecond(946684800)))
+            .append("url", "http://example.com");
+        when(mockIterable.first()).thenReturn(targetDocument);
+        when(resourceCollection.find(any(Bson.class))).thenReturn(mockIterable);
+
+        com.mongodb.client.result.UpdateResult mockResult = mock(com.mongodb.client.result.UpdateResult.class);
+        when(mockResult.getMatchedCount()).thenReturn(0L);
+        when(resourceCollection.updateOne(any(Bson.class), any(Bson.class))).thenReturn(mockResult);
+
+        assertThrows(RecordDoesNotExistException.class, () -> {
+            resourceDAO.editResource(mockCredentials, 1, mockResource);
+        });
+    }
+
+    @Test
+    void invalidRoleMayNotEditResource() {
+        Credentials mockCredentials = mock(Credentials.class);
+        when(mockCredentials.getSystemRole()).thenReturn("Some Invalid Role");
+
+        Resource mockResource = mock(Resource.class);
+
+        assertThrows(AuthorizationException.class, () -> {
+            resourceDAO.editResource(mockCredentials, 1, mockResource);
+        });
+
+        verify(resourceCollection, never()).updateOne(any(Bson.class), any(Bson.class));
+    }
+
+    // ============ Null Parameter Tests ============
+
+    @Test
+    void insertResourceThrowsOnNullUser() {
+        Resource mockResource = mock(Resource.class);
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            resourceDAO.insertResource(null, mockResource);
+        });
+
+        verify(resourceCollection, never()).insertOne(any());
+    }
+
+    @Test
+    void insertResourceThrowsOnNullResource() {
+        Credentials mockCredentials = mock(Credentials.class);
+        when(mockCredentials.getSystemRole()).thenReturn("Admin");
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            resourceDAO.insertResource(mockCredentials, null);
+        });
+
+        verify(resourceCollection, never()).insertOne(any());
+    }
+
+    @Test
+    void insertResourceThrowsOnNullRole() {
+        Credentials mockCredentials = mock(Credentials.class);
+        when(mockCredentials.getSystemRole()).thenReturn(null);
+
+        Resource mockResource = mock(Resource.class);
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            resourceDAO.insertResource(mockCredentials, mockResource);
+        });
+
+        verify(resourceCollection, never()).insertOne(any());
+    }
+
+    @Test
+    void editResourceThrowsOnNullUser() {
+        Resource mockResource = mock(Resource.class);
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            resourceDAO.editResource(null, 1, mockResource);
+        });
+
+        verify(resourceCollection, never()).updateOne(any(Bson.class), any(Bson.class));
+    }
+
+    @Test
+    void editResourceThrowsOnNullResource() {
+        Credentials mockCredentials = mock(Credentials.class);
+        when(mockCredentials.getSystemRole()).thenReturn("Admin");
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            resourceDAO.editResource(mockCredentials, 1, null);
+        });
+
+        verify(resourceCollection, never()).updateOne(any(Bson.class), any(Bson.class));
+    }
+
+    @Test
+    void editResourceThrowsOnNullRole() {
+        Credentials mockCredentials = mock(Credentials.class);
+        when(mockCredentials.getSystemRole()).thenReturn(null);
+
+        Resource mockResource = mock(Resource.class);
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            resourceDAO.editResource(mockCredentials, 1, mockResource);
+        });
+
+        verify(resourceCollection, never()).updateOne(any(Bson.class), any(Bson.class));
+    }
+
+    @Test
+    void removeResourceThrowsOnNullUser() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            resourceDAO.removeResource(null, 1);
+        });
+
+        verify(resourceCollection, never()).deleteOne(any(Bson.class));
+    }
+
+    @Test
+    void removeResourceThrowsOnNullRole() {
+        Credentials mockCredentials = mock(Credentials.class);
+        when(mockCredentials.getSystemRole()).thenReturn(null);
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            resourceDAO.removeResource(mockCredentials, 1);
+        });
+
+        verify(resourceCollection, never()).deleteOne(any(Bson.class));
+    }
+
+    @Test
+    void listAllResourcesThrowsOnNullUser() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            resourceDAO.listAllResources(null);
+        });
+    }
+
+    @Test
+    void listAllResourcesThrowsOnNullRole() {
+        Credentials mockCredentials = mock(Credentials.class);
+        when(mockCredentials.getSystemRole()).thenReturn(null);
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            resourceDAO.listAllResources(mockCredentials);
+        });
+    }
+
+    @Test
+    void setCounterDAOThrowsOnNull() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            resourceDAO.setCounterDAO(null);
+        });
+    }
+
+    @Test
+    void constructorThrowsOnNullDatabase() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            new ResourceDAOImpl(null);
         });
     }
 }

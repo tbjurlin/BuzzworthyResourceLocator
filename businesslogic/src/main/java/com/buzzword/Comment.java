@@ -24,6 +24,9 @@ package com.buzzword;
 /**
  * The Comment class creates a comment object that holds the content of a 
  * comment as well as all fields from the Record class.
+ * 
+ * @author Dennis Shelby
+ * @version 1.0
  */
 public class Comment extends Record {
     private String contents;
@@ -32,19 +35,21 @@ public class Comment extends Record {
 
     private final Logger logger = LoggerFactory.getEventLogger();
 
-    /* Constructor */
+    /**
+     * Constructs a new Comment object with default values.
+     */
     public Comment() {
         super();
         commentSanitizer = new XssSanitizerImpl();
     }
 
     /**
-     * <p>
-     * Compared to Resource.java, this method will focus on validating the contents of the comment.
+     * Validates the contents of the comment.
      * The contents must not be null, must have a minimum length of 1 character,
      * and must not exceed 200 characters.
-     * </p>
-     * @return
+     * 
+     * @param contents the contents to validate
+     * @return the sanitized and validated contents
      */
     private String validateContents(final String contents) {
         final int minLength = 1;
@@ -72,10 +77,24 @@ public class Comment extends Record {
 
         return sanitizedContents;
     }
+    
+    /**
+     * Gets the contents of the comment.
+     * 
+     * @return the comment contents
+     */
     public String getContents() {
         logger.debug("returning the contents");
         return contents;
     }
+    
+    /**
+     * Sets the contents of the comment.
+     * <p>
+     * The contents will be validated and sanitized before being set.
+     * 
+     * @param contents the comment contents to set
+     */
     public void setContents(String contents) {
         logger.debug("setting contents");
         this.contents = validateContents(contents);

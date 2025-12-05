@@ -49,7 +49,7 @@ public class AuthenticatorImpl implements Authenticator{
     /**
      * Authenticator implementation constructor. Builds authentication server URL from provided string.
      * 
-     * @param urlString A string version of the authentication server's URL.
+     * @param urlString a string version of the authentication server's URL
      */
     public AuthenticatorImpl(String urlString) {
         try {
@@ -65,13 +65,10 @@ public class AuthenticatorImpl implements Authenticator{
     }
 
     /**
-     * Send a JSON Web Token (JWT) to an authentication server to be
-     * authenticated and return the corresponding user's credentials.
-     * 
-     * @param token A Token object containing a user's JSON Web Token (JWT) obtained from the authentication server.
-     * @return A Credentials object storing the user's credentials.
+     * {@inheritDoc}
      */
-    public Credentials Authenticate(Token token) {
+    @Override
+    public Credentials authenticate(Token token) {
         logger.info("Authenticating token.");
         try {
             if(serverUrl == null) {

@@ -46,7 +46,7 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
     private static ConfigurationManagerImpl instance;
 
     /**
-     * Constructs a ConfigurationManager
+     * Constructs a ConfigurationManager.
      * <p>
      * Constructs a configuration instance, reading configuration information from the
      * application config file. The manager first looks for a BRL_CONFIG environmental

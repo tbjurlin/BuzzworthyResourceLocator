@@ -1,26 +1,5 @@
 package com.buzzword;
 
-/*
- * This is free and unencumbered software released into the public domain.
- * Anyone is free to copy, modify, publish, use, compile, sell, or distribute this software,
- * either in source code form or as a compiled binary, for any purpose, commercial or
- * non-commercial, and by any means.
- *
- * In jurisdictions that recognize copyright laws, the author or authors of this
- * software dedicate any and all copyright interest in the software to the public domain.
- * We make this dedication for the benefit of the public at large and to the detriment of
- * our heirs and successors. We intend this dedication to be an overt act of relinquishment in
- * perpetuity of all present and future rights to this software under copyright law.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
- * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
- * PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES
- * OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- * For more information, please refer to: https://unlicense.org/
-*/
-
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -443,5 +422,97 @@ public class UpvoteDAOTest {
         });
 
         verify(testCollection, never()).deleteOne(any(Bson.class));
+    }
+
+    @Test
+    void cannotFindUpvoteToRemove() {
+        Credentials mockCredentials = mock(Credentials.class);
+        when(mockCredentials.getId()).thenReturn(1);
+        when(mockCredentials.getSystemRole()).thenReturn("Admin");
+
+        @SuppressWarnings("unchecked")
+        FindIterable<Document> mockIterable = (FindIterable<Document>) mock(FindIterable.class);
+        when(mockIterable.first()).thenReturn(null);
+        when(testCollection.find(any(Bson.class))).thenReturn(mockIterable);
+
+        assertThrows(RecordDoesNotExistException.class, () -> {
+            upvoteDAO.removeUpvote(mockCredentials, 1, 1);
+        });
+
+        verify(testCollection, never()).deleteOne(any(Bson.class));
+    }
+
+    // ============ Null Parameter Tests ============
+
+    @Test
+    void addUpvoteThrowsOnNullUser() {
+        Upvote mockUpvote = mock(Upvote.class);
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            upvoteDAO.addUpvote(null, mockUpvote, 1);
+        });
+
+        verify(testCollection, never()).insertOne(any());
+    }
+
+    @Test
+    void addUpvoteThrowsOnNullUpvote() {
+        Credentials mockCredentials = mock(Credentials.class);
+        when(mockCredentials.getSystemRole()).thenReturn("Admin");
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            upvoteDAO.addUpvote(mockCredentials, null, 1);
+        });
+
+        verify(testCollection, never()).insertOne(any());
+    }
+
+    @Test
+    void addUpvoteThrowsOnNullRole() {
+        Credentials mockCredentials = mock(Credentials.class);
+        when(mockCredentials.getSystemRole()).thenReturn(null);
+
+        Upvote mockUpvote = mock(Upvote.class);
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            upvoteDAO.addUpvote(mockCredentials, mockUpvote, 1);
+        });
+
+        verify(testCollection, never()).insertOne(any());
+    }
+
+    @Test
+    void removeUpvoteThrowsOnNullUser() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            upvoteDAO.removeUpvote(null, 1, 1);
+        });
+
+        verify(testCollection, never()).deleteOne(any(Bson.class));
+    }
+
+    @Test
+    void removeUpvoteThrowsOnNullRole() {
+        Credentials mockCredentials = mock(Credentials.class);
+        when(mockCredentials.getSystemRole()).thenReturn(null);
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            upvoteDAO.removeUpvote(mockCredentials, 1, 1);
+        });
+
+        verify(testCollection, never()).deleteOne(any(Bson.class));
+    }
+
+    @Test
+    void setCounterDAOThrowsOnNull() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            upvoteDAO.setCounterDAO(null);
+        });
+    }
+
+    @Test
+    void constructorThrowsOnNullDatabase() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            new UpvoteDAOImpl(null);
+        });
     }
 }

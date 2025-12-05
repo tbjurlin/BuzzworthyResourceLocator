@@ -1,31 +1,11 @@
 package com.buzzword;
 
-/*
- * This is free and unencumbered software released into the public domain.
- * Anyone is free to copy, modify, publish, use, compile, sell, or distribute this software,
- * either in source code form or as a compiled binary, for any purpose, commercial or
- * non-commercial, and by any means.
- *
- * In jurisdictions that recognize copyright laws, the author or authors of this
- * software dedicate any and all copyright interest in the software to the public domain.
- * We make this dedication for the benefit of the public at large and to the detriment of
- * our heirs and successors. We intend this dedication to be an overt act of relinquishment in
- * perpetuity of all present and future rights to this software under copyright law.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
- * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
- * PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES
- * OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- * For more information, please refer to: https://unlicense.org/
-*/
-
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -56,7 +36,7 @@ public class ResourceTest {
 
     @Test
     public void testSetTitleTooLongThrows() {
-        String longTitle = RandomStringUtils.randomAlphanumeric(65);
+        String longTitle = RandomStringUtils.insecure().nextAlphanumeric(65);
         assertThrows(IllegalArgumentException.class, () -> testResource.setTitle(longTitle));
     }
 
@@ -138,5 +118,82 @@ public class ResourceTest {
         assertEquals(uv, testResource.getUpvotes());
     }
 
+    @Test
+    public void testSetUpvoteCount() {
+        testResource.setUpvoteCount(5);
+        assertEquals(5, testResource.getUpvoteCount());
+        
+        testResource.setUpvoteCount(0);
+        assertEquals(0, testResource.getUpvoteCount());
+    }
+
+    @Test
+    public void testIncrementUpvoteCount() {
+        testResource.setUpvoteCount(0);
+        testResource.incrementUpvoteCount();
+        assertEquals(1, testResource.getUpvoteCount());
+        
+        testResource.incrementUpvoteCount();
+        assertEquals(2, testResource.getUpvoteCount());
+    }
+
+    @Test
+    public void testSetUpvotedByCurrentUser() {
+        testResource.setUpvotedByCurrentUser(true);
+        assertEquals(true, testResource.getUpvotedByCurrentUser());
+        
+        testResource.setUpvotedByCurrentUser(false);
+        assertEquals(false, testResource.getUpvotedByCurrentUser());
+    }
+
+    @Test
+    public void testSetCurrentUserUpvoteId() {
+        testResource.setCurrentUserUpvoteId(42);
+        assertEquals(42, testResource.getCurrentUserUpvoteId());
+        
+        testResource.setCurrentUserUpvoteId(0);
+        assertEquals(0, testResource.getCurrentUserUpvoteId());
+    }
+
+    @Test
+    public void testSetTitleSanitizesHtml() {
+        String input = "<b>Bold Title</b>";
+        testResource.setTitle(input);
+        // Verify HTML is sanitized (exact output depends on sanitizer config)
+        assertEquals("Bold Title", testResource.getTitle());
+    }
+
+    @Test
+    public void testSetDescriptionSanitizesHtml() {
+        String input = "<p>Test <strong>description</strong></p>";
+        testResource.setDescription(input);
+        // Description allows more HTML, so verify it still works
+        assertTrue(testResource.getDescription().contains("description"));
+    }
+
+    @Test
+    public void testSetTitleMaxLength() {
+        // Test with exactly 64 characters (should pass)
+        String validLength = RandomStringUtils.insecure().nextAlphanumeric(64);
+        testResource.setTitle(validLength);
+        assertEquals(validLength, testResource.getTitle());
+    }
+
+    @Test
+    public void testSetDescriptionMaxLength() {
+        // Test with a long description (should pass up to reasonable limit)
+        String longDesc = RandomStringUtils.insecure().nextAlphanumeric(500);
+        testResource.setDescription(longDesc);
+        assertEquals(longDesc, testResource.getDescription());
+    }
+
+    @Test
+    public void testSetUrlWithFragment() {
+        String urlWithFragment = "https://example.com/path#section";
+        testResource.setUrl(urlWithFragment);
+        assertEquals(urlWithFragment, testResource.getUrl());
+    }
+
 }
+
 
