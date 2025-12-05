@@ -47,6 +47,8 @@ abstract class Record{
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private boolean currentUserCanDelete;
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private boolean currentUserCanEdit;
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private boolean isEdited;
 
     private final Logger logger = LoggerFactory.getEventLogger();
@@ -227,5 +229,23 @@ abstract class Record{
     public void setCurrentUserCanDelete(boolean currentUserCanDelete) {
         logger.debug("setting currentUserCanDelete");
         this.currentUserCanDelete = currentUserCanDelete;
+    }
+
+    /**
+     * Returns the currentUserCanEdit value for the Record.
+     * @return true if the current user can edit this record, false otherwise
+     */
+    public boolean getCurrentUserCanEdit() {
+        logger.debug("returning currentUserCanEdit: " + currentUserCanEdit);
+        return currentUserCanEdit;
+    }
+
+    /**
+     * Sets the currentUserCanEdit value for the Record.
+     * @param currentUserCanEdit the value to set into the currentUserCanEdit field
+     */
+    public void setCurrentUserCanEdit(boolean currentUserCanEdit) {
+        logger.debug("setting currentUserCanEdit");
+        this.currentUserCanEdit = currentUserCanEdit;
     }
 }
