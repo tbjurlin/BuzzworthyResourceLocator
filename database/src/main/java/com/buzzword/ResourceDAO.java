@@ -71,6 +71,15 @@ public interface ResourceDAO {
     List<Resource> listAllResources(Credentials user);
 
     /**
+     * Retrieves a single resource by its ID.
+     * 
+     * @param user the credentials of the user requesting the resource
+     * @param id the ID of the resource to retrieve
+     * @return the resource with the specified ID
+     */
+    Resource getResourceById(Credentials user, int id);
+
+    /**
      * Lists all resources available in the system, filtered by keywords.
      * 
      * @param user the credentials of the user requesting the list
