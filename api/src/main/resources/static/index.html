@@ -9,30 +9,31 @@
     <body>
         <h1>Buzzworthy Resource Locator (BRL) — REST API Operations:</h1>
         <hr>
-        <h2>User documentation available @ http://localhost:8080/BRL/api/</h2>
+        <h2>User documentation available @ https://localhost:8443/BRL/api/</h2>
+        <p>* Using old HTTP endpoints (requests to http://localhost:8080) will automatically be redirected to new HTTPS endpoints.</p>
         <hr>
-        <h2>GET http://localhost:8080/BRL/api/wiki/verification</h2>
+        <h2>GET https://localhost:8443/BRL/api/wiki/verification</h2>
         <h3>Purpose — Verify user credentials and retrieve authenticated user information.</h3>
         <h3>Request header — "Bearer: abcdefg...tuvwxyz" where this string is an SSO token.</h3>
         <h3>Request body — Empty.</h3>
         <h3>Return body — {"firstName": "First", "lastName": "Last"}</h3>
         <h3>Return code — 200 (successfully verified), 400 (misformatted request), 401 (unable to authenticate user), 405 (method not allowed for current endpoint), 500 (internal server error)</h3>
         <hr>
-        <h2>GET http://localhost:8080/BRL/api/wiki/resource</h2>
+        <h2>GET https://localhost:8443/BRL/api/wiki/resource</h2>
         <h3>Purpose — Retrieve all resource records from the database.</h3>
         <h3>Request header — "Bearer: abcdefg...tuvwxyz" where this string is an SSO token.</h3>
         <h3>Request body — Empty.</h3>
         <h3>Return body — [{resource},{resource},...,{resource}] where each resource is in the format shown at the bottom of this page.</h3>
         <h3>Return code — 200 (successfully retrieved), 400 (misformatted request), 401 (unable to authenticate user), 403 (insufficient user permissions), 404 (unable to retrieve resources), 405 (method not allowed for current endpoint), 415 (unsupported request media type), 500 (internal server error)</h3>
         <hr>
-        <h2>POST http://localhost:8080/BRL/api/wiki/resource-filtered</h2>
+        <h2>POST https://localhost:8443/BRL/api/wiki/resource-filtered</h2>
         <h3>Purpose — Retrieve resource records from the database filtered by keywords.</h3>
         <h3>Request header — "Bearer: abcdefg...tuvwxyz" where this string is an SSO token.</h3>
         <h3>Request body — {keywordList} where the keywordList is in the format shown at the bottom of this page.</h3>
         <h3>Return body — [{resource},{resource},...,{resource}] where each resource is in the format shown at the bottom of this page.</h3>
         <h3>Return code — 200 (successfully retrieved), 400 (misformatted request), 401 (unable to authenticate user), 403 (insufficient user permissions), 404 (unable to retrieve resources), 405 (method not allowed for current endpoint), 415 (unsupported request media type), 500 (internal server error)</h3>
         <hr>
-        <h2>POST http://localhost:8080/BRL/api/wiki/resource</h2>
+        <h2>POST https://localhost:8443/BRL/api/wiki/resource</h2>
         <h3>Purpose — Insert a new resource record into the database.</h3>
         <h3>Request header — "Bearer: abcdefg...tuvwxyz" where this string is an SSO token.</h3>
         <h3>Request body — {resource} where the resource is in the format shown at the bottom of this page.</h3>
@@ -40,7 +41,7 @@
         <h3>Return body — {"msg": "Successfully added a new resource."}</h3>
         <h3>Return code — 201 (successfully added), 400 (misformatted request), 401 (unable to authenticate user), 403 (insufficient user permissions), 404 (unable to add resource), 405 (method not allowed for current endpoint), 415 (unsupported request media type), 500 (internal server error)</h3>
         <hr>
-        <h2>POST http://localhost:8080/BRL/api/wiki/resource/{resourceId}/comment</h2>
+        <h2>POST https://localhost:8443/BRL/api/wiki/resource/{resourceId}/comment</h2>
         <h3>Purpose — Add a comment to an existing resource record.</h3>
         <h3>Request header — "Bearer: abcdefg...tuvwxyz" where this string is an SSO token.</h3>
         <h3>Request body — {comment} where the comment is in the format shown at the bottom of this page.</h3>
@@ -48,14 +49,14 @@
         <h3>Return body — {"msg": "Successfully added comment to resource {resourceId}."}</h3>
         <h3>Return code — 201 (successfully added), 400 (misformatted request), 401 (unable to authenticate user), 403 (insufficient user permissions), 404 (unable to add comment), 405 (method not allowed for current endpoint), 415 (unsupported request media type), 500 (internal server error)</h3>
         <hr>
-        <h2>POST http://localhost:8080/BRL/api/wiki/resource/{resourceId}/upvote</h2>
+        <h2>POST https://localhost:8443/BRL/api/wiki/resource/{resourceId}/upvote</h2>
         <h3>Purpose — Add an upvote to an existing resource record.</h3>
         <h3>Request header — "Bearer: abcdefg...tuvwxyz" where this string is an SSO token.</h3>
         <h3>Request body — Empty.</h3>
         <h3>Return body — {"msg": "Successfully added new upvote to resource {resourceId}."}</h3>
         <h3>Return code — 201 (successfully added), 400 (misformatted request), 401 (unable to authenticate user), 403 (insufficient user permissions), 404 (unable to add upvote), 405 (method not allowed for current endpoint), 415 (unsupported request media type), 500 (internal server error)</h3>
         <hr>
-        <h2>POST http://localhost:8080/BRL/api/wiki/resource/{resourceId}/reviewFlag</h2>
+        <h2>POST https://localhost:8443/BRL/api/wiki/resource/{resourceId}/reviewFlag</h2>
         <h3>Purpose — Add a flag for manager review to an existing resource record.</h3>
         <h3>Request header — "Bearer: abcdefg...tuvwxyz" where this string is an SSO token.</h3>
         <h3>Request body — {reviewFlag} where the reviewFlag is in the format shown at the bottom of this page.</h3>
@@ -63,7 +64,7 @@
         <h3>Return body — {"msg": "Successfully added new review flag to resource {resourceId}."}</h3>
         <h3>Return code — 201 (successfully added), 400 (misformatted request), 401 (unable to authenticate user), 403 (insufficient user permissions), 404 (unable to add reviewFlag), 405 (method not allowed for current endpoint), 415 (unsupported request media type), 500 (internal server error)</h3>
         <hr>
-        <h2>PUT http://localhost:8080/BRL/api/wiki/resource/{resourceId}</h2>
+        <h2>PUT https://localhost:8443/BRL/api/wiki/resource/{resourceId}</h2>
         <h3>Purpose — Edit an existing resource record in the database.</h3>
         <h3>Request header — "Bearer: abcdefg...tuvwxyz" where this string is an SSO token.</h3>
         <h3>Request body — {resource} where the resource is in the format shown at the bottom of this page.</h3>
@@ -71,7 +72,7 @@
         <h3>Return body — {"msg": "Successfully edited resource {resourceId}."}</h3>
         <h3>Return code — 200 (successfully edited), 400 (misformatted request), 401 (unable to authenticate user), 403 (insufficient user permissions), 404 (unable to edit resource), 405 (method not allowed for current endpoint), 415 (unsupported request media type), 500 (internal server error)</h3>
         <hr>
-        <h2>PUT http://localhost:8080/BRL/api/wiki/resource/{resourceId}/comment/{commentId}</h2>
+        <h2>PUT https://localhost:8443/BRL/api/wiki/resource/{resourceId}/comment/{commentId}</h2>
         <h3>Purpose — Edit an existing comment on a specific resource record in the database.</h3>
         <h3>Request header — "Bearer: abcdefg...tuvwxyz" where this string is an SSO token.</h3>
         <h3>Request body — {comment} where the comment is in the format shown at the bottom of this page.</h3>
@@ -79,7 +80,7 @@
         <h3>Return body — {"msg": "Successfully edited comment {commentId} on resource {resourceId}."}</h3>
         <h3>Return code — 200 (successfully edited), 400 (misformatted request), 401 (unable to authenticate user), 403 (insufficient user permissions), 404 (unable to edit comment), 405 (method not allowed for current endpoint), 415 (unsupported request media type), 500 (internal server error)</h3>
         <hr>
-        <h2>PUT http://localhost:8080/BRL/api/wiki/resource/{resourceId}/reviewFlag/{flagId}</h2>
+        <h2>PUT https://localhost:8443/BRL/api/wiki/resource/{resourceId}/reviewFlag/{flagId}</h2>
         <h3>Purpose — Edit an existing review flag on a specific resource record in the database.</h3>
         <h3>Request header — "Bearer: abcdefg...tuvwxyz" where this string is an SSO token.</h3>
         <h3>Request body — {reviewFlag} where the reviewFlag is in the format shown at the bottom of this page.</h3>
@@ -87,28 +88,28 @@
         <h3>Return body — {"msg": "Successfully edited review flag {flagId} on resource {resourceId}."}</h3>
         <h3>Return code — 200 (successfully edited), 400 (misformatted request), 401 (unable to authenticate user), 403 (insufficient user permissions), 404 (unable to edit reviewFlag), 405 (method not allowed for current endpoint), 415 (unsupported request media type), 500 (internal server error)</h3>
         <hr>
-        <h2>DELETE http://localhost:8080/BRL/api/wiki/resource/{resourceId}</h2>
+        <h2>DELETE https://localhost:8443/BRL/api/wiki/resource/{resourceId}</h2>
         <h3>Purpose — Delete a specific existing resource record.</h3>
         <h3>Request header — "Bearer: abcdefg...tuvwxyz" where this string is an SSO token.</h3>
         <h3>Request body — Empty.</h3>
         <h3>Return body — {"msg": "Successfully removed resource {resourceId}."}</h3>
         <h3>Return code — 200 (successfully deleted), 400 (misformatted request), 401 (unable to authenticate user), 403 (insufficient user permissions), 404 (unable to delete specified resource), 405 (method not allowed for current endpoint), 415 (unsupported request media type), 500 (internal server error)</h3>
         <hr>
-        <h2>DELETE http://localhost:8080/BRL/api/wiki/resource/{resourceId}/comment/{commentId}</h2>
+        <h2>DELETE https://localhost:8443/BRL/api/wiki/resource/{resourceId}/comment/{commentId}</h2>
         <h3>Purpose — Delete a specific comment from a specific existing resource record.</h3>
         <h3>Request header — "Bearer: abcdefg...tuvwxyz" where this string is an SSO token.</h3>
         <h3>Request body — Empty.</h3>
         <h3>Return body — {"msg": "Successfully removed comment {commentId} from resource {resourceId}."}</h3>
         <h3>Return code — 200 (successfully deleted), 400 (misformatted request), 401 (unable to authenticate user), 403 (insufficient user permissions), 404 (unable to delete specified comment), 405 (method not allowed for current endpoint), 415 (unsupported request media type), 500 (internal server error)</h3>
         <hr>
-        <h2>DELETE http://localhost:8080/BRL/api/wiki/resource/{resourceId}/upvote/{upvoteId}</h2>
+        <h2>DELETE https://localhost:8443/BRL/api/wiki/resource/{resourceId}/upvote/{upvoteId}</h2>
         <h3>Purpose — Delete a specific upvote from a specific existing resource record.</h3>
         <h3>Request header — "Bearer: abcdefg...tuvwxyz" where this string is an SSO token.</h3>
         <h3>Request body — Empty.</h3>
         <h3>Return body — {"msg": "Successfully removed upvote {upvoteId} from resource {resourceId}."}</h3>
         <h3>Return code — 200 (successfully deleted), 400 (misformatted request), 401 (unable to authenticate user), 403 (insufficient user permissions), 404 (unable to delete specified upvote), 405 (method not allowed for current endpoint), 415 (unsupported request media type), 500 (internal server error)</h3>
         <hr>
-        <h2>DELETE http://localhost:8080/BRL/api/wiki/resource/{resourceId}/reviewFlag/{flagId}</h2>
+        <h2>DELETE https://localhost:8443/BRL/api/wiki/resource/{resourceId}/reviewFlag/{flagId}</h2>
         <h3>Purpose — Delete a specific reviewFlag from a specific existing resource record.</h3>
         <h3>Request header — "Bearer: abcdefg...tuvwxyz" where this string is an SSO token.</h3>
         <h3>Request body — Empty.</h3>
