@@ -121,7 +121,7 @@
           <configuration>
             <archive>
               <manifest>
-                <mainClass>org.buzzword.api.App</mainClass>
+                <mainClass>com.buzzword.api.App</mainClass>
               </manifest>
             </archive>
           </configuration>

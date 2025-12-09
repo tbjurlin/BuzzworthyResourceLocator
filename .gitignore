@@ -25,3 +25,7 @@ buildNumber.properties
 .project
 # JDT-specific (Eclipse Java Development Tools)
 .classpath
+
+# SSL/TLS Keystore - Contains certificate (can be committed for dev, exclude for production)
+# Uncomment the line below if using production certificates:
+# keystore.p12
