@@ -43,7 +43,7 @@ public interface FlagDAO {
      * @param flag the review flag to be added
      * @param resourceId the ID of the resource to be flagged for review
      */
-    void addReviewFlag(Credentials user, ReviewFlag flag, int resourceId);
+    int addReviewFlag(Credentials user, ReviewFlag flag, int resourceId);
 
     /**
      * Edits a review flag in the database for the specific resource for managerial review.

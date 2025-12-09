@@ -43,7 +43,7 @@ public interface UpvoteDAO {
      * @param upvote the upvote to be added
      * @param resourceId the ID of the resource to be upvoted
      */
-    void addUpvote(Credentials user, Upvote upvote, int resourceId);
+    int addUpvote(Credentials user, Upvote upvote, int resourceId);
     
     /**
      * Instead of downvoting, a user can remove their upvote from a previously upvoted resource within the database.

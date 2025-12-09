@@ -71,7 +71,7 @@ public class CommentDAOImpl implements CommentDAO {
      * {@inheritDoc}
      */
     @Override
-    public void addComment(Credentials user, Comment comment, int resourceId) {
+    public int addComment(Credentials user, Comment comment, int resourceId) {
         // Check for valid authentication and authorization
         if (user == null || user.getSystemRole() == null) {
             logger.error("Attempted to add comment with null user credentials.");
@@ -103,6 +103,8 @@ public class CommentDAOImpl implements CommentDAO {
         comments.insertOne(commentDoc);
 
         logger.info(String.format("User %d added comment %d to resource %d.", user.getId(), comment.getId(), resourceId));
+    
+        return commentDoc.getInteger("commentId");
     }
     
     /**

@@ -203,11 +203,11 @@ public class WikiEndpoint {
         Authenticator auth = new AuthenticatorImpl(authServerUrl);
         Credentials userCredentials = auth.authenticate(token);
         ResourceDAO resourceDAO = new ResourceDAOImpl(databaseConnectionPool.getDatabaseConnection());
-        resourceDAO.insertResource(userCredentials, resource);
+        int resourceId = resourceDAO.insertResource(userCredentials, resource);
         logger.info("Returning HTTP response code 201.");
         return ResponseEntity.status(HttpStatus.CREATED)
                              .contentType(MediaType.APPLICATION_JSON)
-                             .body("{\"msg\": \"Successfully added a new resource.\"}");
+                             .body("{\"resourceId\": "+ resourceId +", \"msg\": \"Successfully added a new resource.\"}");
     }
 
     /**
@@ -227,11 +227,11 @@ public class WikiEndpoint {
         Authenticator auth = new AuthenticatorImpl(authServerUrl);
         Credentials userCredentials = auth.authenticate(token);
         CommentDAO commentDAO = new CommentDAOImpl(databaseConnectionPool.getDatabaseConnection());
-        commentDAO.addComment(userCredentials, comment, resourceId);
+        int commentId = commentDAO.addComment(userCredentials, comment, resourceId);
         logger.info("Returning HTTP response code 201.");
         return ResponseEntity.status(HttpStatus.CREATED)
                              .contentType(MediaType.APPLICATION_JSON)
-                             .body("{\"msg\": \"Successfully added comment to resource " + resourceId + ".\"}");
+                             .body("{\"commentId\": "+ commentId +", \"msg\": \"Successfully added comment to resource " + resourceId + ".\"}");
     }
 
     /**
@@ -250,11 +250,11 @@ public class WikiEndpoint {
         Authenticator auth = new AuthenticatorImpl(authServerUrl);
         Credentials userCredentials = auth.authenticate(token);
         UpvoteDAO upvoteDAO = new UpvoteDAOImpl(databaseConnectionPool.getDatabaseConnection());
-        upvoteDAO.addUpvote(userCredentials, new Upvote(), resourceId);
+        int upvoteId = upvoteDAO.addUpvote(userCredentials, new Upvote(), resourceId);
         logger.info("Returning HTTP response code 201.");
         return ResponseEntity.status(HttpStatus.CREATED)
                              .contentType(MediaType.APPLICATION_JSON)
-                             .body("{\"msg\": \"Successfully added new upvote to resource " + resourceId + ".\"}");
+                             .body("{\"upvoteId\": "+ upvoteId +", \"msg\": \"Successfully added new upvote to resource " + resourceId + ".\"}");
     }
 
     /**
@@ -274,11 +274,11 @@ public class WikiEndpoint {
         Authenticator auth = new AuthenticatorImpl(authServerUrl);
         Credentials userCredentials = auth.authenticate(token);
         FlagDAO flagDAO = new FlagDAOImpl(databaseConnectionPool.getDatabaseConnection());
-        flagDAO.addReviewFlag(userCredentials, reviewFlag, resourceId);
+        int reviewFlagId = flagDAO.addReviewFlag(userCredentials, reviewFlag, resourceId);
         logger.info("Returning HTTP response code 201.");
         return ResponseEntity.status(HttpStatus.CREATED)
                              .contentType(MediaType.APPLICATION_JSON)
-                             .body("{\"msg\": \"Successfully added new review flag to resource " + resourceId + ".\"}");
+                             .body("{\"reviewFlagId\": "+ reviewFlagId +", \"msg\": \"Successfully added new review flag to resource " + resourceId + ".\"}");
     }
 
     /**
