@@ -81,7 +81,9 @@ public class HttpsRedirectFilter implements Filter {
 		// If the request is not secure (HTTP), redirect to HTTPS equivalent request
 		if(!httpRequest.isSecure()) {
 			String httpsURL = buildHttpsUrl(httpRequest);
-			httpResponse.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
+			// Use 308 Permanent Redirect to preserve HTTP method and request body
+			// This is crucial for POST/PUT/PATCH requests to work correctly after redirect
+			httpResponse.setStatus(308);
 			httpResponse.setHeader("Location", httpsURL);
 			return;
 		}
