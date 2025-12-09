@@ -40,7 +40,7 @@ public interface ResourceDAO {
      * @param user the credentials of the user inserting the resource
      * @param resource the resource to be inserted
      */
-    void insertResource(Credentials user, Resource resource);
+    int insertResource(Credentials user, Resource resource);
 
     /**
      * A contributor may update their own resource or an admin may update any resource.

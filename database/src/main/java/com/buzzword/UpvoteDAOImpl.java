@@ -78,7 +78,7 @@ public class UpvoteDAOImpl
      * {@inheritDoc}
      */
     @Override
-    public void addUpvote(Credentials user, Upvote upvote, int resourceId) {
+    public int addUpvote(Credentials user, Upvote upvote, int resourceId) {
         // Check for valid authentication and authorization
         if (user == null || user.getSystemRole() == null) {
             logger.error("Attempted to add upvote with null user credentials.");
@@ -118,6 +118,8 @@ public class UpvoteDAOImpl
         upvotes.insertOne(upvoteDoc);
 
         logger.info(String.format("User %d added upvote to resource %d.", user.getId(), resourceId));
+        
+        return upvoteDoc.getInteger("upvoteId");
     }
 
     /**

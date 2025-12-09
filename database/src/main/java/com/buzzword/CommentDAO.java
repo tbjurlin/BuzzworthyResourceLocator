@@ -36,7 +36,7 @@ public interface CommentDAO {
      * @param comment the comment to be added
      * @param resourceId the ID of the resource to add the comment to
      */
-    void addComment(Credentials user, Comment comment, int resourceId);
+    int addComment(Credentials user, Comment comment, int resourceId);
 
     /**
      * Allows a user to edit a comment on a specific resource.

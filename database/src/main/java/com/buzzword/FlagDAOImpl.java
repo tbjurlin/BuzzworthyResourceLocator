@@ -71,7 +71,7 @@ public class FlagDAOImpl implements FlagDAO {
      * {@inheritDoc}
      */
     @Override
-    public void addReviewFlag(Credentials user, ReviewFlag flag, int resourceId) {
+    public int addReviewFlag(Credentials user, ReviewFlag flag, int resourceId) {
         // Check for valid authentication and authorization
         if (user == null || user.getSystemRole() == null) {
             logger.error("Attempted to add flag with null user credentials.");
@@ -103,6 +103,8 @@ public class FlagDAOImpl implements FlagDAO {
         flags.insertOne(flagDoc);
 
         logger.info(String.format("User %d added flag %d to resource %d.", user.getId(), flag.getId(), resourceId));
+    
+        return flagDoc.getInteger("flagId");
     }
     
     /**

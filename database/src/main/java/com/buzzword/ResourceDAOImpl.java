@@ -88,7 +88,7 @@ public class ResourceDAOImpl implements ResourceDAO {
      * {@inheritDoc}
      */
     @Override
-    public void insertResource(Credentials user, Resource resource) {
+    public int insertResource(Credentials user, Resource resource) {
         // Check for valid authentication and authorization
         if (user == null || user.getSystemRole() == null) {
             logger.error("Attempted to insert resource with null user credentials.");
@@ -121,6 +121,7 @@ public class ResourceDAOImpl implements ResourceDAO {
         resources.insertOne(resourceDoc);
 
         logger.info(String.format("User %d inserted new resource %d", user.getId(), resource.getId()));
+        return resourceDoc.getInteger("resourceId");
     }
 
     /**
