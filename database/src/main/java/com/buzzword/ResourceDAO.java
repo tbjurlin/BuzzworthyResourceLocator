@@ -71,6 +71,14 @@ public interface ResourceDAO {
     List<Resource> listAllResources(Credentials user);
 
     /**
+     * Lists resources available in the system created by the current user.
+     * 
+     * @param user the credentials of the user requesting the list
+     * @return list of all resources created by the user
+     */
+    List<Resource> listOwnResources(Credentials user);
+
+    /**
      * Retrieves a single resource by its ID.
      * 
      * @param user the credentials of the user requesting the resource

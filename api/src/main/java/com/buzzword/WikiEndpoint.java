@@ -177,6 +177,40 @@ public class WikiEndpoint {
 
     /**
      * GET Request.
+     * Retrieve all of user's own resource records from the database as a JSON object
+     * containing a list of Record objects.
+     * 
+     * @param tokenStr A string representation of the user's Java Web Token (JWT).
+     * @return ResponseEntity containing a JSON array of resources and HTTP status 200.
+     */
+    @GetMapping("resource-own")
+    public ResponseEntity<String> retrieveOwnResources(@Valid @RequestHeader("Bearer") String tokenStr) {
+        logger.info("HTTP GET request (retrieveAllResources) received.");
+        Token token = new Token();
+        token.setToken(tokenStr);
+        Authenticator auth = new AuthenticatorImpl(authServerUrl);
+        Credentials userCredentials = auth.authenticate(token);
+        ResourceDAO resourceDAO = new ResourceDAOImpl(databaseConnectionPool.getDatabaseConnection());
+        List<Resource> resources = resourceDAO.listAllResources(userCredentials);
+        if(resources == null) {
+            logger.error("Cannot return a null list of resources.");
+            throw new NullPointerException("Cannot return a null list of resources.");
+        }
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            String returnObj = objectMapper.writeValueAsString(resources);
+        
+            logger.info("Returning HTTP response code 200.");
+            return ResponseEntity.ok()
+                                 .contentType(MediaType.APPLICATION_JSON)
+                                 .body(returnObj);
+        } catch(JsonProcessingException e) {
+            throw new NullPointerException("Unable to parse JSON from list of resources.");
+        }
+    }
+
+    /**
+     * GET Request.
      * Retrieve all resource records from the database as a JSON object
      * containing a list of Record objects.
      * 
