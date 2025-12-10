@@ -108,6 +108,22 @@ public class WikiEndpoint {
 
     /**
      * GET Request.
+     * Retrieve the 'About Us' information from a config file.
+     * 
+     * @return ResponseEntity containing the 'About Us' section and HTTP status 200.
+     */
+    @GetMapping("about-us")
+    public ResponseEntity<String> getAboutSection() {
+        logger.info("HTTP GET request (getAboutSection) received.");
+        ConfigurationManager configManager = ConfigurationManagerImpl.getInstance();
+        String aboutPage = configManager.getAboutPageInfo();
+        return ResponseEntity.ok()
+                             .contentType(MediaType.APPLICATION_JSON)
+                             .body(aboutPage);
+    }
+
+    /**
+     * GET Request.
      * Retrieve a single resource record from the database as a JSON object
      * containing a Record object.
      * 
@@ -157,7 +173,7 @@ public class WikiEndpoint {
         Authenticator auth = new AuthenticatorImpl(authServerUrl);
         Credentials userCredentials = auth.authenticate(token);
         ResourceDAO resourceDAO = new ResourceDAOImpl(databaseConnectionPool.getDatabaseConnection());
-        List<Resource> resources = resourceDAO.listAllResources(userCredentials);
+        List<Resource> resources = resourceDAO.listOwnResources(userCredentials);
         if(resources == null) {
             logger.error("Cannot return a null list of resources.");
             throw new NullPointerException("Cannot return a null list of resources.");

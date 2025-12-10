@@ -102,4 +102,10 @@ public interface ConfigurationManager {
      * @return the list of user roles
      */
     public abstract List<String> getCommenterUserRoles();
+
+    /**
+     * Gets the about page information from the config file
+     * @return the about page information
+     */
+    public abstract String getAboutPageInfo();
 }
