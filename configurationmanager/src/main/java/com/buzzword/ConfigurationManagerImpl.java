@@ -212,4 +212,19 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
         }
         return roles;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getAboutPageInfo() {
+        String aboutPageInfo = propertiesFile.getProperty("aboutpage.content");
+        if (aboutPageInfo == null) {
+            logger.error("About page information is missing from the configuration file.");
+            throw new ConfigurationException("Missing about page information.");
+        }
+        XssSanitizer sanitizer = new XssSanitizerImpl();
+        aboutPageInfo = sanitizer.sanitizeInput(aboutPageInfo);
+        return aboutPageInfo;
+    }
 }

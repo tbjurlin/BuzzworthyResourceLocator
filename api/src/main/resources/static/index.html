@@ -19,8 +19,29 @@
         <h3>Return body — {"firstName": "First", "lastName": "Last"}</h3>
         <h3>Return code — 200 (successfully verified), 400 (misformatted request), 401 (unable to authenticate user), 405 (method not allowed for current endpoint), 500 (internal server error)</h3>
         <hr>
+        <h2>GET https://localhost:8443/BRL/api/wiki/about-us</h2>
+        <h3>Purpose — Retrieve the "About Us" page information.</h3>
+        <h3>Request header — None.</h3>
+        <h3>Request body — Empty.</h3>
+        <h3>Return body — JSON string containing the "About Us" page content.</h3>
+        <h3>Return code — 200 (successfully retrieved), 405 (method not allowed for current endpoint), 500 (internal server error)</h3>
+        <hr>
+        <h2>GET https://localhost:8443/BRL/api/wiki/resource/{resourceId}</h2>
+        <h3>Purpose — Retrieve a single resource record from the database by ID.</h3>
+        <h3>Request header — "Bearer: abcdefg...tuvwxyz" where this string is an SSO token.</h3>
+        <h3>Request body — Empty.</h3>
+        <h3>Return body — {resource} where the resource is in the format shown at the bottom of this page.</h3>
+        <h3>Return code — 200 (successfully retrieved), 400 (misformatted request), 401 (unable to authenticate user), 403 (insufficient user permissions), 404 (unable to retrieve resource), 405 (method not allowed for current endpoint), 415 (unsupported request media type), 500 (internal server error)</h3>
+        <hr>
         <h2>GET https://localhost:8443/BRL/api/wiki/resource</h2>
         <h3>Purpose — Retrieve all resource records from the database.</h3>
+        <h3>Request header — "Bearer: abcdefg...tuvwxyz" where this string is an SSO token.</h3>
+        <h3>Request body — Empty.</h3>
+        <h3>Return body — [{resource},{resource},...,{resource}] where each resource is in the format shown at the bottom of this page.</h3>
+        <h3>Return code — 200 (successfully retrieved), 400 (misformatted request), 401 (unable to authenticate user), 403 (insufficient user permissions), 404 (unable to retrieve resources), 405 (method not allowed for current endpoint), 415 (unsupported request media type), 500 (internal server error)</h3>
+        <hr>
+        <h2>GET https://localhost:8443/BRL/api/wiki/resource-own</h2>
+        <h3>Purpose — Retrieve all resource records created by the current user.</h3>
         <h3>Request header — "Bearer: abcdefg...tuvwxyz" where this string is an SSO token.</h3>
         <h3>Request body — Empty.</h3>
         <h3>Return body — [{resource},{resource},...,{resource}] where each resource is in the format shown at the bottom of this page.</h3>

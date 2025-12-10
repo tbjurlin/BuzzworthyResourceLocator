@@ -279,6 +279,15 @@ public class ResourceDAOImpl implements ResourceDAO {
      * {@inheritDoc}
      */
     @Override
+    public List<Resource> listOwnResources(Credentials user) {
+        Bson findByCreatorId = Filters.eq("creatorId", user.getId());
+        return listResources(user, findByCreatorId, new Document());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Resource getResourceById(Credentials user, int id) {
         Bson findById = Filters.eq("resourceId", id);
         return listResources(user, findById, new Document())
