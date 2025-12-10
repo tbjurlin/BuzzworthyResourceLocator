@@ -33,11 +33,5 @@ To start a new server instance locally:
 
 `sudo systemctl start mongod`
 
-## Installing MongoDB Shell (Mongosh)
-
-Go to MongoDB and find the MongoDB Shell download. We will be using version 2.5.9 for Debian/Ubuntu machines.
-
-https://downloads.mongodb.com/compass/mongodb-mongosh_2.5.9_amd64.deb
-
 
 
