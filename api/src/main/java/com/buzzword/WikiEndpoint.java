@@ -173,7 +173,7 @@ public class WikiEndpoint {
         Authenticator auth = new AuthenticatorImpl(authServerUrl);
         Credentials userCredentials = auth.authenticate(token);
         ResourceDAO resourceDAO = new ResourceDAOImpl(databaseConnectionPool.getDatabaseConnection());
-        List<Resource> resources = resourceDAO.listOwnResources(userCredentials);
+        List<Resource> resources = resourceDAO.listAllResources(userCredentials);
         if(resources == null) {
             logger.error("Cannot return a null list of resources.");
             throw new NullPointerException("Cannot return a null list of resources.");
@@ -201,13 +201,13 @@ public class WikiEndpoint {
      */
     @GetMapping("resource-own")
     public ResponseEntity<String> retrieveOwnResources(@Valid @RequestHeader("Bearer") String tokenStr) {
-        logger.info("HTTP GET request (retrieveAllResources) received.");
+        logger.info("HTTP GET request (retrieveOwnResources) received.");
         Token token = new Token();
         token.setToken(tokenStr);
         Authenticator auth = new AuthenticatorImpl(authServerUrl);
         Credentials userCredentials = auth.authenticate(token);
         ResourceDAO resourceDAO = new ResourceDAOImpl(databaseConnectionPool.getDatabaseConnection());
-        List<Resource> resources = resourceDAO.listAllResources(userCredentials);
+        List<Resource> resources = resourceDAO.listOwnResources(userCredentials);
         if(resources == null) {
             logger.error("Cannot return a null list of resources.");
             throw new NullPointerException("Cannot return a null list of resources.");
